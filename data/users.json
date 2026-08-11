@@ -1,0 +1,47 @@
+[
+  {
+    "id": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "username": "root",
+    "email": "admin@eventpro.com",
+    "password": "$2a$10$mII/9/5fHo/vU8pIEdtmo.fY73.Dn7rgutVav2WtvQfYJr.BJobs6",
+    "role": "root",
+    "isActive": true,
+    "createdAt": "2026-08-03T15:13:09.949Z"
+  },
+  {
+    "id": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "username": "SEBOYAN",
+    "email": "4000445781@eventpro.local",
+    "password": "$2a$10$C0wY687E5klPi.NoHfBMAuMFWESLqQ/mFStZSQ1QT1Bqq69A9ksia",
+    "role": "participante",
+    "isActive": true,
+    "createdAt": "2026-08-04T21:55:52.084Z"
+  },
+  {
+    "id": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "username": "Jesu",
+    "email": "3495504830@eventpro.local",
+    "password": "$2a$10$yhKZ9CSYserHlYvwO48Ar.cflPNnj.zps/E/zjyIsXRluM5Qho2Uy",
+    "role": "participante",
+    "isActive": true,
+    "createdAt": "2026-08-04T21:55:52.141Z"
+  },
+  {
+    "id": "d1357bec-629e-430f-994d-2b1db6b40dba",
+    "username": "TheGhost",
+    "email": "2115415933@eventpro.local",
+    "password": "$2a$10$FIDo0TGMa.0uCIvWNwhxluYpSv.7xv5do0aoD476HagKoj0Pha0SW",
+    "role": "participante",
+    "isActive": true,
+    "createdAt": "2026-08-04T21:55:52.198Z"
+  },
+  {
+    "id": "b8377fac-ff34-41ec-a239-e62e296ad360",
+    "username": "Tiu",
+    "email": "827673899@eventpro.local",
+    "password": "$2a$10$uEELvz/pE6feKuvAA7MMPe8SPghfO95Tj8bMRlVZ5q85V0g6TPgni",
+    "role": "participante",
+    "isActive": true,
+    "createdAt": "2026-08-04T21:55:52.254Z"
+  }
+]

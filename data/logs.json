@@ -1,0 +1,658 @@
+[
+  {
+    "id": "ac5b1df6-b6d1-4a4a-8b32-8037c7def2a0",
+    "timestamp": "2026-08-04T21:42:03.368Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYAN",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "104d7c47-db49-4ce8-a6a3-e6a87c8e8553",
+    "timestamp": "2026-08-04T21:42:11.568Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYAN",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "8467a102-8e58-49ca-aab7-5ee53658d7b7",
+    "timestamp": "2026-08-04T21:45:49.380Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYAN",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "304c8648-588d-4276-bc4d-54b3ee1e4333",
+    "timestamp": "2026-08-04T21:55:52.087Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_missing_user",
+    "target": "4000445781",
+    "details": {
+      "username": "SEBOYAN",
+      "userId": "2a49a210-e417-4498-94dd-fa88c164f26f"
+    }
+  },
+  {
+    "id": "b5869d99-3622-4fbc-9be1-98da76fc05fe",
+    "timestamp": "2026-08-04T21:55:52.144Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_missing_user",
+    "target": "3495504830",
+    "details": {
+      "username": "Jesu",
+      "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059"
+    }
+  },
+  {
+    "id": "931454b7-6c7a-4c0a-82d3-a63be97c074f",
+    "timestamp": "2026-08-04T21:55:52.201Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_missing_user",
+    "target": "2115415933",
+    "details": {
+      "username": "TheGhost",
+      "userId": "d1357bec-629e-430f-994d-2b1db6b40dba"
+    }
+  },
+  {
+    "id": "12c1146e-4ab2-4998-9776-24ffa8267f9d",
+    "timestamp": "2026-08-04T21:55:52.257Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_missing_user",
+    "target": "827673899",
+    "details": {
+      "username": "Tiu",
+      "userId": "b8377fac-ff34-41ec-a239-e62e296ad360"
+    }
+  },
+  {
+    "id": "78da6a60-35d5-4c63-b8c5-32c9079a1cd6",
+    "timestamp": "2026-08-04T22:14:18.705Z",
+    "userId": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "fd0c4446-f3c8-49c5-885e-e1c82ccbcef9",
+    "timestamp": "2026-08-04T22:14:18.708Z",
+    "userId": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYAN",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "56cc1395-9202-4508-8730-c43b4d6670b2",
+    "timestamp": "2026-08-04T22:14:18.720Z",
+    "userId": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "action": "sync_person_user",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "newPersonId": "4000445781"
+    }
+  },
+  {
+    "id": "2d4f8665-a988-421d-af1c-23db84407238",
+    "timestamp": "2026-08-04T22:14:53.821Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "6c90b94a-1a88-47d8-aedf-f1b64f34fc7e",
+    "timestamp": "2026-08-04T22:14:53.824Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYAN",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "22257983-1bee-450a-a93d-958761e57d8f",
+    "timestamp": "2026-08-04T22:14:53.834Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_person_user",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "newPersonId": "4000445781"
+    }
+  },
+  {
+    "id": "06151abf-624e-4204-b4ac-9ff1b13530a0",
+    "timestamp": "2026-08-04T22:22:40.769Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "5b6e350e-15a0-442b-89c9-e7aa9fbfa731",
+    "timestamp": "2026-08-04T22:22:40.772Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYA",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "6b1916f8-19fd-4b50-aef5-a6f04501c14f",
+    "timestamp": "2026-08-04T22:22:41.647Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "6de0435f-3e3c-4042-a88d-2e9f561c1b93",
+    "timestamp": "2026-08-04T22:22:41.649Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYA",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "103a7524-1174-48b2-9fb4-ecd544dacd92",
+    "timestamp": "2026-08-04T22:22:41.870Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "fdf3ef3b-a6a8-4d30-ab5c-23ba30154f27",
+    "timestamp": "2026-08-04T22:22:41.873Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYA",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "ed4a96f8-e67b-467d-b9bc-55a3acbd118d",
+    "timestamp": "2026-08-04T22:22:42.095Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "f23c7fa6-2cfe-440d-a2d2-32fe658b411e",
+    "timestamp": "2026-08-04T22:22:42.098Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYA",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "35fcb82a-3521-42ea-82b4-aae49c7197a5",
+    "timestamp": "2026-08-04T22:22:42.231Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "0d92f378-cc26-4bea-8cc7-ad7e5aee9e37",
+    "timestamp": "2026-08-04T22:22:42.234Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYA",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "29afa552-e217-408f-b8f6-c40652a249b7",
+    "timestamp": "2026-08-04T22:22:42.446Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "0eb3ef93-5980-4555-b09e-6a3c195c7ef4",
+    "timestamp": "2026-08-04T22:22:42.449Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYA",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "adc6bb2d-5c84-4ec4-b01a-22dd4d48e396",
+    "timestamp": "2026-08-04T22:22:42.591Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "481f7657-20d4-4780-9971-08b1df8b70f0",
+    "timestamp": "2026-08-04T22:22:42.594Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYA",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "9eac43ff-4f9c-4a05-a2cc-133e17a43ec1",
+    "timestamp": "2026-08-04T22:23:01.347Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_username",
+    "target": "4000445781",
+    "details": {
+      "newUsername": "SEBOYAN"
+    }
+  },
+  {
+    "id": "6e0bb4be-69aa-4745-900a-1109e29e2500",
+    "timestamp": "2026-08-04T22:23:01.350Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYAN",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "e1e7a9f7-05a2-4415-8bbc-789f78a0a9bb",
+    "timestamp": "2026-08-04T22:23:01.361Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_person_user",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "newPersonId": "4000445781"
+    }
+  },
+  {
+    "id": "64d91527-3fb0-4e04-92d3-0bde2ee932e1",
+    "timestamp": "2026-08-04T22:29:30.897Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_person_user",
+    "target": "3495504830",
+    "details": {
+      "firstName": "Jesu",
+      "newPersonId": "3495504830"
+    }
+  },
+  {
+    "id": "620bf106-dd8b-4a46-a90f-c38215d5cc7e",
+    "timestamp": "2026-08-04T22:29:33.024Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_username",
+    "target": "3495504830",
+    "details": {
+      "newUsername": "Jesu"
+    }
+  },
+  {
+    "id": "1fb9ec49-4169-4ba5-9caf-4aabc1193e73",
+    "timestamp": "2026-08-04T22:29:33.027Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "3495504830",
+    "details": {
+      "firstName": "Jesu",
+      "nickname": "EG JESUS",
+      "coordinationId": "60a8462e-7c0d-4d4f-8007-587f77f915b2"
+    }
+  },
+  {
+    "id": "f992b943-5b09-4597-9223-ac8e2b946c6b",
+    "timestamp": "2026-08-04T22:29:33.039Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_person_user",
+    "target": "3495504830",
+    "details": {
+      "firstName": "Jesu",
+      "newPersonId": "3495504830"
+    }
+  },
+  {
+    "id": "4baf7aed-f57e-4433-9514-ee5b280d65dd",
+    "timestamp": "2026-08-10T00:13:37.150Z",
+    "userId": "ad491fe9-5b0f-440f-b5e3-76bbfda9d1f5",
+    "action": "update_person",
+    "target": "4000445781",
+    "details": {
+      "firstName": "SEBOYAN",
+      "nickname": "EG • SEBOYAN",
+      "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    }
+  },
+  {
+    "id": "27474d18-0a3b-42ac-a22f-820f68e980ec",
+    "timestamp": "2026-08-10T00:14:36.791Z",
+    "userId": "ad491fe9-5b0f-440f-b5e3-76bbfda9d1f5",
+    "action": "create_person_with_user",
+    "target": "2324",
+    "details": {
+      "username": "SEBOYAN2424",
+      "userId": "66bf3db2-3f10-4fdd-ade2-696efb461506"
+    }
+  },
+  {
+    "id": "fb01505e-bec6-4803-9492-ff4e6dca5c47",
+    "timestamp": "2026-08-10T00:14:36.793Z",
+    "userId": "ad491fe9-5b0f-440f-b5e3-76bbfda9d1f5",
+    "action": "create_person",
+    "target": "2324",
+    "details": {
+      "firstName": "SEBOYAN2424",
+      "nickname": "244"
+    }
+  },
+  {
+    "id": "1b33ddd6-fbf3-4315-ac71-a3e2ba733ec6",
+    "timestamp": "2026-08-10T00:14:41.819Z",
+    "userId": "ad491fe9-5b0f-440f-b5e3-76bbfda9d1f5",
+    "action": "update_user_role",
+    "target": "66bf3db2-3f10-4fdd-ade2-696efb461506",
+    "details": {
+      "newRole": "admin"
+    }
+  },
+  {
+    "id": "99b20e62-f9c3-4242-997f-b8d90299da4a",
+    "timestamp": "2026-08-10T00:16:03.698Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_user_role",
+    "target": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "details": {
+      "newRole": "admin"
+    }
+  },
+  {
+    "id": "bf52109d-dc47-409b-9294-f500cced174c",
+    "timestamp": "2026-08-10T00:16:08.652Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_user_role",
+    "target": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "details": {
+      "newRole": "participante"
+    }
+  },
+  {
+    "id": "c8c5e323-58e7-4cca-9402-9846860d1649",
+    "timestamp": "2026-08-10T00:16:10.956Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_user_role",
+    "target": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "details": {
+      "newRole": "admin"
+    }
+  },
+  {
+    "id": "f80de13c-c840-40aa-a196-aceac9f46d2e",
+    "timestamp": "2026-08-10T00:16:35.227Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_user_role",
+    "target": "2a49a210-e417-4498-94dd-fa88c164f26f",
+    "details": {
+      "newRole": "participante"
+    }
+  },
+  {
+    "id": "e9f69519-7e06-4d83-a8e4-e411dc969f9e",
+    "timestamp": "2026-08-10T00:17:23.543Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "delete_person",
+    "target": "2324",
+    "details": {
+      "person": {
+        "id": "2324",
+        "firstName": "SEBOYAN2424",
+        "nickname": "244",
+        "country": "Bahamas",
+        "coordinationId": "60a8462e-7c0d-4d4f-8007-587f77f915b2",
+        "userId": "66bf3db2-3f10-4fdd-ade2-696efb461506",
+        "createdAt": "2026-08-10T00:14:36.735Z"
+      }
+    }
+  },
+  {
+    "id": "12656076-94a1-4423-809b-2f57a21ef4ac",
+    "timestamp": "2026-08-10T01:01:42.115Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_person_with_user",
+    "target": "232323",
+    "details": {
+      "username": "adad",
+      "userId": "97ff26b4-9b57-4a37-a763-dc96d32c7575"
+    }
+  },
+  {
+    "id": "6627b88b-f55c-4637-b54e-4bd1cd327f6e",
+    "timestamp": "2026-08-10T01:01:42.117Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_person",
+    "target": "232323",
+    "details": {
+      "firstName": "adad",
+      "nickname": "sad"
+    }
+  },
+  {
+    "id": "a07eb08e-bbee-48c4-9c8a-7620818e45a9",
+    "timestamp": "2026-08-10T01:01:47.683Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_person_user",
+    "target": "232323",
+    "details": {
+      "firstName": "adad",
+      "newPersonId": "232323"
+    }
+  },
+  {
+    "id": "20eb5ad3-6690-48e1-a3f0-3d6fb1613ac7",
+    "timestamp": "2026-08-10T01:16:32.007Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "delete_person",
+    "target": "232323",
+    "details": {
+      "person": {
+        "id": "232323",
+        "firstName": "adad",
+        "nickname": "sad",
+        "country": "Azerbaiyán",
+        "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc",
+        "userId": "97ff26b4-9b57-4a37-a763-dc96d32c7575",
+        "createdAt": "2026-08-10T01:01:42.057Z"
+      }
+    }
+  },
+  {
+    "id": "58d5916f-57fe-46f0-926a-3d1088bb352c",
+    "timestamp": "2026-08-10T01:19:53.620Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_person_with_user",
+    "target": "2",
+    "details": {
+      "username": "2",
+      "userId": "b8469093-89ed-46e3-a51c-708dea8990f0"
+    }
+  },
+  {
+    "id": "4e811228-5256-4ff8-bc17-fa628b25b2dc",
+    "timestamp": "2026-08-10T01:19:53.623Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "create_person",
+    "target": "2",
+    "details": {
+      "firstName": "2",
+      "nickname": "2"
+    }
+  },
+  {
+    "id": "e08276a3-5b42-46b1-b762-bdeff4929fdd",
+    "timestamp": "2026-08-10T01:20:04.458Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "delete_person",
+    "target": "2",
+    "details": {
+      "person": {
+        "id": "2",
+        "firstName": "2",
+        "nickname": "2",
+        "country": "Bélgica",
+        "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc",
+        "userId": "b8469093-89ed-46e3-a51c-708dea8990f0",
+        "createdAt": "2026-08-10T01:19:53.560Z"
+      }
+    }
+  },
+  {
+    "id": "c8037cb6-4c01-4121-9230-901ead3ec3f5",
+    "timestamp": "2026-08-10T02:34:19.358Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_username",
+    "target": "3495504830",
+    "details": {
+      "newUsername": "Jesu"
+    }
+  },
+  {
+    "id": "d97aa0df-4199-4d20-88c6-af2b5570ec63",
+    "timestamp": "2026-08-10T02:34:19.363Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "3495504830",
+    "details": {
+      "firstName": "Jesu",
+      "nickname": "EG JESUS",
+      "coordinationId": "60a8462e-7c0d-4d4f-8007-587f77f915b2"
+    }
+  },
+  {
+    "id": "fe7fbaa5-7db5-4d06-aa07-2a254b2b6009",
+    "timestamp": "2026-08-10T02:34:19.376Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_person_user",
+    "target": "3495504830",
+    "details": {
+      "firstName": "Jesu",
+      "newPersonId": "3495504830"
+    }
+  },
+  {
+    "id": "c3d9097c-2c50-4326-ab5b-28acbd3572c4",
+    "timestamp": "2026-08-10T02:34:32.138Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_username",
+    "target": "3495504830",
+    "details": {
+      "newUsername": "Jesu"
+    }
+  },
+  {
+    "id": "369a00fb-2e57-4fd7-a918-94cdfc87c641",
+    "timestamp": "2026-08-10T02:34:32.142Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_person",
+    "target": "3495504830",
+    "details": {
+      "firstName": "Jesu",
+      "nickname": "EG JESUS",
+      "coordinationId": "60a8462e-7c0d-4d4f-8007-587f77f915b2"
+    }
+  },
+  {
+    "id": "7feadeaa-e2d0-42bc-9a15-baac488e35ab",
+    "timestamp": "2026-08-10T02:34:32.155Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "sync_person_user",
+    "target": "3495504830",
+    "details": {
+      "firstName": "Jesu",
+      "newPersonId": "3495504830"
+    }
+  },
+  {
+    "id": "9cd33e04-3d92-410d-818e-9e939372b821",
+    "timestamp": "2026-08-10T02:34:51.939Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_user_role",
+    "target": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "details": {
+      "newRole": "admin"
+    }
+  },
+  {
+    "id": "703f4c54-f141-44a6-8cda-9d1f6fbaae52",
+    "timestamp": "2026-08-10T02:34:54.235Z",
+    "userId": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "action": "update_user_role",
+    "target": "0f086bad-ab4c-4a38-b4c0-af802962c059",
+    "details": {
+      "newRole": "participante"
+    }
+  }
+]

@@ -1,0 +1,368 @@
+[
+  {
+    "id": "9fa11957-a213-46dd-aacb-a02730e13a84",
+    "name": "Evento 4/8",
+    "type": "botin",
+    "mode": "escuadras",
+    "maxParticipants": 50,
+    "createdBy": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "status": "activo",
+    "squads": [
+      {
+        "id": "abe4021b-d799-4b9a-9185-18ee3ccb0425",
+        "name": "GOAT",
+        "leaderId": "2115415933",
+        "memberIds": [
+          "4000445781",
+          "3495504830",
+          "2115415933",
+          "827673899"
+        ],
+        "images": []
+      },
+      {
+        "id": "9c19fd69-7b2d-4021-b1e8-724d91a1fc66",
+        "name": "Team",
+        "leaderId": "1",
+        "memberIds": [
+          "2115415933",
+          "1",
+          "2"
+        ],
+        "images": []
+      }
+    ],
+    "participantIds": [
+      "4000445781",
+      "3495504830",
+      "2115415933",
+      "827673899",
+      "123",
+      "1",
+      "2"
+    ],
+    "matches": [
+      {
+        "id": "eef12d8d-46c2-4023-b273-e294b9f8cffa",
+        "participantId": "4000445781",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 6,
+        "elimContratistas": 3,
+        "elimOtros": 0,
+        "minutos": 17,
+        "segundos": 3,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-08T16:51:04.470Z"
+      },
+      {
+        "id": "95a3072f-d765-41c0-9302-a30cd9de5302",
+        "participantId": "3495504830",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 6,
+        "elimContratistas": 3,
+        "elimOtros": 0,
+        "minutos": 17,
+        "segundos": 3,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-08T16:51:04.470Z"
+      },
+      {
+        "id": "167c420f-ab3a-4aa5-82f1-03d945e2bb0f",
+        "participantId": "2115415933",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 6,
+        "elimContratistas": 3,
+        "elimOtros": 0,
+        "minutos": 17,
+        "segundos": 3,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-08T16:51:04.470Z"
+      },
+      {
+        "id": "4783cf3d-c6ec-4f1c-bfd9-953d871f49d8",
+        "participantId": "827673899",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 6,
+        "elimContratistas": 3,
+        "elimOtros": 0,
+        "minutos": 17,
+        "segundos": 3,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-08T16:51:04.470Z"
+      },
+      {
+        "id": "591ed94a-8c2d-4a2f-b935-d0ef55833322",
+        "participantId": "4000445781",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 3,
+        "elimContratistas": 6,
+        "elimOtros": 4,
+        "minutos": 5,
+        "segundos": 5,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-08T16:58:28.376Z"
+      },
+      {
+        "id": "64058e0f-2bb5-492f-8f22-6c3e1bc9f88d",
+        "participantId": "4000445781",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 2,
+        "elimContratistas": 3,
+        "elimOtros": 2,
+        "minutos": 4,
+        "segundos": 5,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:54:39.679Z"
+      },
+      {
+        "id": "2e9e181e-92e3-47a8-9336-17f6ba42c1fc",
+        "participantId": "3495504830",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 2,
+        "elimContratistas": 3,
+        "elimOtros": 2,
+        "minutos": 4,
+        "segundos": 5,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:54:39.679Z"
+      },
+      {
+        "id": "af268652-2f40-441f-a0bc-d7efcc48c648",
+        "participantId": "2115415933",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 2,
+        "elimContratistas": 3,
+        "elimOtros": 2,
+        "minutos": 4,
+        "segundos": 5,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:54:39.679Z"
+      },
+      {
+        "id": "cac3de2f-6985-4c15-856a-810e0adcc775",
+        "participantId": "827673899",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 2,
+        "elimContratistas": 3,
+        "elimOtros": 2,
+        "minutos": 4,
+        "segundos": 5,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:54:39.679Z"
+      },
+      {
+        "id": "e8963b12-5224-4024-9ae8-f3d3d7d6da85",
+        "participantId": "4000445781",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 23,
+        "elimContratistas": 4,
+        "elimOtros": 5,
+        "minutos": 6,
+        "segundos": 1,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:55:16.768Z"
+      },
+      {
+        "id": "27e6c0b9-ccb8-4fce-9b10-a439372bed31",
+        "participantId": "3495504830",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 23,
+        "elimContratistas": 4,
+        "elimOtros": 5,
+        "minutos": 6,
+        "segundos": 1,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:55:16.768Z"
+      },
+      {
+        "id": "92808457-56f7-42e6-a03f-bc48fd4ce0ea",
+        "participantId": "2115415933",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 23,
+        "elimContratistas": 4,
+        "elimOtros": 5,
+        "minutos": 6,
+        "segundos": 1,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:55:16.768Z"
+      },
+      {
+        "id": "63517c00-6ec4-4ecb-aefb-fcd861515edb",
+        "participantId": "827673899",
+        "squadId": "2b92ad7a-21f7-4b5e-a203-4e059cde39f2",
+        "botin": 23,
+        "elimContratistas": 4,
+        "elimOtros": 5,
+        "minutos": 6,
+        "segundos": 1,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-09T23:55:16.768Z"
+      },
+      {
+        "id": "0e029ae4-38de-4149-b3fa-eac67c798390",
+        "participantId": "4000445781",
+        "squadId": "9c68c1f0-f5fe-42a6-b532-58c6e15f9888",
+        "botin": 2,
+        "elimContratistas": 4,
+        "elimOtros": 0,
+        "minutos": 22,
+        "segundos": 0,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-10T00:18:31.794Z"
+      },
+      {
+        "id": "2ecef35e-b0e8-4d77-a01b-27d923657cc6",
+        "participantId": "3495504830",
+        "squadId": "9c68c1f0-f5fe-42a6-b532-58c6e15f9888",
+        "botin": 3555,
+        "elimContratistas": 3,
+        "elimOtros": 5,
+        "minutos": 22,
+        "segundos": 0,
+        "resultado": "Derrota",
+        "timestamp": "2026-08-10T00:18:31.803Z"
+      },
+      {
+        "id": "a9d24738-694a-4992-853d-57f9f371b3ab",
+        "participantId": "2115415933",
+        "squadId": "9c68c1f0-f5fe-42a6-b532-58c6e15f9888",
+        "botin": 0,
+        "elimContratistas": 0,
+        "elimOtros": 0,
+        "minutos": 0,
+        "segundos": 0,
+        "resultado": "",
+        "timestamp": "2026-08-10T00:18:31.808Z"
+      },
+      {
+        "id": "55704ce5-e231-4cd3-b667-618383fa7dae",
+        "participantId": "827673899",
+        "squadId": "9c68c1f0-f5fe-42a6-b532-58c6e15f9888",
+        "botin": 45,
+        "elimContratistas": 7,
+        "elimOtros": 6,
+        "minutos": 8,
+        "segundos": 9,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-10T00:18:31.813Z"
+      },
+      {
+        "id": "57e24622-e623-4dd2-8b22-02963222e2e8",
+        "participantId": "4000445781",
+        "squadId": "abe4021b-d799-4b9a-9185-18ee3ccb0425",
+        "botin": 1,
+        "elimContratistas": 1,
+        "elimOtros": 1,
+        "minutos": 1,
+        "segundos": 1,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-10T00:19:56.423Z"
+      },
+      {
+        "id": "13adf675-7d15-4ac0-959e-487ee4837489",
+        "participantId": "3495504830",
+        "squadId": "abe4021b-d799-4b9a-9185-18ee3ccb0425",
+        "botin": 2,
+        "elimContratistas": 2,
+        "elimOtros": 2,
+        "minutos": 2,
+        "segundos": 2,
+        "resultado": "Derrota",
+        "timestamp": "2026-08-10T00:19:56.438Z"
+      },
+      {
+        "id": "294df727-178c-44d5-a2af-67d4c62125c9",
+        "participantId": "2115415933",
+        "squadId": "abe4021b-d799-4b9a-9185-18ee3ccb0425",
+        "botin": 3,
+        "elimContratistas": 3,
+        "elimOtros": 3,
+        "minutos": 3,
+        "segundos": 3,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-10T00:19:56.443Z"
+      },
+      {
+        "id": "f0cd7caa-9602-4bee-b937-0a433da00607",
+        "participantId": "827673899",
+        "squadId": "abe4021b-d799-4b9a-9185-18ee3ccb0425",
+        "botin": 4,
+        "elimContratistas": 4,
+        "elimOtros": 4,
+        "minutos": 4,
+        "segundos": 4,
+        "resultado": "Derrota",
+        "timestamp": "2026-08-10T00:19:56.449Z"
+      }
+    ],
+    "createdAt": "2026-08-08T15:51:16.049Z",
+    "updatedAt": "2026-08-08T15:51:16.050Z"
+  },
+  {
+    "id": "ae9b749b-14c0-4795-a4cd-cdfe0f1154a4",
+    "name": "tere",
+    "type": "botin",
+    "mode": "duos",
+    "maxParticipants": 50,
+    "createdBy": "5d86cccd-8d5d-432e-8fa5-d54ffe5e31ca",
+    "status": "activo",
+    "squads": [
+      {
+        "id": "ac55b638-063d-45ea-954f-e3181662f8e9",
+        "name": "sd",
+        "leaderId": "827673899",
+        "memberIds": [
+          "827673899",
+          "1"
+        ],
+        "images": []
+      }
+    ],
+    "participantIds": [
+      "4000445781",
+      "827673899",
+      "1"
+    ],
+    "participantStats": {},
+    "createdAt": "2026-08-08T16:26:34.601Z",
+    "updatedAt": "2026-08-08T16:26:34.601Z",
+    "matches": [
+      {
+        "id": "b3104149-5bfa-4365-bd37-c7f3114b3032",
+        "participantId": "4000445781",
+        "squadId": "ac55b638-063d-45ea-954f-e3181662f8e9",
+        "botin": 4,
+        "elimContratistas": 4,
+        "elimOtros": 4,
+        "minutos": 4,
+        "segundos": 4,
+        "resultado": "Victoria",
+        "timestamp": "2026-08-10T00:20:52.635Z"
+      },
+      {
+        "id": "e601b7c1-93c8-4427-9f76-37d38123515e",
+        "participantId": "827673899",
+        "squadId": "ac55b638-063d-45ea-954f-e3181662f8e9",
+        "botin": 42,
+        "elimContratistas": 42,
+        "elimOtros": 42,
+        "minutos": 42,
+        "segundos": 42,
+        "resultado": "Derrota",
+        "timestamp": "2026-08-10T00:20:52.641Z"
+      },
+      {
+        "id": "8d5520ff-6167-427f-bc67-432e7e0cb197",
+        "participantId": "827673899",
+        "squadId": "ac55b638-063d-45ea-954f-e3181662f8e9",
+        "botin": 0,
+        "elimContratistas": 0,
+        "elimOtros": 0,
+        "minutos": 0,
+        "segundos": 0,
+        "resultado": "",
+        "timestamp": "2026-08-10T00:53:29.393Z"
+      }
+    ]
+  }
+]
