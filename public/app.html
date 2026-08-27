@@ -438,6 +438,159 @@
       .ruleta-container { flex-direction: column; }
       .ruleta-grafico canvas { max-width: 100%; }
     }
+
+    /* ===== FORMULARIOS ===== */
+    .forms-grid .form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border: 1px solid #edf2f7;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .forms-grid .form-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      transform: translateY(-4px);
+    }
+    .forms-grid .form-card .title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #0a2540;
+      margin-bottom: 0.3rem;
+    }
+    .forms-grid .form-card .desc {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+    .forms-grid .form-card .meta {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .forms-grid .form-card .badge {
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 0.15rem 0.6rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+    .forms-grid .form-card .badge.private {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .forms-grid .form-card .actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+      justify-content: flex-end;
+    }
+
+    .respondents-grid .respondent-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      transition: 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .respondents-grid .respondent-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.1);
+    }
+    .respondents-grid .respondent-card .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a2540, #3b82f6);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .respondents-grid .respondent-card .info {
+      flex: 1;
+    }
+    .respondents-grid .respondent-card .info .name {
+      font-weight: 500;
+      color: #0a2540;
+    }
+    .respondents-grid .respondent-card .info .date {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    /* Estilos para el editor de preguntas */
+    .question-editor-item {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .question-editor-item .drag-handle {
+      cursor: grab;
+      color: #94a3b8;
+      padding: 0.3rem;
+    }
+    .question-editor-item .question-fields {
+      flex: 1;
+    }
+    .question-editor-item .question-fields input,
+    .question-editor-item .question-fields select,
+    .question-editor-item .question-fields textarea {
+      width: 100%;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+    .question-editor-item .question-fields .options-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+    .question-editor-item .question-fields .options-input input {
+      width: auto;
+      flex: 1;
+      min-width: 120px;
+    }
+    .question-editor-item .question-actions {
+      display: flex;
+      gap: 0.3rem;
+    }
+    .question-editor-item .question-actions button {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+    }
+    .question-editor-item .question-actions button:hover {
+      background: #e2e8f0;
+    }
+    .question-editor-item .question-actions .delete-q {
+      color: #ef4444;
+    }
+    .question-editor-item .question-actions .delete-q:hover {
+      background: #fee2e2;
+    }
   </style>
 </head>
 <body>
@@ -449,11 +602,11 @@
       <p>Accede a tu panel de gestión</p>
       <div class="input-group">
         <label><i class="fas fa-user"></i> Usuario</label>
-        <input type="text" id="loginUser" value="root" />
+        <input type="text" id="loginUser" placeholder="Ingrese Usuario" />
       </div>
       <div class="input-group">
         <label><i class="fas fa-lock"></i> Contraseña</label>
-        <input type="password" id="loginPass" value="admin123" />
+        <input type="password" id="loginPass" placeholder="Ingrese Contraseña" />
       </div>
       <button class="btn-primary" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Iniciar sesión</button>
     </div>
@@ -569,7 +722,7 @@
         <div id="logsList" class="logs-container"></div>
       </div>
 
-      <!-- ===== NUEVA TAB: RULETA ===== -->
+      <!-- Tab: Ruleta -->
       <div class="tab-content" id="tab-ruleta">
         <div class="content-header">
           <h2><i class="fas fa-circle-notch"></i> Ruleta de Nombres</h2>
@@ -596,11 +749,46 @@
           </div>
         </div>
       </div>
+
+      <!-- ===== NUEVA TAB: FORMULARIOS (Google Forms style) ===== -->
+      <div class="tab-content" id="tab-forms">
+        <div class="content-header">
+          <h2><i class="fas fa-edit"></i> Formularios</h2>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn-create" id="openCreateForm"><i class="fas fa-plus"></i> Crear Formulario</button>
+          </div>
+        </div>
+        <!-- Grid de formularios -->
+        <div id="formsGrid" class="forms-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; margin-top:1rem;"></div>
+
+        <!-- Vista de detalle (admin) -->
+        <div id="formDetailView" style="display:none;">
+          <button class="btn-add-participant" onclick="closeFormDetail()" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
+          <div id="formDetailHeader" style="background:#f8fafc; border-radius:16px; padding:1.5rem; border:1px solid #edf2f7; margin-bottom:1.5rem;">
+            <h3 id="detailFormTitle" style="margin:0;"></h3>
+            <p id="detailFormDesc" style="color:#64748b;"></p>
+            <div style="display:flex; gap:1rem; margin-top:0.5rem; font-size:0.9rem; color:#94a3b8;">
+              <span><i class="fas fa-question-circle"></i> <span id="detailQuestionsCount">0</span> preguntas</span>
+              <span><i class="fas fa-users"></i> <span id="detailRespondentsCount">0</span> respuestas</span>
+            </div>
+          </div>
+          <!-- Grid de encuestados -->
+          <div id="respondentsGrid" class="respondents-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem;"></div>
+          <!-- Vista de respuestas de un encuestado (se muestra al hacer clic en una persona) -->
+          <div id="respondentDetailView" style="display:none; background:#fff; border-radius:16px; padding:1.5rem; border:1px solid #edf2f7;">
+            <button class="btn-add-participant" onclick="closeRespondentDetail()" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a los encuestados</button>
+            <div id="respondentAnswers"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ===== MODALES (todos) ===== -->
+<!-- ============================================================ -->
+<!-- MODALES (todos) -->
+<!-- ============================================================ -->
+
 <!-- Organización -->
 <div class="modal" id="orgModal">
   <div class="modal-content">
@@ -842,6 +1030,69 @@
   </div>
 </div>
 
+<!-- ============================================================ -->
+<!-- MODAL: CREAR/EDITAR FORMULARIO (estilo Google Forms)         -->
+<!-- ============================================================ -->
+<div class="modal" id="formModal">
+  <div class="modal-content" style="max-width:900px; padding:0; overflow-y:auto; max-height:95vh;">
+    <div style="background:#0a2540; color:#fff; padding:1.5rem 2rem; border-radius:32px 32px 0 0; display:flex; justify-content:space-between; align-items:center;">
+      <h3 id="formModalTitle" style="margin:0; font-weight:600;"><i class="fas fa-edit"></i> Nuevo Formulario</h3>
+      <button class="btn-cancel" id="closeFormModal" style="background:rgba(255,255,255,0.2); color:#fff; border:none; padding:0.4rem 1rem; border-radius:30px; cursor:pointer;">Cerrar</button>
+    </div>
+    <div style="padding:2rem;">
+      <input type="hidden" id="formEditId" />
+      <div class="input-group" style="margin-bottom:1.5rem;">
+        <label style="font-weight:600; font-size:1.1rem;">Título del formulario *</label>
+        <input type="text" id="formTitle" placeholder="Ej: Encuesta de satisfacción" style="font-size:1.5rem; font-weight:600; border:none; border-bottom:2px solid #e2e8f0; padding:0.5rem 0; border-radius:0; background:transparent;" />
+      </div>
+      <div class="input-group" style="margin-bottom:1.5rem;">
+        <label style="font-weight:500;">Descripción</label>
+        <textarea id="formDescription" rows="2" placeholder="Describe el propósito del formulario" style="border:1px solid #e2e8f0; border-radius:12px; padding:0.8rem; width:100%;"></textarea>
+      </div>
+      <div class="input-group" style="flex-direction:row; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+        <input type="checkbox" id="formPrivate" style="width:auto; height:1.2rem; width:1.2rem;" />
+        <label for="formPrivate" style="margin:0; font-weight:500;">Formulario privado (solo usuarios registrados pueden verlo y responder)</label>
+      </div>
+
+      <!-- Área de preguntas -->
+      <div style="margin-top:2rem; border-top:1px solid #e2e8f0; padding-top:1.5rem;">
+        <h4 style="font-weight:600; margin-bottom:0.5rem;"><i class="fas fa-list"></i> Preguntas</h4>
+        <div id="questionsEditor" style="display:flex; flex-direction:column; gap:0.8rem;"></div>
+        <button class="btn-add-participant" onclick="addQuestionToEditor()" style="margin-top:0.8rem;"><i class="fas fa-plus"></i> Añadir pregunta</button>
+      </div>
+
+      <div class="modal-footer" style="border-top:1px solid #e2e8f0; padding-top:1.5rem; margin-top:1.5rem;">
+        <button class="btn-cancel" id="closeFormModal2" style="padding:0.6rem 2rem;">Cancelar</button>
+        <button class="btn-submit" id="saveFormBtn" style="padding:0.6rem 2.5rem;">Guardar Formulario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: VER RESPUESTAS DE UN ENCUESTADO                        -->
+<!-- ============================================================ -->
+<div class="modal" id="respondentAnswersModal">
+  <div class="modal-content" style="max-width:800px; max-height:90vh; overflow-y:auto;">
+    <h3 id="respondentAnswersTitle"><i class="fas fa-user"></i> Respuestas de <span id="respondentNameDisplay"></span></h3>
+    <div id="respondentAnswersContent" style="margin-top:1rem;"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeRespondentAnswersModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Respuestas (listado general) -->
+<div class="modal" id="responsesModal">
+  <div class="modal-content" style="max-width:900px;">
+    <h3><i class="fas fa-list-ul"></i> Respuestas del formulario</h3>
+    <div id="responsesContent" style="margin-top:1rem; max-height:400px; overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeResponsesModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -862,12 +1113,39 @@
   let statsSquadId = null;
 
   // ================================================================
+  // CARGAR PAÍSES DESDE JSON
+  // ================================================================
+  let countriesData = [];
+
+  async function loadCountries() {
+    try {
+      const response = await fetch('/data/countries.json');
+      if (!response.ok) throw new Error('Error al cargar países');
+      countriesData = await response.json();
+    } catch (e) {
+      console.warn('No se pudo cargar la lista de países, usando fallback vacío', e);
+      countriesData = [];
+    }
+  }
+
+  function populateCountrySelect() {
+    const sel = document.getElementById('personCountry');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Seleccionar país</option>';
+    countriesData.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  }
+
+  // ================================================================
   // RULETA - Estado y funciones
   // ================================================================
   let ruletaNombres = [];
   let ruletaAnguloActual = 0;
   let ruletaGirando = false;
-  let ruletaInicializada = false;
 
   const ruletaColors = [
     '#3b82f6', '#ef4444', '#22c55e', '#eab308', '#8b5cf6',
@@ -881,7 +1159,6 @@
 
   function drawRuleta() {
     const canvas = document.getElementById('ruletaCanvas');
-    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
@@ -960,7 +1237,6 @@
 
   function renderRuletaLista() {
     const container = document.getElementById('ruletaLista');
-    if (!container) return;
     if (ruletaNombres.length === 0) {
       container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:0.5rem;">Sin nombres</div>';
       return;
@@ -1027,32 +1303,6 @@
   }
 
   function initRuleta() {
-    if (ruletaInicializada) return;
-    ruletaInicializada = true;
-
-    // Asignar eventos una sola vez
-    const addBtn = document.getElementById('ruletaAddBtn');
-    const input = document.getElementById('ruletaNombreInput');
-    const girarBtn = document.getElementById('ruletaGirarBtn');
-    const autoBtn = document.getElementById('ruletaAutoBtn');
-    const cargarBtn = document.getElementById('ruletaCargarUsuariosBtn');
-
-    if (!addBtn || !input || !girarBtn || !autoBtn || !cargarBtn) {
-      console.warn('⚠️ No se encontraron elementos de la ruleta');
-      return;
-    }
-
-    // Eliminar listeners antiguos clonando (evita duplicados)
-    const newAddBtn = addBtn.cloneNode(true);
-    addBtn.parentNode.replaceChild(newAddBtn, addBtn);
-    const newGirarBtn = girarBtn.cloneNode(true);
-    girarBtn.parentNode.replaceChild(newGirarBtn, girarBtn);
-    const newAutoBtn = autoBtn.cloneNode(true);
-    autoBtn.parentNode.replaceChild(newAutoBtn, autoBtn);
-    const newCargarBtn = cargarBtn.cloneNode(true);
-    cargarBtn.parentNode.replaceChild(newCargarBtn, cargarBtn);
-
-    // Agregar eventos
     document.getElementById('ruletaAddBtn').addEventListener('click', function() {
       const input = document.getElementById('ruletaNombreInput');
       const nombre = input.value.trim();
@@ -1097,14 +1347,12 @@
       }
     });
 
-    // Redibujar al cambiar tamaño de ventana
     let resizeTimeout;
     window.addEventListener('resize', function() {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(drawRuleta, 200);
     });
 
-    // Inicializar con datos de ejemplo
     ruletaNombres = ['Ana', 'Luis', 'María', 'Carlos', 'Sofía'];
     renderRuletaLista();
     drawRuleta();
@@ -1125,7 +1373,9 @@
     renderTabs();
     loadCoordinationSelects();
     loadPersonSelects();
-    populateCountrySelect();
+    loadCountries().then(() => {
+      populateCountrySelect();
+    });
     loadEvents();
     if (currentUser.role === 'root' || currentUser.role === 'admin') {
       loadOrganizations();
@@ -1133,12 +1383,9 @@
       loadUsers();
       loadTopTab();
     }
-    // Inicializar ruleta después de que el DOM esté listo
-    if (document.readyState === 'complete') {
-      initRuleta();
-    } else {
-      window.addEventListener('load', initRuleta);
-    }
+    initRuleta();
+  } else {
+    loadCountries();
   }
 
   // ================================================================
@@ -1146,7 +1393,6 @@
   // ================================================================
   function showToast(msg, type='success') {
     const t = document.getElementById('toast');
-    if (!t) return;
     t.textContent = msg;
     t.className = 'toast ' + type;
     t.style.display = 'block';
@@ -1242,39 +1488,6 @@
     } catch(e) { console.error('Error cargando personas', e); }
   }
 
-  function populateCountrySelect() {
-    const sel = document.getElementById('personCountry');
-    if (!sel) return;
-    sel.innerHTML = '<option value="">Seleccionar país</option>';
-    countries.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c;
-      opt.textContent = c;
-      sel.appendChild(opt);
-    });
-  }
-
-  const countries = [
-    "Afganistán","Albania","Alemania","Andorra","Angola","Antigua y Barbuda","Arabia Saudita","Argelia","Argentina","Armenia",
-    "Australia","Austria","Azerbaiyán","Bahamas","Bangladés","Barbados","Baréin","Bélgica","Belice","Benín","Bielorrusia",
-    "Bolivia","Bosnia y Herzegovina","Botsuana","Brasil","Brunéi","Bulgaria","Burkina Faso","Burundi","Bután","Cabo Verde",
-    "Camboya","Camerún","Canadá","Catar","Chad","Chile","China","Chipre","Colombia","Comoras","Corea del Norte","Corea del Sur",
-    "Costa de Marfil","Costa Rica","Croacia","Cuba","Dinamarca","Dominica","Ecuador","Egipto","El Salvador","Emiratos Árabes Unidos",
-    "Eritrea","Eslovaquia","Eslovenia","España","Estados Unidos","Estonia","Etiopía","Filipinas","Finlandia","Fiyi","Francia",
-    "Gabón","Gambia","Georgia","Ghana","Granada","Grecia","Guatemala","Guyana","Guinea","Guinea-Bisáu","Guinea Ecuatorial","Haití",
-    "Honduras","Hungría","India","Indonesia","Irak","Irán","Irlanda","Islandia","Israel","Italia","Jamaica","Japón","Jordania",
-    "Kazajistán","Kenia","Kirguistán","Kiribati","Kuwait","Laos","Lesoto","Letonia","Líbano","Liberia","Libia","Liechtenstein",
-    "Lituania","Luxemburgo","Macedonia del Norte","Madagascar","Malasia","Malaui","Maldivas","Malí","Malta","Marruecos","Mauricio",
-    "Mauritania","México","Micronesia","Moldavia","Mónaco","Mongolia","Montenegro","Mozambique","Namibia","Nauru","Nepal",
-    "Nicaragua","Níger","Nigeria","Noruega","Nueva Zelanda","Omán","Países Bajos","Pakistán","Palaos","Panamá","Papúa Nueva Guinea",
-    "Paraguay","Perú","Polonia","Portugal","Reino Unido","República Centroafricana","República Checa","República Democrática del Congo",
-    "República del Congo","República Dominicana","Ruanda","Rumanía","Rusia","Samoa","San Cristóbal y Nieves","San Marino",
-    "San Vicente y las Granadinas","Santa Lucía","Santo Tomé y Príncipe","Senegal","Serbia","Seychelles","Sierra Leona","Singapur",
-    "Siria","Somalia","Sri Lanka","Suazilandia","Sudáfrica","Sudán","Sudán del Sur","Suecia","Suiza","Surinam","Tailandia",
-    "Tanzania","Tayikistán","Timor Oriental","Togo","Tonga","Trinidad y Tobago","Túnez","Turkmenistán","Turquía","Tuvalu",
-    "Ucrania","Uganda","Uruguay","Uzbekistán","Vanuatu","Venezuela","Vietnam","Yemen","Yibuti","Zambia","Zimbabue"
-  ];
-
   function getRandomLeaderColor() {
     const hue = Math.floor(Math.random() * 360);
     return `hsl(${hue}, 70%, 55%)`;
@@ -1298,7 +1511,7 @@
   }
 
   // ================================================================
-  // RENDER TABS
+  // RENDER TABS (incluye llamada a loadForms)
   // ================================================================
   function renderTabs() {
     const container = document.getElementById('navTabs');
@@ -1312,6 +1525,7 @@
         <button data-tab="ranking"><i class="fas fa-chart-simple"></i> Ranking</button>
         <button data-tab="top"><i class="fas fa-trophy"></i> TOP</button>
         <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
+        <button data-tab="forms"><i class="fas fa-edit"></i> Formularios</button>
         <button data-tab="users"><i class="fas fa-user-shield"></i> Usuarios</button>
         <button data-tab="logs"><i class="fas fa-history"></i> Historial</button>
       `;
@@ -1319,6 +1533,7 @@
       tabs = `
         <button data-tab="events"><i class="fas fa-calendar-check"></i> Eventos</button>
         <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
+        <button data-tab="forms"><i class="fas fa-edit"></i> Formularios</button>
       `;
     }
     container.innerHTML = tabs;
@@ -1338,6 +1553,7 @@
         else if (tab === 'users') loadUsers();
         else if (tab === 'logs') loadLogs();
         else if (tab === 'ruleta') { drawRuleta(); }
+        else if (tab === 'forms') { loadForms(); }
       });
     });
   }
@@ -1662,6 +1878,7 @@
 
   document.getElementById('openCreatePerson').addEventListener('click', async () => {
     await loadCoordinationSelects();
+    if (countriesData.length === 0) await loadCountries();
     document.getElementById('personModalTitle').textContent = 'Nueva Persona';
     document.getElementById('personEditId').value = '';
     document.getElementById('personId').value = '';
@@ -1669,6 +1886,7 @@
     document.getElementById('personNick').value = '';
     document.getElementById('personCountry').value = '';
     document.getElementById('personCoordination').value = '';
+    populateCountrySelect();
     document.getElementById('personModal').classList.add('active');
   });
 
@@ -1682,6 +1900,8 @@
       document.getElementById('personNick').value = p.nickname || '';
       document.getElementById('personCountry').value = p.country || '';
       document.getElementById('personCoordination').value = p.coordinationId || '';
+      if (countriesData.length === 0) loadCountries().then(() => populateCountrySelect());
+      else populateCountrySelect();
       document.getElementById('personModal').classList.add('active');
     }).catch(e => showToast(e.message, 'error'));
   }
@@ -3085,6 +3305,7 @@
       renderTabs();
       await loadCoordinationSelects();
       await loadPersonSelects();
+      if (countriesData.length === 0) await loadCountries();
       populateCountrySelect();
       loadEvents();
       if (currentUser.role === 'root' || currentUser.role === 'admin') {
@@ -3093,25 +3314,30 @@
         loadUsers();
         loadTopTab();
       }
-      // Inicializar ruleta después del login
-      if (document.readyState === 'complete') {
-        initRuleta();
-      } else {
-        window.addEventListener('load', initRuleta);
-      }
+      initRuleta();
     } catch(e) {
       showToast(e.message, 'error');
     }
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    authToken = null;
-    currentUser = null;
-    currentPersonId = null;
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
+  // ================================================================
+  // LOGOUT
+  // ================================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        authToken = null;
+        currentUser = null;
+        currentPersonId = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        showToast('✅ Sesión cerrada correctamente');
+      });
+    }
   });
 
   // ================================================================
@@ -3123,18 +3349,390 @@
     });
   });
 
-  populateCountrySelect();
+  // ================================================================
+  // FORMULARIOS - NUEVA VERSIÓN (Google Forms style)
+  // ================================================================
+  let formsData = [];
+  let currentFormId = null;
+  let currentFormResponses = [];
+  let editingQuestionIndex = -1;
 
-  // Si la página ya está cargada y hay sesión, inicializar ruleta
-  if (document.readyState === 'complete' && savedToken && savedUser) {
-    // Ya se llamó en el bloque de persistencia
-  } else if (document.readyState !== 'complete') {
-    window.addEventListener('load', function() {
-      if (savedToken && savedUser) {
-        // Ya se llamó en el bloque de persistencia
+  // ----- Cargar lista de formularios -----
+  async function loadForms() {
+    try {
+      const data = await apiCall('/forms');
+      formsData = data.data || [];
+      renderFormsGrid(formsData);
+    } catch (e) {
+      showToast('Error al cargar formularios: ' + e.message, 'error');
+    }
+  }
+
+  function renderFormsGrid(forms) {
+    const container = document.getElementById('formsGrid');
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+
+    if (!forms || forms.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8; padding:2rem; text-align:center;">No hay formularios disponibles. Crea uno.</p>';
+      return;
+    }
+
+    let html = '';
+    forms.forEach(f => {
+      const isPrivate = f.is_private ? '<span class="badge private"><i class="fas fa-lock"></i> Privado</span>' : '<span class="badge">Público</span>';
+      const qCount = f.questions ? f.questions.length : 0;
+      const actions = isAdmin ? `
+        <div class="actions">
+          <button class="btn-add-participant" onclick="event.stopPropagation(); openFormEditor('${f.id}')"><i class="fas fa-edit"></i> Editar</button>
+          <button class="btn-add-participant" onclick="event.stopPropagation(); viewFormResponses('${f.id}')"><i class="fas fa-list-ul"></i> Respuestas</button>
+          <button class="btn-delete" onclick="event.stopPropagation(); deleteForm('${f.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      ` : '';
+
+      html += `
+        <div class="form-card" onclick="openFormDetail('${f.id}')">
+          <div class="title">${f.title}</div>
+          <div class="desc">${f.description || 'Sin descripción'}</div>
+          <div class="meta">
+            <span>${qCount} preguntas</span>
+            ${isPrivate}
+          </div>
+          ${actions}
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  // ----- Abrir detalle de formulario (admin: ver encuestados) -----
+  async function openFormDetail(formId) {
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+    if (!isAdmin) {
+      // Redirigir a la vista pública para responder
+      window.location.href = `/form?id=${formId}`;
+      return;
+    }
+
+    try {
+      const data = await apiCall(`/forms/${formId}`);
+      const form = data.data;
+      if (!form) return showToast('Formulario no encontrado', 'error');
+
+      // Obtener respuestas
+      const respData = await apiCall(`/forms/${formId}/responses`);
+      currentFormResponses = respData.data || [];
+      currentFormId = formId;
+
+      // Mostrar detalle
+      document.getElementById('formsGrid').style.display = 'none';
+      document.getElementById('formDetailView').style.display = 'block';
+
+      document.getElementById('detailFormTitle').textContent = form.title;
+      document.getElementById('detailFormDesc').textContent = form.description || '';
+      document.getElementById('detailQuestionsCount').textContent = (form.questions || []).length;
+      document.getElementById('detailRespondentsCount').textContent = currentFormResponses.length;
+
+      // Renderizar grid de encuestados
+      renderRespondents(currentFormResponses, form);
+
+    } catch (e) {
+      showToast('Error al abrir detalle: ' + e.message, 'error');
+    }
+  }
+
+  function renderRespondents(responses, form) {
+    const container = document.getElementById('respondentsGrid');
+    if (!responses || responses.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8; padding:1rem;">Todavía no hay respuestas.</p>';
+      document.getElementById('respondentDetailView').style.display = 'none';
+      return;
+    }
+
+    let html = '';
+    responses.forEach((r, idx) => {
+      const name = r.respondent_name || 'Anónimo';
+      const date = new Date(r.created_at).toLocaleDateString();
+      const avatar = name.charAt(0).toUpperCase();
+      html += `
+        <div class="respondent-card" onclick="showRespondentAnswers('${r.id}')">
+          <div class="avatar">${avatar}</div>
+          <div class="info">
+            <div class="name">${name}</div>
+            <div class="date">${date}</div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+    document.getElementById('respondentDetailView').style.display = 'none';
+  }
+
+  // ----- Ver respuestas de un encuestado (modal) -----
+  async function showRespondentAnswers(responseId) {
+    try {
+      const response = currentFormResponses.find(r => r.id === responseId);
+      if (!response) return showToast('Respuesta no encontrada', 'error');
+
+      const formData = await apiCall(`/forms/${currentFormId}`);
+      const form = formData.data;
+      const questions = form.questions || [];
+
+      const container = document.getElementById('respondentAnswersContent');
+      const nameDisplay = document.getElementById('respondentNameDisplay');
+      nameDisplay.textContent = response.respondent_name || 'Anónimo';
+
+      let html = '';
+      questions.forEach(q => {
+        const answer = response.answers[q.id];
+        if (answer === undefined || answer === null) return;
+        const displayAnswer = Array.isArray(answer) ? answer.join(', ') : answer;
+        html += `
+          <div style="margin-bottom:1.2rem; padding-bottom:0.8rem; border-bottom:1px solid #f1f5f9;">
+            <div style="font-weight:500; color:#0a2540;">${q.question_text}</div>
+            <div style="color:#475569; margin-top:0.2rem;">${displayAnswer || '(respuesta vacía)'}</div>
+          </div>
+        `;
+      });
+
+      if (!html) {
+        html = '<p style="color:#94a3b8;">Esta persona no ha respondido ninguna pregunta.</p>';
       }
+
+      container.innerHTML = html;
+      document.getElementById('respondentAnswersModal').classList.add('active');
+
+    } catch (e) {
+      showToast('Error al cargar respuestas: ' + e.message, 'error');
+    }
+  }
+
+  // ----- Cerrar detalle -----
+  function closeFormDetail() {
+    document.getElementById('formsGrid').style.display = 'grid';
+    document.getElementById('formDetailView').style.display = 'none';
+    document.getElementById('respondentDetailView').style.display = 'none';
+    loadForms();
+  }
+
+  function closeRespondentDetail() {
+    document.getElementById('respondentDetailView').style.display = 'none';
+    document.getElementById('respondentsGrid').style.display = 'grid';
+  }
+
+  // ----- Ver respuestas (admin) - botón "Respuestas" en tarjeta -----
+  async function viewFormResponses(formId) {
+    await openFormDetail(formId);
+  }
+
+  // ----- Eliminar formulario -----
+  async function deleteForm(id) {
+    if (!confirm('¿Eliminar este formulario y todas sus preguntas y respuestas?')) return;
+    try {
+      await apiCall(`/forms/${id}`, { method: 'DELETE' });
+      showToast('Formulario eliminado');
+      loadForms();
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  // ================================================================
+  // EDITOR DE FORMULARIOS (Google Forms style)
+  // ================================================================
+  let editorQuestions = [];
+  let editorFormId = null;
+
+  // Abrir el modal para crear/editar formulario
+  document.getElementById('openCreateForm').addEventListener('click', () => {
+    openFormEditor(null);
+  });
+
+  async function openFormEditor(formId = null) {
+    editorFormId = formId;
+    editorQuestions = [];
+
+    if (formId) {
+      try {
+        const data = await apiCall(`/forms/${formId}`);
+        const form = data.data;
+        document.getElementById('formModalTitle').textContent = 'Editar Formulario';
+        document.getElementById('formEditId').value = form.id;
+        document.getElementById('formTitle').value = form.title;
+        document.getElementById('formDescription').value = form.description || '';
+        document.getElementById('formPrivate').checked = form.is_private || false;
+        editorQuestions = form.questions || [];
+      } catch(e) {
+        showToast('Error al cargar formulario: ' + e.message, 'error');
+        return;
+      }
+    } else {
+      document.getElementById('formModalTitle').textContent = 'Nuevo Formulario';
+      document.getElementById('formEditId').value = '';
+      document.getElementById('formTitle').value = '';
+      document.getElementById('formDescription').value = '';
+      document.getElementById('formPrivate').checked = false;
+      editorQuestions = [];
+    }
+
+    renderQuestionsEditor();
+    document.getElementById('formModal').classList.add('active');
+  }
+
+  function renderQuestionsEditor() {
+    const container = document.getElementById('questionsEditor');
+    if (!editorQuestions || editorQuestions.length === 0) {
+      container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:1rem;">No hay preguntas. Añade una.</div>';
+      return;
+    }
+
+    let html = '';
+    editorQuestions.forEach((q, index) => {
+      const opts = q.options || [];
+      const optsHtml = opts.length ? opts.map(o => `<span style="background:#e2e8f0; padding:0.1rem 0.5rem; border-radius:12px; font-size:0.8rem;">${o}</span>`).join('') : '';
+
+      html += `
+        <div class="question-editor-item" data-index="${index}">
+          <span class="drag-handle"><i class="fas fa-grip-lines"></i></span>
+          <div class="question-fields">
+            <input type="text" class="q-text" value="${q.question_text}" placeholder="Texto de la pregunta" data-index="${index}" />
+            <select class="q-type" data-index="${index}">
+              <option value="text" ${q.question_type === 'text' ? 'selected' : ''}>Texto corto</option>
+              <option value="textarea" ${q.question_type === 'textarea' ? 'selected' : ''}>Texto largo</option>
+              <option value="select" ${q.question_type === 'select' ? 'selected' : ''}>Desplegable</option>
+              <option value="radio" ${q.question_type === 'radio' ? 'selected' : ''}>Opción única</option>
+              <option value="checkbox" ${q.question_type === 'checkbox' ? 'selected' : ''}>Selección múltiple</option>
+            </select>
+            <div class="options-input" style="${(q.question_type === 'text' || q.question_type === 'textarea') ? 'display:none;' : ''}">
+              <input type="text" class="q-options" value="${opts.join(', ')}" placeholder="Opciones (separadas por coma)" data-index="${index}" />
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.2rem;">
+              <input type="checkbox" class="q-required" ${q.is_required ? 'checked' : ''} data-index="${index}" />
+              <label style="font-size:0.8rem; font-weight:400; margin:0;">Obligatoria</label>
+            </div>
+          </div>
+          <div class="question-actions">
+            <button class="delete-q" onclick="removeQuestionFromEditor(${index})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.q-text').forEach(input => {
+      input.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        editorQuestions[idx].question_text = this.value;
+      });
+    });
+    container.querySelectorAll('.q-type').forEach(sel => {
+      sel.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        editorQuestions[idx].question_type = this.value;
+        const optionsInput = this.closest('.question-fields').querySelector('.options-input');
+        if (this.value === 'text' || this.value === 'textarea') {
+          optionsInput.style.display = 'none';
+        } else {
+          optionsInput.style.display = 'flex';
+        }
+      });
+    });
+    container.querySelectorAll('.q-options').forEach(input => {
+      input.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        const opts = this.value.split(',').map(s => s.trim()).filter(Boolean);
+        editorQuestions[idx].options = opts;
+      });
+    });
+    container.querySelectorAll('.q-required').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        editorQuestions[idx].is_required = this.checked;
+      });
     });
   }
+
+  function addQuestionToEditor() {
+    editorQuestions.push({
+      question_text: 'Nueva pregunta',
+      question_type: 'text',
+      options: [],
+      is_required: false
+    });
+    renderQuestionsEditor();
+  }
+
+  function removeQuestionFromEditor(index) {
+    editorQuestions.splice(index, 1);
+    renderQuestionsEditor();
+  }
+
+  // Guardar formulario (desde el editor)
+  document.getElementById('saveFormBtn').addEventListener('click', async () => {
+    const id = document.getElementById('formEditId').value;
+    const title = document.getElementById('formTitle').value.trim();
+    const description = document.getElementById('formDescription').value.trim();
+    const is_private = document.getElementById('formPrivate').checked;
+
+    if (!title) return showToast('El título es requerido', 'error');
+
+    try {
+      let formId = id;
+      if (id) {
+        await apiCall(`/forms/${id}`, { method: 'PUT', body: { title, description, is_private } });
+        const existingForm = await apiCall(`/forms/${id}`);
+        const oldQuestions = existingForm.data.questions || [];
+        for (const q of oldQuestions) {
+          await apiCall(`/forms/${id}/questions/${q.id}`, { method: 'DELETE' });
+        }
+        for (const q of editorQuestions) {
+          await apiCall(`/forms/${id}/questions`, {
+            method: 'POST',
+            body: {
+              question_text: q.question_text,
+              question_type: q.question_type,
+              options: q.options,
+              is_required: q.is_required
+            }
+          });
+        }
+        showToast('Formulario actualizado');
+      } else {
+        const newForm = await apiCall('/forms', { method: 'POST', body: { title, description, is_private } });
+        formId = newForm.data.id;
+        for (const q of editorQuestions) {
+          await apiCall(`/forms/${formId}/questions`, {
+            method: 'POST',
+            body: {
+              question_text: q.question_text,
+              question_type: q.question_type,
+              options: q.options,
+              is_required: q.is_required
+            }
+          });
+        }
+        showToast('Formulario creado');
+      }
+
+      document.getElementById('formModal').classList.remove('active');
+      loadForms();
+    } catch(e) {
+      showToast('Error al guardar formulario: ' + e.message, 'error');
+    }
+  });
+
+  // Cerrar modales
+  document.getElementById('closeFormModal').addEventListener('click', () => {
+    document.getElementById('formModal').classList.remove('active');
+  });
+  document.getElementById('closeFormModal2').addEventListener('click', () => {
+    document.getElementById('formModal').classList.remove('active');
+  });
+  document.getElementById('closeRespondentAnswersModal').addEventListener('click', () => {
+    document.getElementById('respondentAnswersModal').classList.remove('active');
+  });
+
+  // ================================================================
+  // INICIALIZACIÓN DE LA PESTAÑA FORMS (ya en renderTabs)
+  // ================================================================
+  // Nota: la llamada a loadForms() ya está en renderTabs al hacer clic en "forms"
 </script>
 </body>
 </html>

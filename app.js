@@ -11,8 +11,7 @@ import personRoutes from './routes/persons.js';
 import userRoutes from './routes/users.js';
 import rankingRoutes from './routes/ranking.js';
 import topRoutes from './routes/top.js';
-import { getTop, saveTop } from './controllers/topController.js';
-import { authenticate } from './middleware/auth.js';
+import formRoutes from './routes/forms.js'; // NUEVO
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,6 +41,7 @@ app.use('/api/persons', personRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/ranking', rankingRoutes);
 app.use('/api/top', topRoutes);
+app.use('/api/forms', formRoutes); // NUEVO
 
 app.get('/health', (req, res) => res.json({ status: 'OK' }));
 
@@ -56,6 +56,10 @@ app.get('/', (req, res) => {
 
 app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'app.html'));
+});
+
+app.get('/form', (req, res) => { // NUEVO: vista pública de formularios
+  res.sendFile(path.join(__dirname, 'public', 'form.html'));
 });
 
 app.listen(PORT, () => {

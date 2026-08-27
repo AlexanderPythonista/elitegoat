@@ -1,3 +1,4 @@
+// scripts/migrate-to-supabase.js
 import { supabase } from '../config/supabase.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -18,6 +19,7 @@ async function readJSON(fileName) {
   }
 }
 
+// Helper para verificar si un ID existe en una tabla
 async function existsInTable(table, id) {
   if (!id) return false;
   const { data, error } = await supabase
@@ -29,7 +31,9 @@ async function existsInTable(table, id) {
   return true;
 }
 
+// Helper para obtener o crear un usuario en auth.users y en la tabla users
 async function getOrCreateUser(userData) {
+  // 1. Verificar si ya existe en auth.users por email
   const { data: authUsers, error: listError } = await supabase.auth.admin.listUsers({
     filters: { email: userData.email }
   });
@@ -39,9 +43,10 @@ async function getOrCreateUser(userData) {
   if (authUsers && authUsers.users && authUsers.users.length > 0) {
     userId = authUsers.users[0].id;
   } else {
+    // Crear en auth.users
     const { data: newAuth, error: createError } = await supabase.auth.admin.createUser({
       email: userData.email,
-      password: 'temporal123',
+      password: 'temporal123', // Cambiar después
       user_metadata: { username: userData.username, role: userData.role || 'participante' },
       email_confirm: true
     });
@@ -49,6 +54,7 @@ async function getOrCreateUser(userData) {
     userId = newAuth.user.id;
   }
 
+  // 2. Insertar o actualizar en la tabla users
   const { error: upsertError } = await supabase
     .from('users')
     .upsert({
@@ -71,20 +77,21 @@ async function migrate() {
   try {
     // ---------- 1. MIGRAR USUARIOS ----------
     const users = await readJSON('users.json');
+    const userIdMap = {}; // Mapeo de id original -> nuevo id (o el mismo)
     for (const user of users) {
       try {
         const newId = await getOrCreateUser(user);
+        userIdMap[user.id] = newId;
         console.log(`✅ Usuario ${user.username} migrado (${newId})`);
       } catch (error) {
         console.warn(`❌ Error migrando usuario ${user.username}:`, error.message);
+        // Si falla, intentamos obtener el ID existente de la tabla users
         const { data: existing } = await supabase
           .from('users')
           .select('id')
           .eq('email', user.email)
           .maybeSingle();
-        if (existing) {
-          console.log(`   Usuario ya existe con id ${existing.id}`);
-        }
+        if (existing) userIdMap[user.id] = existing.id;
       }
     }
 
@@ -92,6 +99,7 @@ async function migrate() {
     const persons = await readJSON('persons.json');
     for (const person of persons) {
       let userId = person.userId;
+      // Verificar que el userId exista en users (si no, poner null)
       if (userId) {
         const exists = await existsInTable('users', userId);
         if (!exists) {
@@ -105,10 +113,10 @@ async function migrate() {
           id: person.id,
           first_name: person.firstName,
           nickname: person.nickname,
-          country: person.country || '',
-          coordination_id: person.coordinationId || null,
-          user_id: userId || null,
-          created_at: person.createdAt || new Date().toISOString()
+          country: person.country,
+          coordination_id: person.coordinationId,
+          user_id: userId,
+          created_at: person.createdAt
         }]);
       if (error) console.warn(`❌ Error migrando persona ${person.id}:`, error.message);
     }
@@ -117,6 +125,7 @@ async function migrate() {
     // ---------- 3. MIGRAR ORGANIZACIONES ----------
     const orgs = await readJSON('organizations.json');
     for (const org of orgs) {
+      // Verificar líderes
       let leaderId = org.leaderId;
       if (leaderId && !(await existsInTable('persons', leaderId))) {
         console.warn(`⚠️ leaderId ${leaderId} no existe, se asignará null a ${org.name}`);
@@ -135,7 +144,7 @@ async function migrate() {
           name: org.name,
           leader_id: leaderId,
           co_leader_id: coLeaderId,
-          created_at: org.createdAt || new Date().toISOString()
+          created_at: org.createdAt
         }])
         .select()
         .single();
@@ -144,7 +153,7 @@ async function migrate() {
         continue;
       }
 
-      // ---------- 4. MIGRAR COORDINACIONES Y PERSONAS ASOCIADAS ----------
+      // Migrar coordinaciones
       if (org.coordinationIds && org.coordinationIds.length) {
         const coords = await readJSON('coordinations.json');
         for (const coordId of org.coordinationIds) {
@@ -164,45 +173,41 @@ async function migrate() {
               organization_id: newOrg.id,
               leader_id: lId,
               co_leader_id: clId,
-              created_at: coord.createdAt || new Date().toISOString()
+              created_at: coord.createdAt
             }])
             .select()
             .single();
 
-          if (!coordError && coord.personIds && coord.personIds.length) {
+          if (!coordError && coord.personIds) {
             for (const pid of coord.personIds) {
-              // ✅ VERIFICAR QUE EL ID NO SEA NULO Y EXISTA EN persons
-              if (pid && await existsInTable('persons', pid)) {
-                const { error: relError } = await supabase
+              if (await existsInTable('persons', pid)) {
+                await supabase
                   .from('coordination_persons')
                   .insert([{ coordination_id: newCoord.id, person_id: pid }]);
-                if (relError) {
-                  console.warn(`⚠️ Error insertando relación coord-persona ${newCoord.id}-${pid}:`, relError.message);
-                }
               } else {
-                console.warn(`⚠️ Persona ${pid} no existe o es nula, omitida de coordinación ${coord.name}`);
+                console.warn(`⚠️ Persona ${pid} no existe, omitida de coordinación ${coord.name}`);
               }
             }
           }
         }
       }
 
-      // ---------- 5. MIGRAR PERSONAS DIRECTAS DE ORGANIZACIÓN ----------
+      // Migrar personas directas
       if (org.personIds && org.personIds.length) {
         for (const pid of org.personIds) {
-          if (pid && await existsInTable('persons', pid)) {
+          if (await existsInTable('persons', pid)) {
             await supabase
               .from('organization_persons')
               .insert([{ organization_id: newOrg.id, person_id: pid }]);
           } else {
-            console.warn(`⚠️ Persona ${pid} no existe o es nula, omitida de organización ${org.name}`);
+            console.warn(`⚠️ Persona ${pid} no existe, omitida de organización ${org.name}`);
           }
         }
       }
     }
     console.log(`✅ Organizaciones y coordinaciones migradas.`);
 
-    // ---------- 6. MIGRAR EVENTOS ----------
+    // ---------- 4. MIGRAR EVENTOS ----------
     const events = await readJSON('events.json');
     for (const ev of events) {
       let createdBy = ev.createdBy;
@@ -218,11 +223,11 @@ async function migrate() {
           name: ev.name,
           type: ev.type,
           mode: ev.mode,
-          max_participants: ev.maxParticipants || 50,
+          max_participants: ev.maxParticipants,
           created_by: createdBy,
           status: ev.status || 'activo',
-          created_at: ev.createdAt || new Date().toISOString(),
-          updated_at: ev.updatedAt || new Date().toISOString()
+          created_at: ev.createdAt,
+          updated_at: ev.updatedAt
         }])
         .select()
         .single();
@@ -231,10 +236,10 @@ async function migrate() {
         continue;
       }
 
-      // Participantes del evento
+      // Participantes
       if (ev.participantIds && ev.participantIds.length) {
         for (const pid of ev.participantIds) {
-          if (pid && await existsInTable('persons', pid)) {
+          if (await existsInTable('persons', pid)) {
             await supabase
               .from('event_participants')
               .insert([{ event_id: newEvent.id, person_id: pid }]);
@@ -265,7 +270,7 @@ async function migrate() {
           if (!sqError) {
             if (sq.memberIds && sq.memberIds.length) {
               for (const pid of sq.memberIds) {
-                if (pid && await existsInTable('persons', pid)) {
+                if (await existsInTable('persons', pid)) {
                   await supabase
                     .from('squad_members')
                     .insert([{ squad_id: newSquad.id, person_id: pid }]);
@@ -289,12 +294,13 @@ async function migrate() {
       if (ev.matches && ev.matches.length) {
         for (const m of ev.matches) {
           let pid = m.participantId;
-          if (!pid || !(await existsInTable('persons', pid))) {
+          if (!(await existsInTable('persons', pid))) {
             console.warn(`⚠️ Participante ${pid} no existe, partida omitida`);
             continue;
           }
           let squadId = m.squadId;
           if (squadId && !(await existsInTable('squads', squadId))) {
+            console.warn(`⚠️ Escuadra ${squadId} no existe, partida se guarda sin squad`);
             squadId = null;
           }
           await supabase
@@ -317,11 +323,12 @@ async function migrate() {
     }
     console.log(`✅ Eventos migrados.`);
 
-    // ---------- 7. MIGRAR LOGS ----------
+    // ---------- 5. MIGRAR LOGS ----------
     const logs = await readJSON('logs.json');
     for (const log of logs) {
       let userId = log.userId;
       if (userId && !(await existsInTable('users', userId))) {
+        console.warn(`⚠️ userId ${userId} no existe, log se guarda con userId null`);
         userId = null;
       }
       await supabase
@@ -331,7 +338,7 @@ async function migrate() {
           action: log.action,
           target: log.target,
           details: log.details || {},
-          timestamp: log.timestamp || new Date().toISOString()
+          timestamp: log.timestamp
         }]);
     }
     console.log(`✅ Logs migrados.`);

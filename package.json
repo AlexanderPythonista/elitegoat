@@ -6,10 +6,10 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "vercel-build": "echo 'Construyendo para Vercel...'"
+    "dev": "nodemon app.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "^2.112.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
