@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elite Goat · Clan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #040404;
+      color: #fff;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ============================================================
+       VECTORIAL DECORATIVE ELEMENTS
+       ============================================================ */
+    .bg-shapes {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-shapes .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.06;
+      background: radial-gradient(circle, #db7245 0%, transparent 70%);
+    }
+
+    .bg-shapes .circle:nth-child(1) {
+      width: 600px;
+      height: 600px;
+      top: -200px;
+      right: -100px;
+    }
+    .bg-shapes .circle:nth-child(2) {
+      width: 400px;
+      height: 400px;
+      bottom: -100px;
+      left: -100px;
+      background: radial-gradient(circle, #84301c 0%, transparent 70%);
+    }
+    .bg-shapes .circle:nth-child(3) {
+      width: 200px;
+      height: 200px;
+      top: 40%;
+      left: 10%;
+      background: radial-gradient(circle, #5f341d 0%, transparent 70%);
+    }
+
+    .bg-shapes .line {
+      position: absolute;
+      border: 1px solid rgba(219, 114, 69, 0.08);
+      width: 200%;
+      transform: rotate(-15deg);
+    }
+    .bg-shapes .line:nth-child(4) {
+      top: 20%;
+      left: -50%;
+    }
+    .bg-shapes .line:nth-child(5) {
+      top: 60%;
+      left: -50%;
+      transform: rotate(12deg);
+    }
+
+    /* ============================================================
+       HEADER / NAV
+       ============================================================ */
+    .navbar {
+      position: relative;
+      z-index: 2;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid rgba(219, 114, 69, 0.15);
+    }
+
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #db7245 0%, #84301c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo img {
+      height: 45px;
+      width: auto;
+      filter: drop-shadow(0 0 10px rgba(219, 114, 69, 0.3));
+    }
+    .logo .logo-text {
+      -webkit-text-fill-color: #db7245;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .nav-links a {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.7);
+      transition: color 0.3s;
+    }
+    .nav-links a:hover {
+      color: #db7245;
+    }
+    .nav-links .btn-outline {
+      border: 1.5px solid #db7245;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      color: #db7245;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .nav-links .btn-outline:hover {
+      background: #db7245;
+      color: #040404;
+    }
+
+    /* Botón hamburguesa (oculto en desktop) */
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #db7245;
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      transition: color 0.3s;
+    }
+    .menu-toggle:hover {
+      color: #fff;
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      position: relative;
+      z-index: 2;
+      padding: 5rem 0 6rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 4.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #db7245 0%, #84301c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.7);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero .btn-primary {
+      display: inline-block;
+      background: linear-gradient(135deg, #db7245 0%, #84301c 100%);
+      color: #fff;
+      font-weight: 700;
+      padding: 0.9rem 2.8rem;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 8px 30px rgba(219, 114, 69, 0.25);
+    }
+    .hero .btn-primary:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 40px rgba(219, 114, 69, 0.4);
+    }
+
+    .hero .btn-primary i {
+      margin-right: 10px;
+    }
+
+    /* ============================================================
+       SECTION: ABOUT
+       ============================================================ */
+    .section {
+      position: relative;
+      z-index: 2;
+      padding: 5rem 0;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+    .section-title span {
+      color: #db7245;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 1.2rem;
+      max-width: 500px;
+    }
+
+    .about-illustration {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .about-illustration .icon-box {
+      background: rgba(219, 114, 69, 0.08);
+      border: 1px solid rgba(219, 114, 69, 0.15);
+      border-radius: 30px;
+      padding: 3rem 2rem;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      backdrop-filter: blur(4px);
+    }
+    .about-illustration .icon-box i {
+      font-size: 4rem;
+      color: #db7245;
+      margin-bottom: 1rem;
+    }
+    .about-illustration .icon-box h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .about-illustration .icon-box p {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.95rem;
+    }
+
+    /* ============================================================
+       SECTION: GAMES
+       ============================================================ */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.8rem;
+      margin-top: 2rem;
+    }
+
+    .game-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(2px);
+      overflow: hidden;
+      position: relative;
+    }
+    .game-card:hover {
+      transform: translateY(-6px);
+      border-color: #db7245;
+      box-shadow: 0 12px 30px rgba(219, 114, 69, 0.08);
+    }
+
+    .game-card .game-icon {
+      font-size: 4rem;
+      color: #db7245;
+      display: inline-block;
+      background: rgba(219, 114, 69, 0.12);
+      width: 90px;
+      height: 90px;
+      line-height: 90px;
+      border-radius: 50%;
+      margin-bottom: 0.8rem;
+      transition: transform 0.3s;
+    }
+    .game-card:hover .game-icon {
+      transform: scale(1.08);
+    }
+
+    .game-card h4 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 0.3rem;
+    }
+    .game-card p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ============================================================
+       SECTION: INTEGRANTES
+       ============================================================ */
+    .integrantes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .integrante-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(2px);
+      cursor: pointer;
+    }
+    .integrante-card:hover {
+      transform: translateY(-4px);
+      border-color: #db7245;
+      box-shadow: 0 8px 25px rgba(219, 114, 69, 0.08);
+    }
+    .integrante-card .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, #db7245 0%, #84301c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #040404;
+      box-shadow: 0 8px 25px rgba(219, 114, 69, 0.2);
+    }
+    .integrante-card .name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .integrante-card .tiktok {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+    }
+    .integrante-card .tiktok i {
+      color: #db7245;
+      margin-right: 4px;
+    }
+    .integrante-card .tiktok a {
+      color: inherit;
+      transition: color 0.3s;
+    }
+    .integrante-card .tiktok a:hover {
+      color: #db7245;
+    }
+
+    /* ============================================================
+       SECTION: CONTACT
+       ============================================================ */
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 1rem 2rem 1rem 1.5rem;
+      border-radius: 60px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .contact-item:hover {
+      border-color: #db7245;
+      background: rgba(219, 114, 69, 0.05);
+    }
+    .contact-item i {
+      font-size: 1.8rem;
+      color: #db7245;
+    }
+    .contact-item .info {
+      display: flex;
+      flex-direction: column;
+    }
+    .contact-item .info .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.3);
+    }
+    .contact-item .info .value {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding: 2rem 0;
+      text-align: center;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.85rem;
+    }
+    .footer span {
+      color: #db7245;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+      /* Mostrar botón hamburguesa */
+      .menu-toggle {
+        display: block;
+      }
+
+      /* Ocultar enlaces por defecto en móvil */
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 0.8rem;
+        width: 100%;
+        padding: 1.5rem 0 0.5rem;
+        background: rgba(4, 4, 4, 0.95);
+        backdrop-filter: blur(6px);
+        border-top: 1px solid rgba(219, 114, 69, 0.15);
+        margin-top: 1rem;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        font-size: 1rem;
+        padding: 0.5rem 0;
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+      }
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+
+      .nav-links .btn-outline {
+        border: 1.5px solid #db7245;
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        color: #db7245;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-block;
+        width: auto;
+        margin: 0 auto;
+      }
+      .nav-links .btn-outline:hover {
+        background: #db7245;
+        color: #040404;
+      }
+
+      /* Ajustes generales */
+      .navbar .container {
+        flex-wrap: wrap;
+      }
+
+      .hero h1 {
+        font-size: 2.8rem;
+      }
+      .hero p {
+        font-size: 1rem;
+        padding: 0 1rem;
+      }
+      .hero .btn-primary {
+        font-size: 1rem;
+        padding: 0.7rem 2rem;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .about-text p {
+        max-width: 100%;
+      }
+
+      .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+      .integrantes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .contact-item {
+        width: 100%;
+        justify-content: center;
+        padding: 0.8rem 1.5rem;
+      }
+
+      .section {
+        padding: 3rem 0;
+      }
+      .section-title {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      .container {
+        padding: 0 1.2rem;
+      }
+      .logo {
+        font-size: 1.4rem;
+      }
+      .logo img {
+        height: 35px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       DECORATIVE VECTORIAL BACKGROUND
+       ============================================================ -->
+  <div class="bg-shapes">
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </div>
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <header class="navbar">
+    <div class="container">
+      <div class="logo">
+        <img src="https://wunfoxghrqmumalnygmg.supabase.co/storage/v1/object/public/img/elite.jpeg" alt="Elite Goat" />
+        <span class="logo-text">Elite Goat</span>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="nav-links" id="navLinks">
+        <a href="#about">Nosotros</a>
+        <a href="#games">Juegos</a>
+        <a href="#integrantes">Integrantes</a>
+        <a href="#contact">Contacto</a>
+        <a href="/form" class="btn-outline"><i class="fas fa-arrow-right-to-bracket"></i> Formularios</a>
+        <a href="/app" class="btn-outline"><i class="fas fa-arrow-right-to-bracket"></i> Panel</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero">
+    <div class="container">
+      <h1>
+        <span>Elite Goat</span><br />
+        Un clan, una familia
+      </h1>
+      <p>
+        Donde la competitividad se une al compañerismo. Únete a nuestra
+        comunidad y vive la experiencia de jugar en equipo.
+      </p>
+      <a href="/app" class="btn-primary">
+        <i class="fas fa-calendar-check"></i> Acceder al panel de eventos
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ABOUT
+       ============================================================ -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text">
+          <h2 class="section-title" style="text-align:left;">Sobre <span>nosotros</span></h2>
+          <p>
+            Somos un clan apasionado por los videojuegos, donde cada miembro
+            encuentra un espacio para crecer, competir y divertirse.
+            Fomentamos un ambiente <strong>amistoso</strong> y
+            <strong>respetuoso</strong>, sin importar el nivel de experiencia.
+          </p>
+          <p>
+            Nuestro objetivo es crear la mejor experiencia para nuestros
+            integrantes, organizando eventos, torneos y actividades que
+            fortalezcan los lazos de nuestra comunidad.
+          </p>
+        </div>
+        <div class="about-illustration">
+          <div class="icon-box">
+            <i class="fas fa-handshake"></i>
+            <h3>Comunidad unida</h3>
+            <p>Todos nos apoyamos para alcanzar nuestras metas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       GAMES
+       ============================================================ -->
+  <section class="section" id="games">
+    <div class="container">
+      <h2 class="section-title">Nuestros <span>juegos</span></h2>
+      <div class="games-grid">
+        <div class="game-card">
+          <i class="fas fa-crosshairs game-icon"></i>
+          <h4>Arena Breakout</h4>
+          <p>FPS táctico</p>
+        </div>
+        <div class="game-card">
+          <i class="fas fa-plane game-icon"></i>
+          <h4>War Thunder</h4>
+          <p>Combate vehicular</p>
+        </div>
+        <div class="game-card">
+          <i class="fas fa-skull game-icon"></i>
+          <h4>Blood Strike</h4>
+          <p>Battle Royale</p>
+        </div>
+        <div class="game-card">
+          <i class="fas fa-gamepad game-icon"></i>
+          <h4>Call of Duty</h4>
+          <p>FPS clásico</p>
+        </div>
+        <div class="game-card">
+          <i class="fas fa-helmet-safety game-icon"></i>
+          <h4>Rainbow Six</h4>
+          <p>Operaciones tácticas</p>
+        </div>
+        <div class="game-card">
+          <i class="fas fa-robot game-icon"></i>
+          <h4>Counter-Strike</h4>
+          <p>Competitivo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       INTEGRANTES
+       ============================================================ -->
+  <section class="section" id="integrantes">
+    <div class="container">
+      <h2 class="section-title">Nuestros <span>integrantes</span></h2>
+      <div class="integrantes-grid">
+        <!-- Tiumaster -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@elitegoat1">
+          <div class="avatar">T</div>
+          <div class="name">Tiumaster</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@elitegoat1" target="_blank">@elitegoat1</a>
+          </div>
+        </div>
+        <!-- Seboyan -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@seboyan_">
+          <div class="avatar">S</div>
+          <div class="name">Seboyan</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@seboyan_" target="_blank">@seboyan_</a>
+          </div>
+        </div>
+        <!-- Jesus -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@jams210308">
+          <div class="avatar">J</div>
+          <div class="name">EG Jesus</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@jams210308" target="_blank">@jams210308</a>
+          </div>
+        </div>
+        <!-- Letona -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@letonasv">
+          <div class="avatar">L</div>
+          <div class="name">Letona</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@letonasv" target="_blank">@letonasv</a>
+          </div>
+        </div>
+        <!-- Ghost -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@theghostab">
+          <div class="avatar">G</div>
+          <div class="name">TheGhost</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@theghostab" target="_blank">@theghostab</a>
+          </div>
+        </div>
+        <!-- BrianMZ -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@brianmz_ab">
+          <div class="avatar">B</div>
+          <div class="name">BrianMZ</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@brianmz_ab" target="_blank">@brianmz_ab</a>
+          </div>
+        </div>
+        <!-- DOX -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@doxtreme_live">
+          <div class="avatar">D</div>
+          <div class="name">DOX</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@doxtreme_live" target="_blank">@doxtreme_live</a>
+          </div>
+        </div>
+        <!-- JOISETDRAGO -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@.joisethdrago">
+          <div class="avatar">J</div>
+          <div class="name">JOISETDRAGO</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@.joisethdrago" target="_blank">@.joisethdrago</a>
+          </div>
+        </div>
+        <!-- Sen2Kbron -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@sen2kbron08">
+          <div class="avatar">S</div>
+          <div class="name">Sen2Kbron</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@sen2kbron08" target="_blank">@sen2kbron08</a>
+          </div>
+        </div>
+        <!-- Mystic (placeholder) -->
+        <div class="integrante-card" data-url="#">
+          <div class="avatar">T</div>
+          <div class="name">TU</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <span>Unete y seras el proximo en nuestas filas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CONTACT
+       ============================================================ -->
+  <section class="section" id="contact">
+    <div class="container">
+      <h2 class="section-title">Conéctate con <span>nosotros</span></h2>
+      <div class="contact-grid">
+        <a href="https://wa.me/123456789" target="_blank" class="contact-item">
+          <i class="fab fa-whatsapp"></i>
+          <div class="info">
+            <span class="label">WhatsApp</span>
+            <span class="value">+123 456 789</span>
+          </div>
+        </a>
+        <a href="https://www.tiktok.com/@elitegoat1" target="_blank" class="contact-item">
+          <i class="fab fa-tiktok"></i>
+          <div class="info">
+            <span class="label">TikTok</span>
+            <span class="value">@elitegoat1</span>
+          </div>
+        </a>
+        <a href="/app" class="contact-item">
+          <i class="fas fa-calendar-check"></i>
+          <div class="info">
+            <span class="label">Eventos</span>
+            <span class="value">Accede al panel</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer">
+    <div class="container">
+      &copy; 2025 <span>Elite Goat</span> — Todos los derechos reservados.
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPT: Menú hamburguesa y click en tarjetas
+       ============================================================ -->
+  <script>
+    // Menú hamburguesa
+    const toggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      navLinks.classList.toggle('open');
+      // Cambiar ícono
+      const icon = this.querySelector('i');
+      if (navLinks.classList.contains('open')) {
+        icon.className = 'fas fa-times';
+      } else {
+        icon.className = 'fas fa-bars';
+      }
+    });
+
+    // Cerrar menú al hacer clic en un enlace
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', function() {
+        navLinks.classList.remove('open');
+        const icon = toggle.querySelector('i');
+        icon.className = 'fas fa-bars';
+      });
+    });
+
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.navbar')) {
+        navLinks.classList.remove('open');
+        const icon = toggle.querySelector('i');
+        icon.className = 'fas fa-bars';
+      }
+    });
+
+    // Click en tarjetas de integrantes (redirige a TikTok)
+    document.querySelectorAll('.integrante-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('a')) return;
+        const url = this.dataset.url || this.querySelector('.tiktok a')?.href;
+        if (url && url !== '#') {
+          window.open(url, '_blank');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

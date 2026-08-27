@@ -1,0 +1,32 @@
+[
+  {
+    "id": "beb40ac8-5a42-4e24-8523-4c98faa678e2",
+    "userId": "123",
+    "nickname": "Ghost",
+    "event": "0c404ea7-c210-4a9e-aa19-baa0107bed7e",
+    "stats": {
+      "kills": 0,
+      "deaths": 0,
+      "wins": 0,
+      "matchesPlayed": 0,
+      "score": 0
+    },
+    "matches": [],
+    "joinedAt": "2026-08-03T15:20:59.028Z"
+  },
+  {
+    "id": "b520b9dd-6c13-49dc-978e-e4b345d1b726",
+    "userId": "990",
+    "nickname": "Mario",
+    "event": "0c404ea7-c210-4a9e-aa19-baa0107bed7e",
+    "stats": {
+      "kills": 0,
+      "deaths": 0,
+      "wins": 0,
+      "matchesPlayed": 0,
+      "score": 0
+    },
+    "matches": [],
+    "joinedAt": "2026-08-03T15:21:44.190Z"
+  }
+]

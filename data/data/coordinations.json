@@ -1,0 +1,26 @@
+[
+  {
+    "id": "60a8462e-7c0d-4d4f-8007-587f77f915b2",
+    "name": "F1",
+    "organizationId": "a59e4c12-0535-4c05-b9f4-abbe3b3a777f",
+    "leaderId": "2115415933",
+    "coLeaderId": null,
+    "personIds": [
+      "2115415933",
+      "827673899",
+      "3495504830"
+    ],
+    "createdAt": "2026-08-03T17:52:20.273Z"
+  },
+  {
+    "id": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc",
+    "name": "F2",
+    "organizationId": "a59e4c12-0535-4c05-b9f4-abbe3b3a777f",
+    "leaderId": "4000445781",
+    "coLeaderId": null,
+    "personIds": [
+      "4000445781"
+    ],
+    "createdAt": "2026-08-04T21:12:08.727Z"
+  }
+]

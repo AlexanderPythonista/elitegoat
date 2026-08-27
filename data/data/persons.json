@@ -1,0 +1,38 @@
+[
+  {
+    "id": "4000445781",
+    "firstName": "SEBOYAN",
+    "nickname": "EG • SEBOYAN",
+    "country": "Bolivia",
+    "coordinationId": "ec386fc9-7b5f-4f16-a312-67b45f92e1dc",
+    "createdAt": "2026-08-04T21:11:50.558Z",
+    "userId": "2a49a210-e417-4498-94dd-fa88c164f26f"
+  },
+  {
+    "id": "3495504830",
+    "firstName": "Jesu",
+    "nickname": "EG JESUS",
+    "country": "Nicaragua",
+    "coordinationId": "60a8462e-7c0d-4d4f-8007-587f77f915b2",
+    "createdAt": "2026-08-04T21:13:34.350Z",
+    "userId": "0f086bad-ab4c-4a38-b4c0-af802962c059"
+  },
+  {
+    "id": "2115415933",
+    "firstName": "TheGhost",
+    "nickname": "?TheGhost",
+    "country": "Venezuela",
+    "coordinationId": "60a8462e-7c0d-4d4f-8007-587f77f915b2",
+    "createdAt": "2026-08-04T21:15:19.222Z",
+    "userId": "d1357bec-629e-430f-994d-2b1db6b40dba"
+  },
+  {
+    "id": "827673899",
+    "firstName": "Tiu",
+    "nickname": "EG • TIUMASTER",
+    "country": "El Salvador",
+    "coordinationId": "60a8462e-7c0d-4d4f-8007-587f77f915b2",
+    "createdAt": "2026-08-04T21:15:46.024Z",
+    "userId": "b8377fac-ff34-41ec-a239-e62e296ad360"
+  }
+]

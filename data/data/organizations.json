@@ -1,0 +1,24 @@
+[
+  {
+    "id": "a59e4c12-0535-4c05-b9f4-abbe3b3a777f",
+    "name": "Elite Goat",
+    "leaderId": "827673899",
+    "coLeaderId": "3dcf6422-cff3-4333-874b-f54fd976c4e1",
+    "coordinationIds": [
+      "60a8462e-7c0d-4d4f-8007-587f77f915b2",
+      "ec386fc9-7b5f-4f16-a312-67b45f92e1dc"
+    ],
+    "createdAt": "2026-08-03T16:25:52.916Z",
+    "personIds": [
+      "01"
+    ]
+  },
+  {
+    "id": "9c98662c-abc6-46cd-8e0e-25454a5051a7",
+    "name": "ANL",
+    "leaderId": "3dcf6422-cff3-4333-874b-f54fd976c4e1",
+    "coLeaderId": "3dcf6422-cff3-4333-874b-f54fd976c4e1",
+    "coordinationIds": [],
+    "createdAt": "2026-08-03T16:29:23.684Z"
+  }
+]

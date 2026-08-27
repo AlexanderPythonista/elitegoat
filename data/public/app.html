@@ -1,0 +1,4466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EventPro - Gestión Completa</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* ===== RESET & BASE ===== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:#f4f7fc; color:#1e293b; min-height:100vh; display:flex; justify-content:center; align-items:center; }
+    .app-container { width:100%; max-width:1400px; min-height:100vh; background:#fff; box-shadow:0 0 40px rgba(0,0,0,0.05); display:flex; flex-direction:column; }
+
+    /* ===== LOGIN ===== */
+    .login-screen { display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(145deg,#f8faff,#eef2f7); padding:2rem; text-align:center; }
+    .login-card { background:#fff; padding:3rem 2.5rem; border-radius:32px; box-shadow:0 20px 60px rgba(0,20,50,0.08); max-width:420px; width:100%; }
+    .login-card h1 { font-weight:700; font-size:2rem; color:#0a2540; margin-bottom:0.25rem; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .login-card h1 i { color:#3b82f6; }
+    .login-card p { color:#64748b; margin-bottom:2rem; font-size:0.95rem; }
+    .input-group { display:flex; flex-direction:column; text-align:left; margin-bottom:1.25rem; }
+    .input-group label { font-weight:500; font-size:0.85rem; color:#334155; margin-bottom:0.3rem; }
+    .input-group input, .input-group select { padding:0.9rem 1rem; border:1.5px solid #e2e8f0; border-radius:16px; font-size:1rem; transition:0.2s; background:#fafcff; width:100%; }
+    .input-group input:focus, .input-group select:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 4px rgba(59,130,246,0.15); }
+    .login-remember { display:flex; align-items:center; gap:0.5rem; margin-bottom:1.25rem; cursor:pointer; }
+    .login-remember input[type="checkbox"] { width:auto; height:1.2rem; width:1.2rem; margin:0; }
+    .login-remember label { font-size:0.9rem; color:#475569; cursor:pointer; }
+    .btn-primary { background:#0a2540; color:#fff; border:none; padding:0.9rem 1.5rem; border-radius:40px; font-weight:600; font-size:1rem; cursor:pointer; width:100%; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .btn-primary:hover { background:#1e3a5f; transform:scale(1.02); box-shadow:0 8px 20px rgba(10,37,64,0.15); }
+
+    /* ===== DASHBOARD ===== */
+    .dashboard { display:none; flex-direction:column; min-height:100vh; }
+    .navbar { background:#fff; padding:1rem 2.5rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eef2f6; flex-wrap:wrap; }
+    .navbar-brand { font-weight:700; font-size:1.5rem; color:#0a2540; display:flex; align-items:center; gap:10px; }
+    .navbar-brand i { color:#3b82f6; }
+    .navbar-user { display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+    .navbar-user span { font-weight:500; color:#1e293b; background:#f1f5f9; padding:0.4rem 1rem; border-radius:40px; font-size:0.9rem; }
+    .logout-btn { background:none; border:none; color:#64748b; font-size:1.2rem; cursor:pointer; transition:0.2s; }
+    .logout-btn:hover { color:#ef4444; }
+
+    /* === NUEVO: Menú hamburguesa === */
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #0a2540;
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      transition: color 0.3s;
+    }
+    .menu-toggle:hover {
+      color: #3b82f6;
+    }
+
+    .content { padding:2rem 2.5rem; flex:1; }
+    .content-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; }
+    .content-header h2 { font-weight:600; font-size:1.8rem; color:#0a2540; }
+    .btn-create { background:#0a2540; color:#fff; border:none; padding:0.6rem 1.8rem; border-radius:40px; font-weight:600; display:flex; align-items:center; gap:8px; cursor:pointer; transition:0.2s; }
+    .btn-create:hover { background:#1e3a5f; transform:scale(1.03); }
+
+    /* ===== TABS ===== */
+    .nav-tabs { display:flex; gap:1rem; margin-bottom:2rem; border-bottom:2px solid #e2e8f0; padding-bottom:0.5rem; flex-wrap:wrap; }
+    .nav-tabs button { background:none; border:none; padding:0.5rem 1.5rem; font-weight:600; color:#64748b; cursor:pointer; border-radius:30px; transition:0.2s; }
+    .nav-tabs button.active { background:#0a2540; color:#fff; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+
+    /* ===== EVENTOS ===== */
+    .events-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(420px,1fr)); gap:1.8rem; margin-top:0.5rem; }
+    .event-card, .org-card, .person-card { background:#f8fafc; border-radius:16px; padding:1.2rem; border:1px solid #edf2f7; margin-bottom:1rem; position:relative; }
+    .event-type { display:inline-block; background:#eef2ff; color:#4338ca; font-weight:600; font-size:0.7rem; padding:0.2rem 0.9rem; border-radius:30px; text-transform:uppercase; }
+    .event-title { font-weight:600; font-size:1.3rem; margin:0.6rem 0 0.3rem; color:#0a2540; }
+    .event-meta { display:flex; gap:1.2rem; color:#475569; font-size:0.9rem; margin:0.5rem 0 1rem; flex-wrap:wrap; }
+    .event-meta i { margin-right:4px; color:#3b82f6; }
+
+    /* ===== ESCUADRAS ===== */
+    .squads-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:0.5rem; }
+    .squad-card { background:#fff; border-radius:12px; padding:1rem; border:1px solid #e2e8f0; transition:0.2s; }
+    .squad-card:hover { box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+    .squad-card .squad-name { font-weight:600; font-size:1.1rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center; }
+    .squad-card .squad-members { display:flex; flex-direction:column; gap:0.3rem; }
+    .squad-member { display:flex; align-items:center; gap:8px; padding:0.2rem 0; }
+    .squad-member .member-avatar { width:28px; height:28px; border-radius:50%; background:#e2e8f0; display:inline-flex; align-items:center; justify-content:center; font-weight:600; font-size:0.7rem; color:#64748b; flex-shrink:0; }
+    .squad-member.leader { background:rgba(59,130,246,0.08); border-radius:6px; padding:0.2rem 0.4rem; }
+    .squad-member .leader-badge { font-size:0.6rem; background:#3b82f6; color:#fff; padding:0.1rem 0.4rem; border-radius:12px; margin-left:4px; }
+    .squad-images { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem; }
+    .squad-images img { width:50px; height:50px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; cursor:pointer; }
+    .squad-actions { display:flex; gap:6px; margin-top:0.5rem; justify-content:flex-end; flex-wrap:wrap; }
+    .squad-actions button { background:none; border:none; cursor:pointer; font-size:0.8rem; color:#64748b; padding:0.2rem 0.4rem; border-radius:4px; }
+    .squad-actions button:hover { background:#e2e8f0; color:#0a2540; }
+    .squad-actions .btn-upload { color:#3b82f6; }
+    .squad-actions .btn-upload:hover { background:#dbeafe; }
+
+    .event-actions { display:flex; gap:10px; margin-top:0.8rem; flex-wrap:wrap; }
+    .event-actions button { background:#f1f5f9; border:none; padding:0.35rem 1rem; border-radius:30px; font-size:0.75rem; font-weight:500; color:#1e293b; display:flex; align-items:center; gap:5px; cursor:pointer; transition:0.15s; }
+    .event-actions button:hover { background:#e2e8f0; }
+    .event-actions .btn-primary-action { background:#0a2540; color:#fff; }
+    .event-actions .btn-primary-action:hover { background:#1e3a5f; }
+
+    .btn-add-participant { background:transparent; border:1px dashed #94a3b8; color:#475569; padding:0.25rem 1rem; border-radius:30px; font-size:0.75rem; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:4px; }
+    .btn-add-participant:hover { background:#f1f5f9; border-color:#3b82f6; color:#0a2540; }
+
+    .btn-edit, .btn-delete { background:none; border:none; cursor:pointer; font-size:1rem; padding:0.2rem; }
+    .btn-edit { color:#64748b; }
+    .btn-edit:hover { color:#0a2540; }
+    .btn-delete { color:#ef4444; }
+    .btn-delete:hover { color:#dc2626; }
+
+    /* ===== MODALES ===== */
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,37,64,0.4); backdrop-filter:blur(4px); justify-content:center; align-items:center; z-index:999; padding:1.5rem; }
+    .modal.active { display:flex; }
+    .modal-content { background:#fff; max-width:700px; width:100%; border-radius:32px; padding:2rem 2.2rem; box-shadow:0 30px 60px rgba(0,0,0,0.15); animation:modalFade 0.25s ease; max-height:90vh; overflow-y:auto; }
+    @keyframes modalFade { 0%{opacity:0;transform:scale(0.96)} 100%{opacity:1;transform:scale(1)} }
+    .modal-content h3 { font-weight:600; font-size:1.6rem; margin-bottom:1.2rem; color:#0a2540; }
+    .modal-footer { display:flex; gap:12px; margin-top:1.5rem; justify-content:flex-end; flex-wrap:wrap; }
+    .modal-footer button { padding:0.6rem 1.8rem; border-radius:40px; font-weight:600; border:none; cursor:pointer; }
+    .btn-cancel { background:#f1f5f9; color:#334155; }
+    .btn-cancel:hover { background:#e2e8f0; }
+    .btn-submit { background:#0a2540; color:#fff; }
+    .btn-submit:hover { background:#1e3a5f; }
+
+    .toast { position:fixed; bottom:30px; right:30px; background:#0a2540; color:#fff; padding:1rem 2rem; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,0.15); font-weight:500; z-index:1000; display:none; }
+    .toast.error { background:#dc2626; }
+    .toast.success { background:#16a34a; }
+
+    /* ===== RANKING / TOP ===== */
+    .ranking-tabs { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+    .ranking-tabs button { background:#f1f5f9; border:none; padding:0.3rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:500; cursor:pointer; transition:0.2s; }
+    .ranking-tabs button.active { background:#0a2540; color:#fff; }
+    .ranking-tabs button:hover { background:#e2e8f0; }
+
+    .ranking-table { width:100%; border-collapse:collapse; margin-top:1rem; font-size:0.9rem; }
+    .ranking-table th, .ranking-table td { padding:0.5rem; text-align:left; border-bottom:1px solid #e2e8f0; }
+    .ranking-table th { background:#f1f5f9; font-weight:600; position:sticky; top:0; }
+    .ranking-table tr:hover { background:#f8fafc; }
+    .ranking-table .squad-row { background:#eef2ff; font-weight:600; }
+    .ranking-table .squad-row td { border-top:2px solid #3b82f6; }
+
+    .top-table-container { overflow-x:auto; margin-top:1rem; }
+    .top-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .top-table th, .top-table td { padding:0.4rem; text-align:left; border:1px solid #e2e8f0; }
+    .top-table th { background:#f1f5f9; font-weight:600; }
+    .top-table input { border:none; background:transparent; width:100%; padding:0.2rem; font-size:0.85rem; }
+    .top-table input:focus { outline:2px solid #3b82f6; border-radius:4px; }
+    .top-table select { border:none; background:transparent; width:100%; padding:0.2rem; font-size:0.85rem; }
+    .top-table select:focus { outline:2px solid #3b82f6; border-radius:4px; }
+
+    /* ===== TOP TABLE STYLES ===== */
+    .top-row-out td { background: #dc2626 !important; color: white !important; }
+    .top-row-out input,
+    .top-row-out select { background: #dc2626 !important; color: white !important; border-color: #991b1b !important; }
+    .top-row-no td { background: #94a3b8 !important; color: #1e293b !important; }
+    .top-row-no input,
+    .top-row-no select { background: #94a3b8 !important; color: #1e293b !important; border-color: #64748b !important; }
+
+    /* ===== DRAG HANDLE ===== */
+    .drag-handle { cursor: grab; color: #94a3b8; font-size:1.1rem; padding:0 0.2rem; user-select:none; }
+    .drag-handle:active { cursor: grabbing; }
+    .dragging td { background: #e2e8f0 !important; opacity:0.6; }
+
+    /* ===== ESTADÍSTICAS POR PARTICIPANTE ===== */
+    .participant-stats-form {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #e2e8f0;
+    }
+    .participant-stats-form .form-header {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: #0a2540;
+    }
+    .participant-stats-form .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .participant-stats-form .form-row .input-group {
+      margin-bottom: 0.3rem;
+    }
+    .participant-stats-form .form-row .input-group label {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .participant-stats-form .form-row .input-group input,
+    .participant-stats-form .form-row .input-group select {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .extracted-text { background:#f8fafc; border-radius:8px; padding:0.5rem; margin:0.5rem 0; max-height:150px; overflow-y:auto; font-family:monospace; font-size:0.8rem; white-space:pre-wrap; }
+    .stats-form { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+    .stats-form .input-group { margin-bottom:0.5rem; }
+    .participant-stats-btn { background:none; border:none; color:#3b82f6; cursor:pointer; font-size:0.7rem; margin-left:4px; }
+    .participant-stats-btn:hover { text-decoration:underline; }
+    .checkbox-group { display:flex; flex-wrap:wrap; gap:0.5rem; max-height:150px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px; padding:0.5rem; }
+    .checkbox-group label { display:flex; align-items:center; gap:4px; font-size:0.9rem; cursor:pointer; }
+    .checkbox-group input[type="checkbox"] { margin-right:4px; }
+
+    .users-table { width:100%; border-collapse:collapse; }
+    .users-table th, .users-table td { padding:0.5rem; text-align:left; border-bottom:1px solid #e2e8f0; }
+    .users-table th { background:#f1f5f9; font-weight:600; }
+    .users-table tr:hover { background:#f8fafc; }
+
+    .logs-container { max-height:500px; overflow-y:auto; }
+    .log-entry { padding:0.5rem; border-bottom:1px solid #e2e8f0; font-size:0.9rem; }
+    .log-entry .timestamp { color:#64748b; font-size:0.8rem; }
+    .log-entry .action { font-weight:600; }
+
+    /* ===== PERSONAS ===== */
+    .person-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .person-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.2rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border: 1px solid #edf2f7;
+      transition: box-shadow 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .person-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .person-card .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a2540, #3b82f6);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .person-card .info {
+      flex: 1;
+    }
+
+    .person-card .info .name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #0a2540;
+    }
+
+    .person-card .info .nick {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .person-card .info .details {
+      font-size: 0.85rem;
+      color: #475569;
+      margin-top: 0.2rem;
+    }
+
+    .person-card .actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .person-card .actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.3rem;
+      border-radius: 8px;
+      transition: background 0.15s;
+      color: #64748b;
+    }
+
+    .person-card .actions button:hover {
+      background: #f1f5f9;
+    }
+
+    .person-card .actions .btn-edit:hover { color: #0a2540; }
+    .person-card .actions .btn-delete:hover { color: #ef4444; }
+    .person-card .actions .btn-add-user:hover { color: #3b82f6; }
+
+    .user-badge {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 0.7rem;
+      padding: 0.1rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .no-user-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #94a3b8;
+      font-size: 0.7rem;
+      padding: 0.1rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    /* ===== RULETA ===== */
+    .ruleta-container {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ruleta-grafico {
+      flex: 2;
+      min-width: 300px;
+      position: relative;
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid #edf2f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .ruleta-grafico canvas {
+      width: 100%;
+      height: auto;
+      max-width: 500px;
+      aspect-ratio: 1/1;
+      display: block;
+      margin: 0 auto;
+      border-radius: 50%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: transform 0.1s;
+      background: #fff;
+    }
+    .ruleta-controles {
+      flex: 1;
+      min-width: 250px;
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 1px solid #edf2f7;
+    }
+    .ruleta-controles .input-group {
+      margin-bottom: 1rem;
+    }
+    .ruleta-controles .input-group label {
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #334155;
+    }
+    .ruleta-controles .input-group input {
+      padding: 0.6rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      width: 100%;
+      background: #fff;
+    }
+    .ruleta-lista {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 0.5rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.5rem;
+      background: #fff;
+    }
+    .ruleta-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.3rem 0.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+    }
+    .ruleta-item:last-child { border-bottom: none; }
+    .ruleta-item .nombre { font-weight: 500; color: #0a2540; }
+    .ruleta-item .btn-remove {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .ruleta-item .btn-remove:hover { background: #fee2e2; }
+    .ruleta-acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .ruleta-acciones .btn-action {
+      background: #0a2540;
+      color: #fff;
+      border: none;
+      padding: 0.4rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ruleta-acciones .btn-action:hover {
+      background: #1e3a5f;
+      transform: scale(1.02);
+    }
+    .ruleta-acciones .btn-action.girar {
+      background: #db7245;
+    }
+    .ruleta-acciones .btn-action.girar:hover {
+      background: #c45f32;
+    }
+    .ruleta-resultado {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #eef2ff;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #4338ca;
+      font-size: 1.1rem;
+      border: 1px solid #c7d2fe;
+      min-height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== FORMULARIOS ===== */
+    .forms-grid .form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border: 1px solid #edf2f7;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .forms-grid .form-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      transform: translateY(-4px);
+    }
+    .forms-grid .form-card .title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #0a2540;
+      margin-bottom: 0.3rem;
+    }
+    .forms-grid .form-card .desc {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+    .forms-grid .form-card .meta {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .forms-grid .form-card .badge {
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 0.15rem 0.6rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+    .forms-grid .form-card .badge.private {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .forms-grid .form-card .actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+      justify-content: flex-end;
+    }
+
+    .respondents-grid .respondent-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      transition: 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .respondents-grid .respondent-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.1);
+    }
+    .respondents-grid .respondent-card .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a2540, #3b82f6);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .respondents-grid .respondent-card .info {
+      flex: 1;
+    }
+    .respondents-grid .respondent-card .info .name {
+      font-weight: 500;
+      color: #0a2540;
+    }
+    .respondents-grid .respondent-card .info .date {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    /* Estilos para el editor de preguntas */
+    .question-editor-item {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .question-editor-item .drag-handle {
+      cursor: grab;
+      color: #94a3b8;
+      padding: 0.3rem;
+    }
+    .question-editor-item .question-fields {
+      flex: 1;
+    }
+    .question-editor-item .question-fields input,
+    .question-editor-item .question-fields select,
+    .question-editor-item .question-fields textarea {
+      width: 100%;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+    .question-editor-item .question-fields .options-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+    .question-editor-item .question-fields .options-input input {
+      width: auto;
+      flex: 1;
+      min-width: 120px;
+    }
+    .question-editor-item .question-actions {
+      display: flex;
+      gap: 0.3rem;
+    }
+    .question-editor-item .question-actions button {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+    }
+    .question-editor-item .question-actions button:hover {
+      background: #e2e8f0;
+    }
+    .question-editor-item .question-actions .delete-q {
+      color: #ef4444;
+    }
+    .question-editor-item .question-actions .delete-q:hover {
+      background: #fee2e2;
+    }
+    /* ===== PERFIL ===== */
+.profile-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  border: 1px solid #edf2f7;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0a2540, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.profile-info h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+.profile-info .sub {
+  color: #64748b;
+  font-size: 1rem;
+}
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.profile-stat {
+  background: #f8fafc;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.profile-stat .label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.profile-stat .value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0a2540;
+}
+.profile-squads {
+  margin-top: 1.5rem;
+}
+.profile-squads .squad-tag {
+  display: inline-block;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin: 0.2rem 0.4rem 0.2rem 0;
+}
+.profile-fan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.profile-fan .fan-item {
+  background: #f8fafc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  min-width: 120px;
+}
+.profile-fan .fan-item .label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+.profile-fan .fan-item .value {
+  font-weight: 600;
+}
+.profile-edit-form .input-group {
+  margin-bottom: 1rem;
+}
+.profile-edit-form label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.profile-edit-form input, .profile-edit-form select {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+.profile-card-mini {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.2s;
+}
+.profile-card-mini:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+    /* ===== RESPONSIVE NAV ===== */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .navbar-user {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 1rem 0 0.5rem;
+        border-top: 1px solid #eef2f6;
+        margin-top: 1rem;
+      }
+      .navbar-user.open {
+        display: flex;
+      }
+
+      .navbar-user span,
+      .navbar-user .logout-btn,
+      .navbar-user a {
+        padding: 0.5rem 1rem;
+        text-align: center;
+        border-radius: 8px;
+      }
+      .navbar-user a {
+        background: #f1f5f9;
+        color: #0a2540;
+      }
+
+      .navbar {
+        flex-wrap: wrap;
+      }
+
+      .content {
+        padding: 1rem 1.2rem;
+      }
+      .events-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-tabs {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .nav-tabs button {
+        text-align: left;
+        padding: 0.6rem 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+      .nav-tabs button.active {
+        background: #0a2540;
+        color: #fff;
+      }
+      .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 0.8rem;
+      }
+      .content-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      .btn-create {
+        justify-content: center;
+      }
+      .profile-card {
+        padding: 1rem;
+      }
+      .profile-stats {
+        grid-template-columns: 1fr;
+      }
+      .forms-grid {
+        grid-template-columns: 1fr;
+      }
+      .respondents-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-fan {
+        flex-direction: column;
+      }
+      .profile-fan .fan-item {
+        min-width: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <!-- ===== LOGIN ===== -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <h1><i class="fas fa-flag-checkered"></i> EventPro</h1>
+      <p>Accede a tu panel de gestión</p>
+      <div class="input-group">
+        <label><i class="fas fa-user"></i> Usuario</label>
+        <input type="text" id="loginUser" placeholder="Ingrese Usuario" />
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-lock"></i> Contraseña</label>
+        <input type="password" id="loginPass" placeholder="Ingrese Contraseña" />
+      </div>
+      <div class="login-remember">
+        <input type="checkbox" id="rememberMe" />
+        <label for="rememberMe">Recordar sesión</label>
+      </div>
+      <button class="btn-primary" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Iniciar sesión</button>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="dashboard" id="dashboard">
+    <nav class="navbar">
+      <div class="navbar-brand"><i class="fas fa-flag-checkered"></i> EventPro</div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="navbar-user" id="navUser">
+        <span><i class="fas fa-user-circle"></i> <span id="userNameDisplay">Root</span></span>
+        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+        <a href="/" class="btn-add-participant" style="text-decoration:none; text-align:center;"><i class="fas fa-home"></i> Inicio</a>
+      </div>
+    </nav>
+    <div class="content">
+      <div class="nav-tabs" id="navTabs">
+        <!-- Renderizado dinámico según rol -->
+      </div>
+
+      <!-- Tab: Organizaciones -->
+      <div class="tab-content" id="tab-organizations">
+        <div class="content-header">
+          <h2><i class="fas fa-building"></i> Organizaciones</h2>
+          <button class="btn-create" id="openCreateOrg"><i class="fas fa-plus"></i> Crear Organización</button>
+        </div>
+        <div id="orgList"></div>
+      </div>
+
+      <!-- Tab: Personas -->
+      <div class="tab-content" id="tab-persons">
+        <div class="content-header">
+          <h2><i class="fas fa-users"></i> Personas</h2>
+          <button class="btn-create" id="openCreatePerson"><i class="fas fa-plus"></i> Crear Persona</button>
+        </div>
+        <div id="personList"></div>
+      </div>
+
+      <!-- Tab: Eventos -->
+      <div class="tab-content active" id="tab-events">
+        <div class="content-header">
+          <h2><i class="fas fa-calendar-check"></i> Mis Eventos</h2>
+          <button class="btn-create" id="openCreateEvent"><i class="fas fa-plus"></i> Crear Evento</button>
+        </div>
+        <div id="eventsGrid"></div>
+      </div>
+
+      <!-- Tab: Ranking (solo admin) -->
+      <div class="tab-content" id="tab-ranking">
+        <div class="content-header">
+          <h2><i class="fas fa-chart-simple"></i> Ranking de Eventos</h2>
+        </div>
+        <div id="rankingContainer">
+          <p style="color:#94a3b8;">Selecciona un evento para ver el ranking.</p>
+          <div id="rankingEventSelector" style="margin:1rem 0;"></div>
+          <div id="rankingContent"></div>
+        </div>
+      </div>
+
+      <!-- Tab: TOP (solo admin) -->
+      <div class="tab-content" id="tab-top">
+        <div class="content-header">
+          <h2><i class="fas fa-trophy"></i> TOP Jugadores</h2>
+          <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+            <label style="font-weight:600; margin-right:0.5rem;">Hoja:</label>
+            <select id="topSheetSelector" style="padding:0.4rem 1rem; border-radius:12px; border:1px solid #e2e8f0; background:#fff;" onchange="switchTopSheet()"></select>
+            <button class="btn-create" onclick="topAddRow()"><i class="fas fa-plus"></i> Añadir fila</button>
+            <button class="btn-create" onclick="topExportExcel()" style="background:#16a34a;"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+            <button class="btn-create" onclick="document.getElementById('topFileInput').click()" style="background:#3b82f6;"><i class="fas fa-upload"></i> Importar Excel</button>
+            <input type="file" id="topFileInput" accept=".xlsx,.xls" style="display:none" onchange="topImportExcel(event)" />
+            <button class="btn-create" onclick="topSave()" style="background:#8b5cf6;"><i class="fas fa-save"></i> Guardar</button>
+          </div>
+        </div>
+        <div class="top-table-container">
+          <table class="top-table" id="topTable">
+            <thead>
+              <tr>
+                <th style="width:30px;"></th>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>ALMACEN ACTUAL</th>
+                <th>NUM</th>
+                <th>RANGO</th>
+                <th>CLAN</th>
+                <th>PREV ALMACEN</th>
+                <th>NACIONALIDAD</th>
+                <th>HORAS</th>
+                <th>RANGO</th>
+                <th>RANGO</th>
+                <th>JUGADORES</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="topBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab: Usuarios -->
+      <div class="tab-content" id="tab-users">
+        <div class="content-header">
+          <h2><i class="fas fa-user-shield"></i> Usuarios</h2>
+          <button class="btn-create" onclick="createMissingUsers()"><i class="fas fa-user-plus"></i> Crear usuarios faltantes</button>
+        </div>
+        <div id="usersList"></div>
+      </div>
+
+      <!-- Tab: Historial -->
+      <div class="tab-content" id="tab-logs">
+        <div class="content-header">
+          <h2><i class="fas fa-history"></i> Historial de actividad</h2>
+        </div>
+        <div id="logsList" class="logs-container"></div>
+      </div>
+
+      <!-- Tab: Ruleta -->
+      <div class="tab-content" id="tab-ruleta">
+        <div class="content-header">
+          <h2><i class="fas fa-circle-notch"></i> Ruleta de Nombres</h2>
+        </div>
+        <div class="ruleta-container">
+          <div class="ruleta-grafico">
+            <canvas id="ruletaCanvas" width="500" height="500"></canvas>
+          </div>
+          <div class="ruleta-controles">
+            <div class="input-group">
+              <label>Nombre</label>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="text" id="ruletaNombreInput" placeholder="Ej: Juan" />
+                <button class="btn-create" id="ruletaAddBtn" style="padding:0.4rem 1rem;"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="ruleta-lista" id="ruletaLista"></div>
+            <div class="ruleta-acciones">
+              <button class="btn-action" id="ruletaAutoBtn"><i class="fas fa-sort-alpha-up"></i> A-Z</button>
+              <button class="btn-action" id="ruletaCargarUsuariosBtn"><i class="fas fa-users"></i> Cargar usuarios</button>
+              <button class="btn-action girar" id="ruletaGirarBtn"><i class="fas fa-play"></i> Girar</button>
+            </div>
+            <div class="ruleta-resultado" id="ruletaResultado">¡Listo para girar!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== NUEVA TAB: FORMULARIOS (Google Forms style) ===== -->
+      <div class="tab-content" id="tab-forms">
+        <div class="content-header">
+          <h2><i class="fas fa-edit"></i> Formularios</h2>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button class="btn-create" id="openCreateForm"><i class="fas fa-plus"></i> Crear Formulario</button>
+          </div>
+        </div>
+        <!-- Grid de formularios -->
+        <div id="formsGrid" class="forms-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; margin-top:1rem;"></div>
+
+        <!-- Vista de detalle (admin) -->
+        <div id="formDetailView" style="display:none;">
+          <button class="btn-add-participant" onclick="closeFormDetail()" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
+          <div id="formDetailHeader" style="background:#f8fafc; border-radius:16px; padding:1.5rem; border:1px solid #edf2f7; margin-bottom:1.5rem;">
+            <h3 id="detailFormTitle" style="margin:0;"></h3>
+            <p id="detailFormDesc" style="color:#64748b;"></p>
+            <div style="display:flex; gap:1rem; margin-top:0.5rem; font-size:0.9rem; color:#94a3b8;">
+              <span><i class="fas fa-question-circle"></i> <span id="detailQuestionsCount">0</span> preguntas</span>
+              <span><i class="fas fa-users"></i> <span id="detailRespondentsCount">0</span> respuestas</span>
+            </div>
+          </div>
+          <!-- Grid de encuestados -->
+          <div id="respondentsGrid" class="respondents-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem;"></div>
+          <!-- Vista de respuestas de un encuestado (se muestra al hacer clic en una persona) -->
+          <div id="respondentDetailView" style="display:none; background:#fff; border-radius:16px; padding:1.5rem; border:1px solid #edf2f7;">
+            <button class="btn-add-participant" onclick="closeRespondentDetail()" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a los encuestados</button>
+            <div id="respondentAnswers"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Tab: Perfil -->
+<div class="tab-content" id="tab-perfil">
+  <div class="content-header">
+    <h2><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+  </div>
+  <div id="profileContent">
+    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando perfil...</div>
+  </div>
+</div>
+
+<!-- Tab: Perfiles (solo admin) -->
+<div class="tab-content" id="tab-perfiles">
+  <div class="content-header">
+    <h2><i class="fas fa-users-cog"></i> Todos los Perfiles</h2>
+  </div>
+  <div id="profilesGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.5rem; margin-top:1rem;"></div>
+  <div id="profileDetailView" style="display:none; margin-top:1rem;">
+    <button class="btn-add-participant" onclick="closeProfileDetail()" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
+    <div id="profileDetailContent"></div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODALES (todos) -->
+<!-- ============================================================ -->
+
+<!-- Organización -->
+<div class="modal" id="orgModal">
+  <div class="modal-content">
+    <h3 id="orgModalTitle"><i class="fas fa-building"></i> Nueva Organización</h3>
+    <input type="hidden" id="orgEditId" />
+    <div class="input-group"><label>Nombre</label><input type="text" id="orgName" placeholder="Ej: Elite Goat" /></div>
+    <div class="input-group"><label>Líder (ID de persona)</label><input type="text" id="orgLeader" placeholder="ID" /></div>
+    <div class="input-group"><label>Colíder (ID de persona)</label><input type="text" id="orgCoLeader" placeholder="ID" /></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeOrgModal">Cancelar</button>
+      <button class="btn-submit" id="saveOrgBtn">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Persona -->
+<div class="modal" id="personModal">
+  <div class="modal-content">
+    <h3 id="personModalTitle"><i class="fas fa-user-plus"></i> Nueva Persona</h3>
+    <input type="hidden" id="personEditId" />
+    <div class="input-group"><label>ID (opcional)</label><input type="text" id="personId" placeholder="Dejar vacío" /></div>
+    <div class="input-group"><label>Nombre</label><input type="text" id="personFirstName" placeholder="Juan" /></div>
+    <div class="input-group"><label>Nickname</label><input type="text" id="personNick" placeholder="Juampi" /></div>
+    <div class="input-group"><label>País</label>
+      <select id="personCountry"><option value="">Seleccionar país</option></select>
+    </div>
+    <div class="input-group"><label>Coordinación (opcional)</label>
+      <select id="personCoordination"><option value="">Sin coordinación</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closePersonModal">Cancelar</button>
+      <button class="btn-submit" id="savePersonBtn">Guardar</button>
+    </div>
+    <div class="modal-footer" style="margin-top:0.5rem;">
+      <button class="btn-add-participant" id="syncPersonBtn" onclick="syncPersonUser()"><i class="fas fa-sync"></i> Sincronizar con usuario</button>
+    </div>
+  </div>
+</div>
+
+<!-- Editar Usuario -->
+<div class="modal" id="editUserModal">
+  <div class="modal-content">
+    <h3><i class="fas fa-user-edit"></i> Editar Usuario</h3>
+    <input type="hidden" id="editUserId" />
+    <div class="input-group"><label>Username</label><input type="text" id="editUserUsername" /></div>
+    <div class="input-group"><label>Nueva contraseña (dejar vacío para no cambiar)</label><input type="text" id="editUserPassword" placeholder="Nueva contraseña" /></div>
+    <div class="input-group"><label>Rol</label>
+      <select id="editUserRole">
+        <option value="participante">Participante</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeEditUserModal">Cancelar</button>
+      <button class="btn-submit" id="saveEditUserBtn">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Añadir persona a organización -->
+<div class="modal" id="addPersonToOrgModal">
+  <div class="modal-content">
+    <h3><i class="fas fa-user-plus"></i> Añadir persona a organización</h3>
+    <p>Selecciona la persona para añadir a <strong id="orgTargetName"></strong></p>
+    <input type="hidden" id="targetOrgId" />
+    <div class="input-group">
+      <label>Persona</label>
+      <select id="personSelectForOrg"><option value="">Seleccionar persona</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeAddPersonOrgModal">Cancelar</button>
+      <button class="btn-submit" id="saveAddPersonOrgBtn">Añadir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Añadir persona a coordinación -->
+<div class="modal" id="addPersonToCoordModal">
+  <div class="modal-content">
+    <h3><i class="fas fa-user-plus"></i> Añadir persona a coordinación</h3>
+    <p>Selecciona la persona para añadir a <strong id="coordTargetName"></strong></p>
+    <input type="hidden" id="targetCoordId" />
+    <div class="input-group">
+      <label>Persona</label>
+      <select id="personSelectForCoord"><option value="">Seleccionar persona</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeAddPersonCoordModal">Cancelar</button>
+      <button class="btn-submit" id="saveAddPersonCoordBtn">Añadir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal escuadra -->
+<div class="modal" id="squadModal">
+  <div class="modal-content">
+    <h3 id="squadModalTitle"><i class="fas fa-users"></i> Crear Escuadra</h3>
+    <input type="hidden" id="squadEventId" />
+    <input type="hidden" id="squadEditId" />
+    <div class="input-group"><label>Nombre</label><input type="text" id="squadName" placeholder="Ej: Alpha" /></div>
+    <div class="input-group"><label>Líder</label>
+      <select id="squadLeaderSelect"><option value="">Seleccionar líder</option></select>
+    </div>
+    <div class="input-group"><label>Miembros (Ctrl+clic)</label>
+      <select id="squadMembersSelect" multiple style="height:100px;"></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeSquadModal">Cancelar</button>
+      <button class="btn-submit" id="saveSquadBtn">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Subir imagen / Ingresar estadísticas -->
+<div class="modal" id="uploadStatsModal">
+  <div class="modal-content" style="max-width:800px;">
+    <h3><i class="fas fa-upload"></i> Subir imagen / Ingresar estadísticas</h3>
+    <p>Selecciona los participantes para esta partida y completa los datos de cada uno:</p>
+    <div id="statsParticipantsContainer" class="checkbox-group">
+      <!-- Se llenará con checkboxes -->
+    </div>
+    <div id="statsFormsContainer" style="margin-top:1rem;">
+      <!-- Aquí se generarán los formularios individuales -->
+    </div>
+    <div class="input-group">
+      <label>Subir imagen (opcional, se aplicará a todos)</label>
+      <input type="file" id="statsImageInput" accept="image/*" />
+      <button class="btn-add-participant" onclick="extractTextFromImage()" style="margin-top:0.5rem;"><i class="fas fa-eye"></i> Extraer texto</button>
+      <div id="extractedTextDisplay" class="extracted-text" style="display:none;"></div>
+    </div>
+    <input type="hidden" id="statsEventId" />
+    <input type="hidden" id="statsSquadId" />
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeStatsModal">Cancelar</button>
+      <button class="btn-submit" id="saveStatsBtn">Guardar partida(s)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ranking -->
+<div class="modal" id="rankingModal">
+  <div class="modal-content" style="max-width:900px;">
+    <h3><i class="fas fa-chart-simple"></i> Ranking del Evento</h3>
+    <div id="rankingEventName" style="font-weight:500; margin-bottom:0.5rem;"></div>
+    <div class="ranking-tabs">
+      <button class="active" data-rank="general">General</button>
+      <button data-rank="squad">Por Escuadra</button>
+    </div>
+    <div id="rankingContent">
+      <table class="ranking-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Jugador</th><th>Partidas</th><th>Botín</th>
+            <th>Elim. Contratistas</th><th>Otras Elim.</th><th>Tiempo</th>
+            <th>Victorias</th><th>Derrotas</th><th>Puntuación</th>
+          </tr>
+        </thead>
+        <tbody id="rankingBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeRankingModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Añadir participantes -->
+<div class="modal" id="addParticipantModal">
+  <div class="modal-content">
+    <h3><i class="fas fa-user-plus"></i> Añadir participantes al evento</h3>
+    <p>Evento: <strong id="addParticipantEventName"></strong></p>
+    <input type="hidden" id="addParticipantEventId" />
+    <div class="input-group">
+      <label>Personas (Ctrl+clic para múltiples)</label>
+      <select id="addParticipantPersonSelect" multiple style="height:150px;"></select>
+    </div>
+    <div class="input-group">
+      <label>Escuadra (opcional)</label>
+      <select id="addParticipantSquadSelect"><option value="">Sin escuadra</option></select>
+    </div>
+    <div class="input-group">
+      <label>O crear nueva escuadra</label>
+      <input type="text" id="addParticipantNewSquadInput" placeholder="Nombre de la nueva escuadra" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeAddParticipantModal">Cancelar</button>
+      <button class="btn-submit" id="saveAddParticipantBtn">Añadir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Crear Evento -->
+<div class="modal" id="createEventModal">
+  <div class="modal-content">
+    <h3><i class="fas fa-trophy"></i> Nuevo Evento</h3>
+    <div class="input-group"><label>Nombre</label><input type="text" id="eventName" placeholder="Torneo" /></div>
+    <div class="input-group"><label>Tipo</label>
+      <select id="eventType"><option value="botin">Botín</option><option value="kill">Kill</option><option value="supervivencia">Supervivencia</option></select>
+    </div>
+    <div class="input-group"><label>Modalidad</label>
+      <select id="eventMode"><option value="individual">Individual</option><option value="duos">Dúos</option><option value="trios">Trios</option><option value="escuadras">Escuadras</option><option value="mixto">Mixto</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeEventModal">Cancelar</button>
+      <button class="btn-submit" id="saveEventBtn">Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Editar Evento -->
+<div class="modal" id="editEventModal">
+  <div class="modal-content">
+    <h3><i class="fas fa-edit"></i> Editar Evento</h3>
+    <input type="hidden" id="editEventId" />
+    <div class="input-group"><label>Nombre</label><input type="text" id="editEventName" /></div>
+    <div class="input-group"><label>Tipo</label>
+      <select id="editEventType">
+        <option value="botin">Botín</option>
+        <option value="kill">Kill</option>
+        <option value="supervivencia">Supervivencia</option>
+      </select>
+    </div>
+    <div class="input-group"><label>Modalidad</label>
+      <select id="editEventMode">
+        <option value="individual">Individual</option>
+        <option value="duos">Dúos</option>
+        <option value="trios">Trios</option>
+        <option value="escuadras">Escuadras</option>
+        <option value="mixto">Mixto</option>
+      </select>
+    </div>
+    <div class="input-group"><label>Participantes actuales</label>
+      <div id="editEventParticipants" class="participant-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeEditEventModal">Cancelar</button>
+      <button class="btn-submit" id="saveEditEventBtn">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: CREAR/EDITAR FORMULARIO (estilo Google Forms)         -->
+<!-- ============================================================ -->
+<div class="modal" id="formModal">
+  <div class="modal-content" style="max-width:900px; padding:0; overflow-y:auto; max-height:95vh;">
+    <div style="background:#0a2540; color:#fff; padding:1.5rem 2rem; border-radius:32px 32px 0 0; display:flex; justify-content:space-between; align-items:center;">
+      <h3 id="formModalTitle" style="margin:0; font-weight:600;"><i class="fas fa-edit"></i> Nuevo Formulario</h3>
+      <button class="btn-cancel" id="closeFormModal" style="background:rgba(255,255,255,0.2); color:#fff; border:none; padding:0.4rem 1rem; border-radius:30px; cursor:pointer;">Cerrar</button>
+    </div>
+    <div style="padding:2rem;">
+      <input type="hidden" id="formEditId" />
+      <div class="input-group" style="margin-bottom:1.5rem;">
+        <label style="font-weight:600; font-size:1.1rem;">Título del formulario *</label>
+        <input type="text" id="formTitle" placeholder="Ej: Encuesta de satisfacción" style="font-size:1.5rem; font-weight:600; border:none; border-bottom:2px solid #e2e8f0; padding:0.5rem 0; border-radius:0; background:transparent;" />
+      </div>
+      <div class="input-group" style="margin-bottom:1.5rem;">
+        <label style="font-weight:500;">Descripción</label>
+        <textarea id="formDescription" rows="2" placeholder="Describe el propósito del formulario" style="border:1px solid #e2e8f0; border-radius:12px; padding:0.8rem; width:100%;"></textarea>
+      </div>
+      <div class="input-group" style="flex-direction:row; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+        <input type="checkbox" id="formPrivate" style="width:auto; height:1.2rem; width:1.2rem;" />
+        <label for="formPrivate" style="margin:0; font-weight:500;">Formulario privado (solo usuarios registrados pueden verlo y responder)</label>
+      </div>
+
+      <!-- Área de preguntas -->
+      <div style="margin-top:2rem; border-top:1px solid #e2e8f0; padding-top:1.5rem;">
+        <h4 style="font-weight:600; margin-bottom:0.5rem;"><i class="fas fa-list"></i> Preguntas</h4>
+        <div id="questionsEditor" style="display:flex; flex-direction:column; gap:0.8rem;"></div>
+        <button class="btn-add-participant" onclick="addQuestionToEditor()" style="margin-top:0.8rem;"><i class="fas fa-plus"></i> Añadir pregunta</button>
+      </div>
+
+      <div class="modal-footer" style="border-top:1px solid #e2e8f0; padding-top:1.5rem; margin-top:1.5rem;">
+        <button class="btn-cancel" id="closeFormModal2" style="padding:0.6rem 2rem;">Cancelar</button>
+        <button class="btn-submit" id="saveFormBtn" style="padding:0.6rem 2.5rem;">Guardar Formulario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: VER RESPUESTAS DE UN ENCUESTADO                        -->
+<!-- ============================================================ -->
+<div class="modal" id="respondentAnswersModal">
+  <div class="modal-content" style="max-width:800px; max-height:90vh; overflow-y:auto;">
+    <h3 id="respondentAnswersTitle"><i class="fas fa-user"></i> Respuestas de <span id="respondentNameDisplay"></span></h3>
+    <div id="respondentAnswersContent" style="margin-top:1rem;"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeRespondentAnswersModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Respuestas (listado general) -->
+<div class="modal" id="responsesModal">
+  <div class="modal-content" style="max-width:900px;">
+    <h3><i class="fas fa-list-ul"></i> Respuestas del formulario</h3>
+    <div id="responsesContent" style="margin-top:1rem; max-height:400px; overflow-y:auto;"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="closeResponsesModal">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ================================================================
+  // CONFIGURACIÓN
+  // ================================================================
+  const API_URL = '/api';
+  let authToken = null;
+  let currentUser = null;
+  let currentPersonId = null;
+  let allCoords = [];
+  let allPersons = [];
+  const squadLeaderColors = {};
+  let topData = {};
+  let activeSheet = 'F1';
+  let statsEventId = null;
+  let statsSquadId = null;
+
+  // ================================================================
+  // CARGAR PAÍSES DESDE JSON
+  // ================================================================
+  let countriesData = [];
+
+  async function loadCountries() {
+    try {
+      const response = await fetch('/data/countries.json');
+      if (!response.ok) throw new Error('Error al cargar países');
+      countriesData = await response.json();
+    } catch (e) {
+      console.warn('No se pudo cargar la lista de países, usando fallback vacío', e);
+      countriesData = [];
+    }
+  }
+
+  function populateCountrySelect() {
+    const sel = document.getElementById('personCountry');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Seleccionar país</option>';
+    countriesData.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  }
+
+  // ================================================================
+  // RULETA - Estado y funciones
+  // ================================================================
+  let ruletaNombres = [];
+  let ruletaAnguloActual = 0;
+  let ruletaGirando = false;
+
+  const ruletaColors = [
+    '#3b82f6', '#ef4444', '#22c55e', '#eab308', '#8b5cf6',
+    '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16',
+    '#06b6d4', '#d946ef', '#10b981', '#f59e0b', '#3b82f6'
+  ];
+
+  function getRuletaColor(index) {
+    return ruletaColors[index % ruletaColors.length];
+  }
+
+  function drawRuleta() {
+    const canvas = document.getElementById('ruletaCanvas');
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(width, height) / 2 * 0.9;
+
+    ctx.clearRect(0, 0, width, height);
+
+    if (ruletaNombres.length === 0) {
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fill();
+      ctx.fillStyle = '#64748b';
+      ctx.font = '20px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Sin participantes', centerX, centerY);
+      return;
+    }
+
+    const total = ruletaNombres.length;
+    const angleStep = (2 * Math.PI) / total;
+
+    for (let i = 0; i < total; i++) {
+      const startAngle = ruletaAnguloActual + i * angleStep;
+      const endAngle = startAngle + angleStep;
+      const color = getRuletaColor(i);
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Texto
+      const midAngle = startAngle + angleStep / 2;
+      const textRadius = radius * 0.65;
+      const x = centerX + Math.cos(midAngle) * textRadius;
+      const y = centerY + Math.sin(midAngle) * textRadius;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(midAngle + (midAngle > Math.PI/2 ? Math.PI : 0));
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const label = ruletaNombres[i].length > 12 ? ruletaNombres[i].substring(0,10)+'…' : ruletaNombres[i];
+      ctx.fillText(label, 0, 0);
+      ctx.restore();
+    }
+
+    // Centro y flecha
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 12, 0, 2 * Math.PI);
+    ctx.fillStyle = '#0a2540';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Flecha superior
+    ctx.beginPath();
+    ctx.moveTo(centerX, 20);
+    ctx.lineTo(centerX - 12, 40);
+    ctx.lineTo(centerX + 12, 40);
+    ctx.closePath();
+    ctx.fillStyle = '#dc2626';
+    ctx.fill();
+  }
+
+  function renderRuletaLista() {
+    const container = document.getElementById('ruletaLista');
+    if (ruletaNombres.length === 0) {
+      container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:0.5rem;">Sin nombres</div>';
+      return;
+    }
+    let html = '';
+    ruletaNombres.forEach((nombre, index) => {
+      html += `
+        <div class="ruleta-item">
+          <span class="nombre">${index+1}. ${nombre}</span>
+          <button class="btn-remove" data-index="${index}"><i class="fas fa-times"></i></button>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('.btn-remove').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const idx = parseInt(this.dataset.index);
+        ruletaNombres.splice(idx, 1);
+        renderRuletaLista();
+        drawRuleta();
+        document.getElementById('ruletaResultado').textContent = '¡Listo para girar!';
+      });
+    });
+  }
+
+  function girarRuleta() {
+    if (ruletaGirando) return;
+    if (ruletaNombres.length === 0) {
+      document.getElementById('ruletaResultado').textContent = '⚠️ Añade al menos un nombre.';
+      return;
+    }
+
+    ruletaGirando = true;
+    const giros = 8 + Math.random() * 12;
+    const anguloFinal = ruletaAnguloActual + giros * 2 * Math.PI + (Math.random() * 2 * Math.PI);
+    const duracion = 6000 + Math.random() * 3000;
+    const inicio = performance.now();
+
+    function animar(timestamp) {
+      const progreso = Math.min((timestamp - inicio) / duracion, 1);
+      const ease = 1 - Math.pow(1 - progreso, 5);
+      const anguloActual = ruletaAnguloActual + (anguloFinal - ruletaAnguloActual) * ease;
+      ruletaAnguloActual = anguloActual;
+      drawRuleta();
+
+      if (progreso < 1) {
+        requestAnimationFrame(animar);
+      } else {
+        ruletaAnguloActual = anguloFinal;
+        drawRuleta();
+        ruletaGirando = false;
+
+        const total = ruletaNombres.length;
+        const angleStep = (2 * Math.PI) / total;
+        const anguloFlecha = -Math.PI / 2;
+        let anguloNormalizado = ((anguloFlecha - ruletaAnguloActual) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+        let idx = Math.floor(anguloNormalizado / angleStep) % total;
+        if (Math.abs(anguloNormalizado % angleStep - angleStep) < 1e-6) idx = (idx + 1) % total;
+        const ganador = ruletaNombres[idx];
+        document.getElementById('ruletaResultado').innerHTML = `🎉 <strong>${ganador}</strong> 🎉`;
+      }
+    }
+    requestAnimationFrame(animar);
+  }
+
+  function initRuleta() {
+    document.getElementById('ruletaAddBtn').addEventListener('click', function() {
+      const input = document.getElementById('ruletaNombreInput');
+      const nombre = input.value.trim();
+      if (!nombre) return;
+      ruletaNombres.push(nombre);
+      input.value = '';
+      renderRuletaLista();
+      drawRuleta();
+      document.getElementById('ruletaResultado').textContent = '¡Listo para girar!';
+    });
+
+    document.getElementById('ruletaNombreInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('ruletaAddBtn').click();
+      }
+    });
+
+    document.getElementById('ruletaGirarBtn').addEventListener('click', girarRuleta);
+
+    document.getElementById('ruletaAutoBtn').addEventListener('click', function() {
+      const abecedario = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+      ruletaNombres = abecedario;
+      renderRuletaLista();
+      drawRuleta();
+      document.getElementById('ruletaResultado').textContent = '¡Listo para girar!';
+    });
+
+    document.getElementById('ruletaCargarUsuariosBtn').addEventListener('click', async function() {
+      try {
+        const data = await apiCall('/persons');
+        if (data.data && data.data.length > 0) {
+          const nombres = data.data.map(p => p.nickname || p.firstName || p.id).filter(Boolean);
+          ruletaNombres = nombres;
+          renderRuletaLista();
+          drawRuleta();
+          document.getElementById('ruletaResultado').textContent = `✅ ${nombres.length} usuarios cargados.`;
+        } else {
+          showToast('No hay usuarios disponibles.', 'error');
+        }
+      } catch(e) {
+        showToast('Error al cargar usuarios: ' + e.message, 'error');
+      }
+    });
+
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(drawRuleta, 200);
+    });
+
+    ruletaNombres = ['Ana', 'Luis', 'María', 'Carlos', 'Sofía'];
+    renderRuletaLista();
+    drawRuleta();
+    document.getElementById('ruletaResultado').textContent = '¡Listo para girar!';
+  }
+
+  // ================================================================
+  // PERSISTENCIA DE SESIÓN Y REMEMBER ME
+  // ================================================================
+  // Cargar credenciales guardadas
+  const savedUsername = localStorage.getItem('rememberUsername');
+  const savedPassword = localStorage.getItem('rememberPassword');
+  if (savedUsername && savedPassword) {
+    document.getElementById('loginUser').value = savedUsername;
+    document.getElementById('loginPass').value = savedPassword;
+    document.getElementById('rememberMe').checked = true;
+  }
+
+  const savedToken = localStorage.getItem('token');
+  const savedUser = localStorage.getItem('user');
+  if (savedToken && savedUser) {
+    authToken = savedToken;
+    currentUser = JSON.parse(savedUser);
+    document.getElementById('userNameDisplay').textContent = currentUser.username;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    renderTabs();
+    loadCoordinationSelects();
+    loadPersonSelects();
+    loadCountries().then(() => {
+      populateCountrySelect();
+    });
+    loadEvents();
+    if (currentUser.role === 'root' || currentUser.role === 'admin') {
+      loadOrganizations();
+      loadPersons();
+      loadUsers();
+      loadTopTab();
+    }
+    initRuleta();
+  } else {
+    loadCountries();
+  }
+
+  // ================================================================
+  // HELPERS
+  // ================================================================
+  function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  async function apiCall(endpoint, options={}) {
+    const url = `${API_URL}${endpoint}`;
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+    const config = { ...options, headers };
+    if (options.body && !(options.body instanceof FormData)) {
+      config.body = JSON.stringify(options.body);
+    }
+    if (options.body instanceof FormData) {
+      delete headers['Content-Type'];
+      config.body = options.body;
+    }
+    try {
+      const res = await fetch(url, config);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Error en la petición');
+      return data;
+    } catch (error) {
+      if (error.message === 'No autorizado' || error.message === 'Token inválido' || error.message === 'Credenciales inválidas') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        authToken = null;
+        currentUser = null;
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        showToast('Sesión expirada, inicia sesión nuevamente', 'error');
+      }
+      throw error;
+    }
+  }
+
+  async function loadCoordinationSelects() {
+    try {
+      const data = await apiCall('/coordinations');
+      allCoords = data.data || [];
+      ['personCoordination', 'personSelectForCoord', 'personSelectForOrg'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        const currentVal = sel.value;
+        sel.innerHTML = '<option value="">Seleccionar</option>';
+        allCoords.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          sel.appendChild(opt);
+        });
+        if (currentVal) sel.value = currentVal;
+      });
+    } catch(e) { console.error('Error cargando coordinaciones', e); }
+  }
+
+  async function loadPersonSelects(excludeIds = []) {
+    try {
+      const data = await apiCall('/persons');
+      allPersons = data.data || [];
+      const sel = document.getElementById('addParticipantPersonSelect');
+      if (sel) {
+        const currentVal = sel.value;
+        sel.innerHTML = '';
+        allPersons.forEach(p => {
+          if (excludeIds.includes(p.id)) return;
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = `${p.firstName || p.nickname || p.id} (${p.nickname || p.id})`;
+          sel.appendChild(opt);
+        });
+        if (currentVal) {
+          Array.from(sel.options).forEach(o => {
+            if (currentVal.includes(o.value)) o.selected = true;
+          });
+        }
+      }
+      ['personSelectForOrg', 'personSelectForCoord'].forEach(id => {
+        const s = document.getElementById(id);
+        if (!s) return;
+        const cv = s.value;
+        s.innerHTML = '<option value="">Seleccionar persona</option>';
+        allPersons.forEach(p => {
+          if (excludeIds.includes(p.id)) return;
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = `${p.firstName || p.nickname || p.id} (${p.nickname || p.id})`;
+          s.appendChild(opt);
+        });
+        if (cv) s.value = cv;
+      });
+    } catch(e) { console.error('Error cargando personas', e); }
+  }
+
+  function getRandomLeaderColor() {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 55%)`;
+  }
+
+  function getLeaderColor(squadId) {
+    if (!squadLeaderColors[squadId]) {
+      squadLeaderColors[squadId] = getRandomLeaderColor();
+    }
+    return squadLeaderColors[squadId];
+  }
+
+  function getSquadLimit(mode) {
+    switch(mode) {
+      case 'individual': return 1;
+      case 'duos': return 2;
+      case 'trios': return 3;
+      case 'escuadras': return 4;
+      default: return 10;
+    }
+  }
+
+  // ================================================================
+  // RENDER TABS (excluye formularios para participantes)
+  // ================================================================
+ function renderTabs() {
+  const container = document.getElementById('navTabs');
+  const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+  let tabs = '';
+  if (isAdmin) {
+    tabs = `
+      <button data-tab="organizations"><i class="fas fa-building"></i> Organizaciones</button>
+      <button data-tab="persons"><i class="fas fa-users"></i> Personas</button>
+      <button data-tab="events"><i class="fas fa-calendar-check"></i> Eventos</button>
+      <button data-tab="ranking"><i class="fas fa-chart-simple"></i> Ranking</button>
+      <button data-tab="top"><i class="fas fa-trophy"></i> TOP</button>
+      <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
+      <button data-tab="forms"><i class="fas fa-edit"></i> Formularios</button>
+      <button data-tab="perfil"><i class="fas fa-user"></i> Perfil</button>
+      <button data-tab="perfiles"><i class="fas fa-users-cog"></i> Perfiles</button>
+      <button data-tab="users"><i class="fas fa-user-shield"></i> Usuarios</button>
+      <button data-tab="logs"><i class="fas fa-history"></i> Historial</button>
+    `;
+  } else {
+    tabs = `
+      <button data-tab="events"><i class="fas fa-calendar-check"></i> Eventos</button>
+      <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
+      <button data-tab="perfil"><i class="fas fa-user"></i> Perfil</button>
+    `;
+  }
+  container.innerHTML = tabs;
+  document.querySelectorAll('.nav-tabs button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const tab = this.dataset.tab;
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      const target = document.getElementById('tab-'+tab);
+      if (target) target.classList.add('active');
+      if (tab === 'organizations') loadOrganizations();
+      else if (tab === 'persons') { loadPersons(); loadCoordinationSelects(); }
+      else if (tab === 'events') loadEvents();
+      else if (tab === 'ranking') loadRankingTab();
+      else if (tab === 'top') loadTopTab();
+      else if (tab === 'users') loadUsers();
+      else if (tab === 'logs') loadLogs();
+      else if (tab === 'ruleta') { drawRuleta(); }
+      else if (tab === 'forms') { loadForms(); }
+      else if (tab === 'perfil') { 
+        if (currentUser) {
+          const personId = currentUser.personId || currentUser.id;
+          if (personId) loadProfile(personId);
+          else showToast('No se encontró tu perfil', 'error');
+        }
+      }
+      else if (tab === 'perfiles') { loadAllProfiles(); }
+    });
+  });
+}
+  // ================================================================
+  // ORGANIZACIONES
+  // ================================================================
+  async function loadOrganizations() {
+    try {
+      const data = await apiCall('/organizations');
+      renderOrganizations(data.data);
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  function renderOrganizations(orgs) {
+    const container = document.getElementById('orgList');
+    if (!orgs || orgs.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8;">No hay organizaciones. Crea una.</p>';
+      return;
+    }
+    let html = '';
+    orgs.forEach(org => {
+      const leader = org.leader ? org.leader.firstName : 'Sin líder';
+      const coLeader = org.coLeader ? org.coLeader.firstName : 'Sin colíder';
+      const directPersons = org.persons || [];
+      const directPersonsHtml = renderPersonList(directPersons, `org-${org.id}`, true);
+      const coords = org.coordinations || [];
+      let coordsHtml = coords.map(c => {
+        const members = c.members || [];
+        const leaderName = c.leader ? c.leader.firstName : 'N/A';
+        const coLeaderName = c.coLeader ? c.coLeader.firstName : 'N/A';
+        const membersHtml = renderPersonList(members, `coord-${c.id}`, false);
+        return `
+          <div class="coord-block">
+            <div class="coord-header" onclick="toggleCollapse('coord-${c.id}')">
+              <span><strong>${c.name}</strong> (Líder: ${leaderName} | Colíder: ${coLeaderName})</span>
+              <span>
+                <i class="fas fa-chevron-down" id="icon-coord-${c.id}"></i>
+                <button class="btn-add-participant" onclick="event.stopPropagation(); openAddPersonToCoord('${c.id}','${c.name}')"><i class="fas fa-user-plus"></i></button>
+                <button class="btn-edit" onclick="event.stopPropagation(); editCoordination('${c.id}')"><i class="fas fa-edit"></i></button>
+                <button class="btn-delete" onclick="event.stopPropagation(); deleteCoordination('${c.id}')"><i class="fas fa-trash"></i></button>
+              </span>
+            </div>
+            <div class="coord-body" id="body-coord-${c.id}">
+              ${membersHtml || '<p style="color:#94a3b8;">Sin miembros</p>'}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      html += `
+        <div class="org-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="org-header-collapsible" onclick="toggleCollapse('org-${org.id}')">
+              <h3><i class="fas fa-chevron-down" id="icon-org-${org.id}"></i> ${org.name}</h3>
+            </div>
+            <div>
+              <button class="btn-add-participant" onclick="openAddPersonToOrg('${org.id}','${org.name}')"><i class="fas fa-user-plus"></i></button>
+              <button class="btn-edit" onclick="editOrganization('${org.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn-delete" onclick="deleteOrganization('${org.id}')"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          <p><strong>Líder:</strong> ${leader} | <strong>Colíder:</strong> ${coLeader}</p>
+          <div class="org-person-body" id="body-org-${org.id}">
+            <div style="margin:0.5rem 0;">
+              <strong>Personas directas:</strong>
+              ${directPersonsHtml || '<span style="color:#94a3b8;">Sin personas directas</span>'}
+            </div>
+            <button class="btn-add-participant" onclick="openAddCoordination('${org.id}')"><i class="fas fa-plus"></i> Añadir Coordinación</button>
+            <div style="margin-top:0.5rem;">
+              <strong>Coordinaciones:</strong>
+              ${coordsHtml || '<span style="color:#94a3b8;">Sin coordinaciones</span>'}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function renderPersonList(persons, parentId, showActions) {
+    if (!persons || persons.length === 0) return '';
+    let html = '';
+    persons.forEach(p => {
+      if (!p) return;
+      const avatar = p.firstName ? p.firstName.charAt(0).toUpperCase() : '?';
+      html += `
+        <div class="person-list-item">
+          <div class="person-avatar">${avatar}</div>
+          <div class="person-info">
+            <div><strong>${p.firstName || '?'}</strong> (${p.nickname || '?'}) <span style="color:#64748b;font-size:0.8rem;">ID: ${p.id || '?'}</span></div>
+            <div style="font-size:0.9rem; color:#475569;">País: ${p.country || 'No especificado'}</div>
+          </div>
+          ${showActions ? `
+            <div class="org-person-actions">
+              <button class="btn-delete" onclick="removePersonFromOrg('${parentId.replace('org-','')}','${p.id}')"><i class="fas fa-times"></i></button>
+            </div>
+          ` : `
+            <div class="org-person-actions">
+              <button class="btn-delete" onclick="removePersonFromCoord('${parentId.replace('coord-','')}','${p.id}')"><i class="fas fa-times"></i></button>
+            </div>
+          `}
+        </div>
+      `;
+    });
+    return html;
+  }
+
+  function toggleCollapse(id) {
+    const body = document.getElementById('body-'+id);
+    const icon = document.getElementById('icon-'+id);
+    if (body) {
+      body.classList.toggle('hidden');
+      if (icon) icon.classList.toggle('collapsed');
+    }
+  }
+
+  // CRUD Organizaciones
+  document.getElementById('openCreateOrg').addEventListener('click', () => {
+    document.getElementById('orgModalTitle').textContent = 'Nueva Organización';
+    document.getElementById('orgEditId').value = '';
+    document.getElementById('orgName').value = '';
+    document.getElementById('orgLeader').value = '';
+    document.getElementById('orgCoLeader').value = '';
+    document.getElementById('orgModal').classList.add('active');
+  });
+
+  window.editOrganization = function(id) {
+    apiCall(`/organizations/${id}`).then(data => {
+      const org = data.data;
+      document.getElementById('orgModalTitle').textContent = 'Editar Organización';
+      document.getElementById('orgEditId').value = org.id;
+      document.getElementById('orgName').value = org.name;
+      document.getElementById('orgLeader').value = org.leaderId || '';
+      document.getElementById('orgCoLeader').value = org.coLeaderId || '';
+      document.getElementById('orgModal').classList.add('active');
+    }).catch(e => showToast(e.message, 'error'));
+  };
+
+  window.deleteOrganization = function(id) {
+    if (!confirm('¿Eliminar organización?')) return;
+    apiCall(`/organizations/${id}`, { method: 'DELETE' })
+      .then(() => { showToast('Eliminada'); loadOrganizations(); })
+      .catch(e => showToast(e.message, 'error'));
+  };
+
+  document.getElementById('closeOrgModal').addEventListener('click', () => {
+    document.getElementById('orgModal').classList.remove('active');
+  });
+
+  document.getElementById('saveOrgBtn').addEventListener('click', async () => {
+    const id = document.getElementById('orgEditId').value;
+    const name = document.getElementById('orgName').value.trim();
+    const leaderId = document.getElementById('orgLeader').value.trim() || null;
+    const coLeaderId = document.getElementById('orgCoLeader').value.trim() || null;
+    if (!name) return showToast('Nombre requerido', 'error');
+    try {
+      if (id) {
+        await apiCall(`/organizations/${id}`, { method: 'PUT', body: { name, leaderId, coLeaderId } });
+        showToast('Organización actualizada');
+      } else {
+        await apiCall('/organizations', { method: 'POST', body: { name, leaderId, coLeaderId } });
+        showToast('Organización creada');
+      }
+      document.getElementById('orgModal').classList.remove('active');
+      loadOrganizations();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  // Coordinaciones
+  function openAddCoordination(orgId) {
+    const name = prompt('Nombre de la nueva coordinación:');
+    if (!name) return;
+    const leaderId = prompt('ID del líder (opcional):') || null;
+    const coLeaderId = prompt('ID del colíder (opcional):') || null;
+    apiCall('/coordinations', { method: 'POST', body: { name, organizationId: orgId, leaderId, coLeaderId } })
+      .then(() => { showToast('Coordinación creada'); loadOrganizations(); })
+      .catch(e => showToast(e.message, 'error'));
+  }
+
+  function editCoordination(id) {
+    apiCall(`/coordinations/${id}`).then(data => {
+      const coord = data.data;
+      const newName = prompt('Nuevo nombre:', coord.name);
+      if (newName === null) return;
+      const newLeader = prompt('Nuevo líder (ID):', coord.leaderId || '');
+      const newCoLeader = prompt('Nuevo colíder (ID):', coord.coLeaderId || '');
+      apiCall(`/coordinations/${id}`, {
+        method: 'PUT',
+        body: { name: newName, leaderId: newLeader || null, coLeaderId: newCoLeader || null }
+      }).then(() => { showToast('Coordinación actualizada'); loadOrganizations(); })
+        .catch(e => showToast(e.message, 'error'));
+    }).catch(e => showToast(e.message, 'error'));
+  }
+
+  function deleteCoordination(id) {
+    if (!confirm('¿Eliminar coordinación?')) return;
+    apiCall(`/coordinations/${id}`, { method: 'DELETE' })
+      .then(() => { showToast('Eliminada'); loadOrganizations(); })
+      .catch(e => showToast(e.message, 'error'));
+  }
+
+  // Añadir persona a organización
+  function openAddPersonToOrg(orgId, orgName) {
+    document.getElementById('orgTargetName').textContent = orgName;
+    document.getElementById('targetOrgId').value = orgId;
+    apiCall(`/organizations/${orgId}`).then(data => {
+      const org = data.data;
+      const existingIds = org.personIds || [];
+      loadPersonSelects(existingIds);
+      document.getElementById('addPersonToOrgModal').classList.add('active');
+    }).catch(e => showToast(e.message, 'error'));
+  }
+
+  document.getElementById('closeAddPersonOrgModal').addEventListener('click', () => {
+    document.getElementById('addPersonToOrgModal').classList.remove('active');
+  });
+
+  document.getElementById('saveAddPersonOrgBtn').addEventListener('click', async () => {
+    const orgId = document.getElementById('targetOrgId').value;
+    const personId = document.getElementById('personSelectForOrg').value;
+    if (!personId) return showToast('Selecciona una persona', 'error');
+    try {
+      await apiCall(`/organizations/${orgId}/persons`, { method: 'POST', body: { personId } });
+      showToast('Persona añadida');
+      document.getElementById('addPersonToOrgModal').classList.remove('active');
+      loadOrganizations();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  function removePersonFromOrg(orgId, personId) {
+    if (!confirm('¿Remover persona?')) return;
+    apiCall(`/organizations/${orgId}/persons/${personId}`, { method: 'DELETE' })
+      .then(() => { showToast('Persona removida'); loadOrganizations(); })
+      .catch(e => showToast(e.message, 'error'));
+  }
+
+  // Añadir persona a coordinación
+  async function openAddPersonToCoord(coordId, coordName) {
+    document.getElementById('coordTargetName').textContent = coordName;
+    document.getElementById('targetCoordId').value = coordId;
+    try {
+      const coordData = await apiCall(`/coordinations/${coordId}`);
+      const coord = coordData.data;
+      const existingIds = coord.personIds || [];
+      loadPersonSelects(existingIds);
+      document.getElementById('addPersonToCoordModal').classList.add('active');
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  document.getElementById('closeAddPersonCoordModal').addEventListener('click', () => {
+    document.getElementById('addPersonToCoordModal').classList.remove('active');
+  });
+
+  document.getElementById('saveAddPersonCoordBtn').addEventListener('click', async () => {
+    const coordId = document.getElementById('targetCoordId').value;
+    const personId = document.getElementById('personSelectForCoord').value;
+    if (!personId) return showToast('Selecciona una persona', 'error');
+    try {
+      await apiCall(`/coordinations/${coordId}/persons`, { method: 'POST', body: { personId } });
+      showToast('Persona añadida a la coordinación');
+      document.getElementById('addPersonToCoordModal').classList.remove('active');
+      loadOrganizations();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  function removePersonFromCoord(coordId, personId) {
+    if (!confirm('¿Remover persona?')) return;
+    apiCall(`/coordinations/${coordId}/persons/${personId}`, { method: 'DELETE' })
+      .then(() => { showToast('Persona removida'); loadOrganizations(); })
+      .catch(e => showToast(e.message, 'error'));
+  }
+
+  // ================================================================
+  // PERSONAS
+  // ================================================================
+  async function loadPersons() {
+    try {
+      const data = await apiCall('/persons');
+      renderPersons(data.data);
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  function renderPersons(persons) {
+    const container = document.getElementById('personList');
+    if (!persons || persons.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8; padding:1rem;">No hay personas. Crea una.</p>';
+      return;
+    }
+
+    let html = '<div class="person-list">';
+    persons.forEach(p => {
+      if (!p) return;
+      const coord = p.coordination ? p.coordination.name : 'Sin coordinación';
+      const org = p.organization ? p.organization.name : 'Sin organización';
+      const avatarLetter = p.firstName ? p.firstName.charAt(0).toUpperCase() : '?';
+      const userInfo = p.userId ? `<span class="user-badge"><i class="fas fa-user-circle"></i> ${p.user ? p.user.username : 'Usuario'}</span>` : `<span class="no-user-badge">Sin usuario</span>`;
+      const createUserBtn = !p.userId ? `<button class="btn-add-user" onclick="createUserForPerson('${p.id}')" title="Crear usuario"><i class="fas fa-user-plus"></i></button>` : '';
+
+      html += `
+        <div class="person-card">
+          <div class="avatar">${avatarLetter}</div>
+          <div class="info">
+            <div class="name">${p.firstName || '?'}</div>
+            <div class="nick">${p.nickname || '?'} <span style="color:#94a3b8;font-size:0.75rem;">ID: ${p.id || '?'}</span></div>
+            <div class="details">
+              <i class="fas fa-map-pin"></i> ${p.country || 'No especificado'} &middot; ${coord} &middot; ${org}
+            </div>
+            <div style="margin-top:0.3rem;">${userInfo}</div>
+          </div>
+          <div class="actions">
+            ${createUserBtn}
+            <button class="btn-edit" onclick="editPerson('${p.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+            <button class="btn-delete" onclick="deletePerson('${p.id}')" title="Eliminar"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  document.getElementById('openCreatePerson').addEventListener('click', async () => {
+    await loadCoordinationSelects();
+    if (countriesData.length === 0) await loadCountries();
+    document.getElementById('personModalTitle').textContent = 'Nueva Persona';
+    document.getElementById('personEditId').value = '';
+    document.getElementById('personId').value = '';
+    document.getElementById('personFirstName').value = '';
+    document.getElementById('personNick').value = '';
+    document.getElementById('personCountry').value = '';
+    document.getElementById('personCoordination').value = '';
+    populateCountrySelect();
+    document.getElementById('personModal').classList.add('active');
+  });
+
+  function editPerson(id) {
+    apiCall(`/persons/${id}`).then(data => {
+      const p = data.data;
+      document.getElementById('personModalTitle').textContent = 'Editar Persona';
+      document.getElementById('personEditId').value = p.id;
+      document.getElementById('personId').value = p.id;
+      document.getElementById('personFirstName').value = p.firstName || '';
+      document.getElementById('personNick').value = p.nickname || '';
+      document.getElementById('personCountry').value = p.country || '';
+      document.getElementById('personCoordination').value = p.coordinationId || '';
+      if (countriesData.length === 0) loadCountries().then(() => populateCountrySelect());
+      else populateCountrySelect();
+      document.getElementById('personModal').classList.add('active');
+    }).catch(e => showToast(e.message, 'error'));
+  }
+
+  function deletePerson(id) {
+    if (!confirm('¿Eliminar persona?')) return;
+    apiCall(`/persons/${id}`, { method: 'DELETE' })
+      .then(() => { showToast('Eliminada'); loadPersons(); loadOrganizations(); })
+      .catch(e => showToast(e.message, 'error'));
+  }
+
+  document.getElementById('closePersonModal').addEventListener('click', () => {
+    document.getElementById('personModal').classList.remove('active');
+  });
+
+  document.getElementById('savePersonBtn').addEventListener('click', async () => {
+    const id = document.getElementById('personEditId').value;
+    const personId = document.getElementById('personId').value.trim() || undefined;
+    const firstName = document.getElementById('personFirstName').value.trim();
+    const nickname = document.getElementById('personNick').value.trim();
+    const country = document.getElementById('personCountry').value;
+    const coordinationId = document.getElementById('personCoordination').value || null;
+    if (!firstName || !nickname) return showToast('Nombre y nickname requeridos', 'error');
+    try {
+      if (id) {
+        await apiCall(`/persons/${id}`, { method: 'PUT', body: { firstName, nickname, country, coordinationId } });
+        showToast('Persona actualizada');
+        const pData = await apiCall(`/persons/${id}`);
+        if (pData.data.userId) {
+          await apiCall(`/users/sync/${id}`, {
+            method: 'PUT',
+            body: { firstName, id: personId || undefined }
+          });
+        }
+      } else {
+        await apiCall('/persons', { method: 'POST', body: { id: personId, firstName, nickname, country, coordinationId } });
+        showToast('Persona creada (usuario creado automáticamente)');
+      }
+      document.getElementById('personModal').classList.remove('active');
+      loadPersons();
+      loadOrganizations();
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  async function syncPersonUser() {
+    const personId = document.getElementById('personEditId').value;
+    if (!personId) return showToast('No hay persona seleccionada', 'error');
+    const firstName = document.getElementById('personFirstName').value.trim();
+    const newId = document.getElementById('personId').value.trim();
+    if (!firstName) return showToast('Nombre requerido', 'error');
+    try {
+      await apiCall(`/users/sync/${personId}`, {
+        method: 'PUT',
+        body: { firstName, id: newId || undefined }
+      });
+      showToast('Sincronizado con usuario');
+      loadPersons();
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  async function createUserForPerson(personId) {
+    if (!confirm('¿Crear usuario para esta persona?')) return;
+    try {
+      await apiCall(`/users/create-for-person/${personId}`, { method: 'POST' });
+      showToast('Usuario creado');
+      loadPersons();
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  async function createMissingUsers() {
+    if (!confirm('¿Crear usuarios para todas las personas sin usuario?')) return;
+    try {
+      const data = await apiCall('/users/create-missing', { method: 'POST' });
+      showToast(data.message);
+      loadPersons();
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  // ================================================================
+  // USUARIOS
+  // ================================================================
+  async function loadUsers() {
+    try {
+      const data = await apiCall('/users');
+      renderUsers(data.data);
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  function renderUsers(users) {
+    const container = document.getElementById('usersList');
+    if (!users || users.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8;">No hay usuarios.</p>';
+      return;
+    }
+    let html = `
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    users.forEach(u => {
+      const isRoot = u.username === 'root';
+      const canEdit = (currentUser?.role === 'admin' || currentUser?.role === 'root') && !isRoot;
+      const canChangeRole = currentUser?.role === 'root' && !isRoot;
+      html += `
+        <tr>
+          <td>${u.username}</td>
+          <td>${u.role}</td>
+          <td>
+            ${canEdit ? `<button class="btn-edit" onclick="openEditUser('${u.id}')"><i class="fas fa-edit"></i></button>` : ''}
+            ${canChangeRole ? `
+              <select onchange="changeUserRole('${u.id}', this.value)" style="margin-left:0.5rem;">
+                <option value="participante" ${u.role === 'participante' ? 'selected' : ''}>Participante</option>
+                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+              </select>
+            ` : (isRoot ? '<span style="color:#94a3b8;">Root</span>' : '')}
+          </td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+  }
+
+  async function changeUserRole(userId, newRole) {
+    if (!confirm(`¿Cambiar rol a ${newRole}?`)) return;
+    try {
+      await apiCall(`/users/${userId}/role`, { method: 'PUT', body: { role: newRole } });
+      showToast('Rol actualizado');
+      loadUsers();
+    } catch(e) {
+      showToast('Error al cambiar rol: ' + e.message, 'error');
+    }
+  }
+
+  function openEditUser(userId) {
+    apiCall(`/users`).then(data => {
+      const user = data.data.find(u => u.id === userId);
+      if (!user) return showToast('Usuario no encontrado', 'error');
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUserUsername').value = user.username;
+      document.getElementById('editUserPassword').value = '';
+      document.getElementById('editUserRole').value = user.role;
+      if (currentUser.role !== 'root') {
+        document.getElementById('editUserRole').disabled = true;
+      } else {
+        document.getElementById('editUserRole').disabled = false;
+      }
+      document.getElementById('editUserModal').classList.add('active');
+    }).catch(e => showToast(e.message, 'error'));
+  }
+
+  document.getElementById('closeEditUserModal').addEventListener('click', () => {
+    document.getElementById('editUserModal').classList.remove('active');
+  });
+
+  document.getElementById('saveEditUserBtn').addEventListener('click', async () => {
+    const id = document.getElementById('editUserId').value;
+    const username = document.getElementById('editUserUsername').value.trim();
+    const password = document.getElementById('editUserPassword').value.trim();
+    const role = document.getElementById('editUserRole').value;
+    if (!username) return showToast('Username requerido', 'error');
+    try {
+      const body = { username };
+      if (password) body.password = password;
+      if (currentUser.role === 'root') body.role = role;
+      await apiCall(`/users/${id}`, { method: 'PUT', body });
+      showToast('Usuario actualizado');
+      document.getElementById('editUserModal').classList.remove('active');
+      loadUsers();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  // ================================================================
+  // HISTORIAL
+  // ================================================================
+  async function loadLogs() {
+    try {
+      const data = await apiCall('/users/logs');
+      renderLogs(data.data);
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  function renderLogs(logs) {
+    const container = document.getElementById('logsList');
+    if (!logs || logs.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8;">No hay registros de actividad.</p>';
+      return;
+    }
+    let html = '';
+    logs.forEach(log => {
+      const date = new Date(log.timestamp);
+      const formatted = date.toLocaleString();
+      html += `
+        <div class="log-entry">
+          <span class="timestamp">${formatted}</span>
+          <span class="action">${log.action}</span>
+          <span style="color:#64748b;"> - Usuario: ${log.userId}</span>
+          ${log.details ? `<span style="font-size:0.8rem; color:#475569;"> - ${JSON.stringify(log.details)}</span>` : ''}
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  // ================================================================
+  // EVENTOS
+  // ================================================================
+  async function loadEvents() {
+    try {
+      const data = await apiCall('/events');
+      const events = Array.isArray(data.data) ? data.data : [];
+      renderEvents(events);
+    } catch(e) {
+      console.error('Error loading events:', e);
+      showToast('Error al cargar eventos: ' + e.message, 'error');
+      document.getElementById('eventsGrid').innerHTML = '<p style="color:#94a3b8;">Error al cargar eventos. Intenta recargar.</p>';
+    }
+  }
+
+  function renderEvents(events) {
+    const container = document.getElementById('eventsGrid');
+    if (!events || !Array.isArray(events) || events.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8;">No hay eventos. Crea uno.</p>';
+      return;
+    }
+
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+    let html = '';
+    events.forEach(ev => {
+      if (!ev) return;
+      const squads = Array.isArray(ev.squads) ? ev.squads : [];
+      const participants = Array.isArray(ev.participants) ? ev.participants : [];
+      const mode = ev.mode || 'individual';
+      const limit = getSquadLimit(mode);
+
+      let visibleSquads = squads;
+      if (!isAdmin && currentPersonId) {
+        visibleSquads = squads.filter(sq => {
+          const memberIds = Array.isArray(sq.memberIds) ? sq.memberIds : [];
+          return memberIds.includes(currentPersonId);
+        });
+      }
+
+      let squadsHtml = '';
+      if (visibleSquads.length) {
+        squadsHtml = `<div class="squads-grid">`;
+        visibleSquads.forEach(sq => {
+          if (!sq) return;
+          const memberIds = Array.isArray(sq.memberIds) ? sq.memberIds : [];
+          const memberList = memberIds
+            .map(id => participants.find(p => p && p.id === id))
+            .filter(p => p !== null && p !== undefined);
+
+          const leader = memberList.find(p => p.id === sq.leaderId);
+          const leaderColor = getLeaderColor(sq.id);
+          let membersHtml = '';
+          if (memberList.length) {
+            membersHtml = memberList.map(p => {
+              if (!p) return '';
+              const isLeader = p.id === sq.leaderId;
+              const avatar = p.firstName ? p.firstName.charAt(0).toUpperCase() : '?';
+              const showStatsBtn = isAdmin || (currentUser && currentUser.id === p.userId);
+              return `
+                <div class="squad-member ${isLeader ? 'leader' : ''}" style="${isLeader ? `background:${leaderColor}22; border-radius:6px; padding:0.2rem 0.4rem;` : ''}">
+                  <span class="member-avatar" style="${isLeader ? `background:${leaderColor}; color:white;` : ''}">${avatar}</span>
+                  <span>${p.firstName || p.nickname || p.id || '?'} ${isLeader ? '<span class="leader-badge">Líder</span>' : ''}</span>
+                  ${showStatsBtn ? `<span class="participant-stats-btn" onclick="openStatsModal('${ev.id}','${p.id}','${p.nickname}')"><i class="fas fa-chart-bar"></i></span>` : ''}
+                </div>
+              `;
+            }).join('');
+          } else {
+            membersHtml = '<span style="color:#94a3b8; font-size:0.8rem;">Sin miembros</span>';
+          }
+          const images = Array.isArray(sq.images) ? sq.images : [];
+          let imagesHtml = '';
+          if (images.length) {
+            imagesHtml = `<div class="squad-images">`;
+            images.forEach(img => {
+              imagesHtml += `<img src="${img}" alt="img" onclick="window.open('${img}','_blank')" />`;
+            });
+            imagesHtml += `</div>`;
+          }
+          squadsHtml += `
+            <div class="squad-card">
+              <div class="squad-name">
+                <span>${sq.name || 'Sin nombre'}</span>
+                <div class="squad-actions">
+                  <button class="btn-upload" onclick="openUploadImageForSquad('${ev.id}','${sq.id}','${sq.name}')"><i class="fas fa-upload"></i></button>
+                  ${isAdmin ? `<button onclick="editSquad('${ev.id}','${sq.id}')"><i class="fas fa-edit"></i></button>` : ''}
+                  ${isAdmin ? `<button onclick="deleteSquad('${ev.id}','${sq.id}')"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
+              </div>
+              <div class="squad-members">${membersHtml}</div>
+              ${imagesHtml}
+            </div>
+          `;
+        });
+        squadsHtml += `</div>`;
+      } else {
+        squadsHtml = '<span style="color:#94a3b8;">No tienes acceso a ninguna escuadra de este evento.</span>';
+      }
+
+      let participantListHtml = '';
+      participants.forEach(p => {
+        if (!p) return;
+        const showStatsBtn = isAdmin || (currentUser && currentUser.id === p.userId);
+        participantListHtml += `
+          <span class="participant-chip">
+            ${p.nickname || p.firstName || p.id || '?'}
+            ${showStatsBtn ? `<button class="participant-stats-btn" onclick="openStatsModal('${ev.id}','${p.id}','${p.nickname}')"><i class="fas fa-chart-bar"></i></button>` : ''}
+          </span>
+        `;
+      });
+
+      html += `
+        <div class="event-card">
+          <div style="display:flex; justify-content:space-between;">
+            <span class="event-type">${ev.type ? ev.type.toUpperCase() : '?'}</span>
+            <div>
+              ${isAdmin ? `<button class="btn-edit" onclick="openEditEvent('${ev.id}')"><i class="fas fa-edit"></i></button>` : ''}
+              ${isAdmin ? `<button class="btn-delete" onclick="deleteEvent('${ev.id}')"><i class="fas fa-trash"></i></button>` : ''}
+            </div>
+          </div>
+          <div class="event-title">${ev.name || 'Sin nombre'}</div>
+          <div class="event-meta">
+            <span><i class="fas fa-users"></i> ${ev.mode || '?'}</span>
+            <span><i class="fas fa-user-friends"></i> ${Array.isArray(ev.participantIds) ? ev.participantIds.length : 0} participantes</span>
+            <span><i class="fas fa-users-cog"></i> Límite por escuadra: ${limit}</span>
+          </div>
+          <div style="margin:0.5rem 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>Escuadras:</strong>
+              ${isAdmin ? `<button class="btn-add-participant" onclick="openCreateSquad('${ev.id}')"><i class="fas fa-plus"></i> Crear escuadra</button>` : ''}
+            </div>
+            ${squadsHtml}
+          </div>
+          <div style="margin-top:0.5rem;">
+            <strong>Participantes:</strong>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
+              ${participantListHtml || '<span style="color:#94a3b8;">Sin participantes</span>'}
+            </div>
+          </div>
+          <div class="event-actions">
+            ${isAdmin ? `<button class="btn-primary-action" onclick="openAddParticipantModal('${ev.id}')"><i class="fas fa-user-plus"></i> Añadir participantes</button>` : ''}
+            <button onclick="viewRankingModal('${ev.id}')"><i class="fas fa-chart-simple"></i> Ver ranking</button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  // ================================================================
+  // CRUD EVENTOS
+  // ================================================================
+  document.getElementById('openCreateEvent').addEventListener('click', () => {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos para crear eventos', 'error');
+    }
+    document.getElementById('eventName').value = '';
+    document.getElementById('createEventModal').classList.add('active');
+  });
+
+  document.getElementById('closeEventModal').addEventListener('click', () => {
+    document.getElementById('createEventModal').classList.remove('active');
+  });
+
+  document.getElementById('saveEventBtn').addEventListener('click', async () => {
+    const name = document.getElementById('eventName').value.trim();
+    const type = document.getElementById('eventType').value;
+    const mode = document.getElementById('eventMode').value;
+    if (!name) return showToast('Nombre requerido', 'error');
+    try {
+      await apiCall('/events', { method: 'POST', body: { name, type, mode } });
+      showToast('Evento creado');
+      document.getElementById('createEventModal').classList.remove('active');
+      loadEvents();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  function deleteEvent(id) {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos para eliminar eventos', 'error');
+    }
+    if (!confirm('¿Eliminar evento?')) return;
+    apiCall(`/events/${id}`, { method: 'DELETE' })
+      .then(() => { showToast('Evento eliminado'); loadEvents(); })
+      .catch(e => showToast(e.message, 'error'));
+  }
+
+  async function openEditEvent(eventId) {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos para editar eventos', 'error');
+    }
+    try {
+      const data = await apiCall(`/events/${eventId}`);
+      const ev = data.data;
+      document.getElementById('editEventId').value = ev.id;
+      document.getElementById('editEventName').value = ev.name || '';
+      document.getElementById('editEventType').value = ev.type || 'botin';
+      document.getElementById('editEventMode').value = ev.mode || 'individual';
+
+      const container = document.getElementById('editEventParticipants');
+      const participants = Array.isArray(ev.participants) ? ev.participants : [];
+      if (participants.length) {
+        let html = '';
+        participants.forEach(p => {
+          if (!p) return;
+          html += `<span class="participant-chip">${p.firstName || '?'} (${p.nickname || '?'}) 
+            <button onclick="removeParticipantFromEvent('${ev.id}','${p.id}')" style="border:none;background:none;color:#ef4444;cursor:pointer;"><i class="fas fa-times"></i></button>
+          </span>`;
+        });
+        container.innerHTML = html;
+      } else {
+        container.innerHTML = '<span style="color:#94a3b8;">Sin participantes</span>';
+      }
+
+      document.getElementById('editEventModal').classList.add('active');
+    } catch(e) {
+      showToast('Error al cargar evento: ' + e.message, 'error');
+    }
+  }
+
+  async function removeParticipantFromEvent(eventId, personId) {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos', 'error');
+    }
+    if (!confirm('¿Remover este participante del evento?')) return;
+    try {
+      await apiCall(`/events/${eventId}/participants/${personId}`, { method: 'DELETE' });
+      showToast('Participante removido');
+      openEditEvent(eventId);
+      loadEvents();
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  document.getElementById('closeEditEventModal').addEventListener('click', () => {
+    document.getElementById('editEventModal').classList.remove('active');
+  });
+
+  document.getElementById('saveEditEventBtn').addEventListener('click', async () => {
+    const id = document.getElementById('editEventId').value;
+    const name = document.getElementById('editEventName').value.trim();
+    const type = document.getElementById('editEventType').value;
+    const mode = document.getElementById('editEventMode').value;
+    if (!name) return showToast('Nombre requerido', 'error');
+    try {
+      await apiCall(`/events/${id}`, { method: 'PUT', body: { name, type, mode } });
+      showToast('Evento actualizado');
+      document.getElementById('editEventModal').classList.remove('active');
+      loadEvents();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  // ================================================================
+  // ESCUADRAS
+  // ================================================================
+  async function openCreateSquad(eventId) {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos para crear escuadras', 'error');
+    }
+    await openSquadModal(eventId);
+  }
+
+  async function openSquadModal(eventId, squadId = null) {
+    try {
+      const eventData = await apiCall(`/events/${eventId}`);
+      const event = eventData.data;
+      const participants = Array.isArray(event.participants) ? event.participants : [];
+      const mode = event.mode || 'individual';
+
+      const leaderSelect = document.getElementById('squadLeaderSelect');
+      const membersSelect = document.getElementById('squadMembersSelect');
+      leaderSelect.innerHTML = '<option value="">Seleccionar líder</option>';
+      membersSelect.innerHTML = '';
+      participants.forEach(p => {
+        if (!p) return;
+        const optLeader = document.createElement('option');
+        optLeader.value = p.id;
+        optLeader.textContent = `${p.firstName || '?'} (${p.nickname || '?'})`;
+        leaderSelect.appendChild(optLeader);
+
+        const optMember = document.createElement('option');
+        optMember.value = p.id;
+        optMember.textContent = `${p.firstName || '?'} (${p.nickname || '?'})`;
+        membersSelect.appendChild(optMember);
+      });
+
+      if (squadId) {
+        const squads = Array.isArray(event.squads) ? event.squads : [];
+        const squad = squads.find(s => s.id === squadId);
+        if (squad) {
+          document.getElementById('squadModalTitle').textContent = 'Editar Escuadra';
+          document.getElementById('squadName').value = squad.name || '';
+          document.getElementById('squadLeaderSelect').value = squad.leaderId || '';
+          const memberIds = Array.isArray(squad.memberIds) ? squad.memberIds : [];
+          Array.from(membersSelect.options).forEach(opt => {
+            opt.selected = memberIds.includes(opt.value);
+          });
+          document.getElementById('squadEditId').value = squadId;
+        }
+      } else {
+        document.getElementById('squadModalTitle').textContent = 'Crear Escuadra';
+        document.getElementById('squadName').value = '';
+        document.getElementById('squadLeaderSelect').value = '';
+        document.getElementById('squadMembersSelect').selectedIndex = -1;
+        document.getElementById('squadEditId').value = '';
+      }
+
+      document.getElementById('squadEventId').value = eventId;
+      document.getElementById('squadModal').classList.add('active');
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  window.editSquad = function(eventId, squadId) {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos para editar escuadras', 'error');
+    }
+    openSquadModal(eventId, squadId);
+  };
+
+  window.deleteSquad = function(eventId, squadId) {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos para eliminar escuadras', 'error');
+    }
+    if (!confirm('¿Eliminar esta escuadra?')) return;
+    apiCall(`/events/${eventId}/squads/${squadId}`, { method: 'DELETE' })
+      .then(() => { showToast('Escuadra eliminada'); loadEvents(); })
+      .catch(e => showToast(e.message, 'error'));
+  };
+
+  document.getElementById('closeSquadModal').addEventListener('click', () => {
+    document.getElementById('squadModal').classList.remove('active');
+  });
+
+  document.getElementById('saveSquadBtn').addEventListener('click', async function() {
+    const eventId = document.getElementById('squadEventId').value;
+    const squadId = document.getElementById('squadEditId').value;
+    const name = document.getElementById('squadName').value.trim();
+    const leaderId = document.getElementById('squadLeaderSelect').value || null;
+    const membersSelect = document.getElementById('squadMembersSelect');
+    const memberIds = Array.from(membersSelect.selectedOptions).map(opt => opt.value);
+
+    if (!name) return showToast('Nombre requerido', 'error');
+    try {
+      if (squadId) {
+        await apiCall(`/events/${eventId}/squads/${squadId}`, {
+          method: 'PUT',
+          body: { name, leaderId, memberIds }
+        });
+        showToast('Escuadra actualizada');
+      } else {
+        await apiCall(`/events/${eventId}/squads`, {
+          method: 'POST',
+          body: { name, leaderId, memberIds }
+        });
+        showToast('Escuadra creada');
+      }
+      document.getElementById('squadModal').classList.remove('active');
+      loadEvents();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  // ================================================================
+  // SUBIR IMAGEN / ESTADÍSTICAS (con filtro de escuadra para participantes)
+  // ================================================================
+  function openStatsModal(eventId, personId, personName) {
+    // Si es participante, solo puede ver miembros de su escuadra
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+    if (!isAdmin && personId !== currentPersonId) {
+      // Si intenta ver estadísticas de otro, redirigimos a su propia escuadra
+      // Buscamos su escuadra en el evento
+      apiCall(`/events/${eventId}`).then(data => {
+        const event = data.data;
+        const squads = event.squads || [];
+        let userSquad = null;
+        for (const sq of squads) {
+          if ((sq.memberIds || []).includes(currentPersonId)) {
+            userSquad = sq;
+            break;
+          }
+        }
+        if (!userSquad) {
+          showToast('No perteneces a ninguna escuadra en este evento', 'error');
+          return;
+        }
+        // Abrir modal con solo los miembros de su escuadra
+        openStatsModalForSquad(event, userSquad);
+      }).catch(e => showToast(e.message, 'error'));
+      return;
+    }
+
+    // Admin o el propio participante viendo sus propias estadísticas
+    statsEventId = eventId;
+    statsSquadId = null;
+    document.getElementById('statsEventId').value = eventId;
+    document.getElementById('statsSquadId').value = '';
+    apiCall(`/events/${eventId}`).then(data => {
+      const event = data.data;
+      const participants = event.participants || [];
+      const container = document.getElementById('statsParticipantsContainer');
+      container.innerHTML = '';
+
+      if (!isAdmin) {
+        // Participante viendo sus propias estadísticas: solo él
+        const self = participants.find(p => p.id === personId);
+        if (self) {
+          container.innerHTML = `
+            <label>
+              <input type="checkbox" value="${self.id}" checked disabled />
+              ${self.nickname}
+            </label>
+          `;
+        } else {
+          container.innerHTML = '<span style="color:#94a3b8;">No perteneces a este evento</span>';
+        }
+      } else {
+        // Admin: muestra todos los participantes
+        participants.forEach(p => {
+          const checked = (p.id === personId) ? 'checked' : '';
+          container.innerHTML += `
+            <label>
+              <input type="checkbox" value="${p.id}" ${checked} />
+              ${p.nickname}
+            </label>
+          `;
+        });
+      }
+      updateStatsForms();
+      document.getElementById('statsImageInput').value = '';
+      document.getElementById('extractedTextDisplay').style.display = 'none';
+      document.getElementById('extractedTextDisplay').textContent = '';
+      document.querySelector('#uploadStatsModal h3').textContent = 'Subir imagen / Ingresar estadísticas';
+      document.getElementById('uploadStatsModal').classList.add('active');
+    }).catch(e => showToast(e.message, 'error'));
+  }
+
+  // Función auxiliar para abrir modal con los miembros de una escuadra específica
+  function openStatsModalForSquad(event, squad) {
+    statsEventId = event.id;
+    statsSquadId = squad.id;
+    document.getElementById('statsEventId').value = event.id;
+    document.getElementById('statsSquadId').value = squad.id;
+
+    const participants = event.participants || [];
+    const memberIds = squad.memberIds || [];
+    const container = document.getElementById('statsParticipantsContainer');
+    container.innerHTML = '';
+
+    // Mostrar solo los miembros de la escuadra
+    participants.forEach(p => {
+      if (memberIds.includes(p.id)) {
+        const checked = (p.id === currentPersonId) ? 'checked' : 'checked'; // Todos seleccionados por defecto
+        container.innerHTML += `
+          <label>
+            <input type="checkbox" value="${p.id}" ${checked} />
+            ${p.nickname}
+          </label>
+        `;
+      }
+    });
+
+    updateStatsForms();
+    document.getElementById('statsImageInput').value = '';
+    document.getElementById('extractedTextDisplay').style.display = 'none';
+    document.getElementById('extractedTextDisplay').textContent = '';
+    document.querySelector('#uploadStatsModal h3').textContent = `Subir imagen / Ingresar estadísticas - Escuadra: ${squad.name}`;
+    document.getElementById('uploadStatsModal').classList.add('active');
+  }
+
+  function openUploadImageForSquad(eventId, squadId, squadName) {
+    statsEventId = eventId;
+    statsSquadId = squadId;
+    document.getElementById('statsEventId').value = eventId;
+    document.getElementById('statsSquadId').value = squadId;
+    apiCall(`/events/${eventId}`).then(data => {
+      const event = data.data;
+      const participants = event.participants || [];
+      const squad = event.squads.find(s => s.id === squadId);
+      const memberIds = squad ? squad.memberIds : [];
+      const container = document.getElementById('statsParticipantsContainer');
+      container.innerHTML = '';
+      participants.forEach(p => {
+        if (currentUser.role === 'participante') {
+          if (memberIds.includes(p.id)) {
+            const checked = (p.id === currentPersonId) ? 'checked' : 'disabled';
+            container.innerHTML += `
+              <label>
+                <input type="checkbox" value="${p.id}" ${checked} />
+                ${p.nickname}
+              </label>
+            `;
+          }
+        } else {
+          const checked = memberIds.includes(p.id) ? 'checked' : '';
+          container.innerHTML += `
+            <label>
+              <input type="checkbox" value="${p.id}" ${checked} />
+              ${p.nickname}
+            </label>
+          `;
+        }
+      });
+      updateStatsForms();
+      document.getElementById('statsImageInput').value = '';
+      document.getElementById('extractedTextDisplay').style.display = 'none';
+      document.getElementById('extractedTextDisplay').textContent = '';
+      document.querySelector('#uploadStatsModal h3').textContent = 'Subir imagen a escuadra';
+      document.getElementById('uploadStatsModal').classList.add('active');
+    }).catch(e => showToast(e.message, 'error'));
+  }
+
+  function updateStatsForms() {
+    const checkboxes = document.querySelectorAll('#statsParticipantsContainer input[type="checkbox"]:checked');
+    const container = document.getElementById('statsFormsContainer');
+    if (checkboxes.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8;">Selecciona al menos un participante para ingresar datos.</p>';
+      return;
+    }
+    let html = '';
+    checkboxes.forEach(cb => {
+      const participantId = cb.value;
+      const participantName = cb.parentElement.textContent.trim();
+      html += `
+        <div class="participant-stats-form" data-participant-id="${participantId}">
+          <div class="form-header"><i class="fas fa-user"></i> ${participantName}</div>
+          <div class="form-row">
+            <div class="input-group">
+              <label>Valor del botín</label>
+              <input type="number" class="stat-botin" value="0" min="0" />
+            </div>
+            <div class="input-group">
+              <label>Elim. contratistas</label>
+              <input type="number" class="stat-elim-contratistas" value="0" min="0" />
+            </div>
+            <div class="input-group">
+              <label>Otras eliminaciones</label>
+              <input type="number" class="stat-elim-otros" value="0" min="0" />
+            </div>
+            <div class="input-group">
+              <label>Minutos (máx 45)</label>
+              <input type="number" class="stat-minutos" value="0" min="0" max="45" />
+            </div>
+            <div class="input-group">
+              <label>Segundos (0-59)</label>
+              <input type="number" class="stat-segundos" value="0" min="0" max="59" />
+            </div>
+            <div class="input-group">
+              <label>Resultado</label>
+              <select class="stat-resultado">
+                <option value="">Seleccionar</option>
+                <option value="Victoria">Victoria</option>
+                <option value="Derrota">Derrota</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.matches('#statsParticipantsContainer input[type="checkbox"]')) {
+      updateStatsForms();
+    }
+  });
+
+  async function extractTextFromImage() {
+    const fileInput = document.getElementById('statsImageInput');
+    const file = fileInput.files[0];
+    if (!file) return showToast('Selecciona una imagen primero', 'error');
+
+    try {
+      const imageUrl = URL.createObjectURL(file);
+      const result = await Tesseract.recognize(imageUrl, 'spa', {
+        logger: (m) => console.log(m)
+      });
+      const text = result.data.text;
+      const display = document.getElementById('extractedTextDisplay');
+      display.textContent = text;
+      display.style.display = 'block';
+      const numbers = text.match(/\d+/g);
+      if (numbers) {
+        const numArr = numbers.map(Number);
+        if (numArr.length >= 4) {
+          const botin = numArr[0] || 0;
+          const elimContratistas = numArr[1] || 0;
+          const elimOtros = numArr[2] || 0;
+          const maybeMin = numArr[3];
+          const maybeSec = numArr[4] || 0;
+          let minutos = 0, segundos = 0;
+          if (maybeMin > 45) {
+            segundos = Math.min(maybeMin, 59);
+          } else {
+            minutos = Math.min(maybeMin, 45);
+            segundos = Math.min(maybeSec, 59);
+          }
+          document.querySelectorAll('.participant-stats-form').forEach(form => {
+            form.querySelector('.stat-botin').value = botin;
+            form.querySelector('.stat-elim-contratistas').value = elimContratistas;
+            form.querySelector('.stat-elim-otros').value = elimOtros;
+            form.querySelector('.stat-minutos').value = minutos;
+            form.querySelector('.stat-segundos').value = segundos;
+          });
+        }
+      }
+      const words = text.split(/\s+/);
+      const keywords = ['victoria', 'derrota', 'win', 'loss'];
+      for (let w of words) {
+        const lower = w.toLowerCase();
+        if (keywords.some(k => lower.includes(k))) {
+          const resultado = lower.includes('victoria') || lower.includes('win') ? 'Victoria' : 'Derrota';
+          document.querySelectorAll('.participant-stats-form .stat-resultado').forEach(sel => {
+            sel.value = resultado;
+          });
+          break;
+        }
+      }
+      showToast('Texto extraído. Revisa los valores.');
+    } catch(e) {
+      showToast('Error al extraer texto: '+e.message, 'error');
+    }
+  }
+
+  document.getElementById('closeStatsModal').addEventListener('click', () => {
+    document.getElementById('uploadStatsModal').classList.remove('active');
+  });
+
+  document.getElementById('saveStatsBtn').addEventListener('click', async () => {
+    const eventId = document.getElementById('statsEventId').value;
+    const squadId = document.getElementById('statsSquadId').value || null;
+    const forms = document.querySelectorAll('.participant-stats-form');
+    if (forms.length === 0) return showToast('No hay participantes seleccionados', 'error');
+
+    const matches = [];
+    let valid = true;
+    forms.forEach(form => {
+      const participantId = form.dataset.participantId;
+      const botin = parseFloat(form.querySelector('.stat-botin').value) || 0;
+      const elimContratistas = parseFloat(form.querySelector('.stat-elim-contratistas').value) || 0;
+      const elimOtros = parseFloat(form.querySelector('.stat-elim-otros').value) || 0;
+      const minutos = parseInt(form.querySelector('.stat-minutos').value) || 0;
+      const segundos = parseInt(form.querySelector('.stat-segundos').value) || 0;
+      const resultado = form.querySelector('.stat-resultado').value || '';
+
+      if (isNaN(botin) || isNaN(elimContratistas) || isNaN(elimOtros) || isNaN(minutos) || isNaN(segundos)) {
+        showToast('Error: algunos valores no son números válidos', 'error');
+        valid = false;
+        return;
+      }
+
+      matches.push({
+        participantId,
+        squadId,
+        botin,
+        elimContratistas,
+        elimOtros,
+        minutos,
+        segundos,
+        resultado
+      });
+    });
+
+    if (!valid || matches.length === 0) return;
+
+    const fileInput = document.getElementById('statsImageInput');
+    const file = fileInput.files[0];
+    if (squadId && file) {
+      const formData = new FormData();
+      formData.append('image', file);
+      try {
+        const url = `${API_URL}/events/${eventId}/squads/${squadId}/images`;
+        const headers = { 'Authorization': `Bearer ${authToken}` };
+        await fetch(url, { method: 'POST', headers, body: formData });
+      } catch(e) { showToast('Error al subir imagen: '+e.message, 'error'); }
+    }
+
+    try {
+      for (const match of matches) {
+        await apiCall(`/events/${eventId}/matches`, {
+          method: 'POST',
+          body: {
+            participantIds: [match.participantId],
+            squadId: match.squadId,
+            botin: match.botin,
+            elimContratistas: match.elimContratistas,
+            elimOtros: match.elimOtros,
+            minutos: match.minutos,
+            segundos: match.segundos,
+            resultado: match.resultado
+          }
+        });
+      }
+      showToast(`${matches.length} partida(s) registrada(s) correctamente`, 'success');
+      document.getElementById('uploadStatsModal').classList.remove('active');
+      loadEvents(); // Recargar eventos
+
+      // Si el modal de ranking está abierto, cerrarlo y volver a abrirlo
+      if (document.getElementById('rankingModal').classList.contains('active')) {
+        document.getElementById('rankingModal').classList.remove('active');
+        if (currentRankingEventId) {
+          viewRankingModal(currentRankingEventId);
+        }
+      }
+    } catch(e) {
+      showToast('Error al guardar partidas: ' + e.message, 'error');
+    }
+  });
+
+  // ================================================================
+  // RANKING (Modal individual)
+  // ================================================================
+  let currentRankingEventId = null;
+  let currentRankingData = [];
+
+  async function viewRankingModal(eventId) {
+    try {
+      const data = await apiCall(`/events/${eventId}/ranking`);
+      currentRankingEventId = eventId;
+      document.getElementById('rankingEventName').textContent = data.data[0]?.eventName || 'Evento';
+      currentRankingData = data.data;
+      renderRanking('general');
+      document.getElementById('rankingModal').classList.add('active');
+    } catch(e) {
+      showToast('Error al cargar ranking: ' + e.message, 'error');
+    }
+  }
+
+  function renderRanking(mode) {
+    const tbody = document.getElementById('rankingBody');
+    tbody.innerHTML = '';
+
+    if (mode === 'general') {
+      currentRankingData.forEach((p, idx) => {
+        const s = p.stats || {};
+        const tiempo = `${s.minutos || 0}m ${s.segundos || 0}s`;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx+1}</td>
+          <td>${p.nickname}</td>
+          <td>${s.partidas || 0}</td>
+          <td>${s.botin || 0}</td>
+          <td>${s.elimContratistas || 0}</td>
+          <td>${s.elimOtros || 0}</td>
+          <td>${tiempo}</td>
+          <td>${s.victorias || 0}</td>
+          <td>${s.derrotas || 0}</td>
+          <td>${s.score || 0}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } else {
+      apiCall(`/events/${currentRankingEventId}`).then(eventData => {
+        const event = eventData.data;
+        const squads = event.squads || [];
+        let html = '';
+        squads.forEach(sq => {
+          const members = sq.memberIds.map(id => currentRankingData.find(p => p.id === id)).filter(p => p);
+          if (members.length === 0) {
+            html += `<tr><td colspan="10" style="text-align:center;color:#94a3b8;">Escuadra ${sq.name} sin miembros</td></tr>`;
+            return;
+          }
+          html += `<tr style="background:#eef2ff;font-weight:600;"><td colspan="10">Escuadra: ${sq.name}</td></tr>`;
+          members.forEach((p, idx) => {
+            const s = p.stats || {};
+            const tiempo = `${s.minutos || 0}m ${s.segundos || 0}s`;
+            html += `
+              <tr>
+                <td>${idx+1}</td>
+                <td>${p.nickname}</td>
+                <td>${s.partidas || 0}</td>
+                <td>${s.botin || 0}</td>
+                <td>${s.elimContratistas || 0}</td>
+                <td>${s.elimOtros || 0}</td>
+                <td>${tiempo}</td>
+                <td>${s.victorias || 0}</td>
+                <td>${s.derrotas || 0}</td>
+                <td>${s.score || 0}</td>
+              </tr>
+            `;
+          });
+        });
+        tbody.innerHTML = html;
+      }).catch(e => showToast(e.message, 'error'));
+    }
+  }
+
+  document.querySelectorAll('.ranking-tabs button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ranking-tabs button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const mode = this.dataset.rank;
+      renderRanking(mode);
+    });
+  });
+
+  document.getElementById('closeRankingModal').addEventListener('click', () => {
+    document.getElementById('rankingModal').classList.remove('active');
+  });
+
+  // ================================================================
+  // RANKING TAB
+  // ================================================================
+  async function loadRankingTab() {
+    try {
+      const events = await apiCall('/events');
+      const selector = document.getElementById('rankingEventSelector');
+      const container = document.getElementById('rankingContent');
+      
+      if (!events.data || events.data.length === 0) {
+        selector.innerHTML = '<p style="color:#94a3b8;">No hay eventos disponibles.</p>';
+        container.innerHTML = '';
+        return;
+      }
+
+      let selectHtml = '<select id="rankingEventSelect" onchange="loadRankingForEvent(this.value)" style="padding:0.5rem;border-radius:12px;border:1px solid #e2e8f0;width:100%;max-width:300px;">';
+      selectHtml += '<option value="">-- Selecciona un evento --</option>';
+      events.data.forEach(ev => {
+        selectHtml += `<option value="${ev.id}">${ev.name}</option>`;
+      });
+      selectHtml += '</select>';
+      selector.innerHTML = selectHtml;
+      container.innerHTML = '<p style="color:#94a3b8;">Selecciona un evento para ver el ranking detallado.</p>';
+    } catch(e) {
+      showToast('Error al cargar eventos para ranking: ' + e.message, 'error');
+    }
+  }
+
+  async function loadRankingForEvent(eventId) {
+    if (!eventId) {
+      document.getElementById('rankingContent').innerHTML = '<p style="color:#94a3b8;">Selecciona un evento para ver el ranking detallado.</p>';
+      return;
+    }
+    try {
+      const eventData = await apiCall(`/events/${eventId}`);
+      const event = eventData.data;
+      const participants = event.participants || [];
+      const squads = event.squads || [];
+      const statsMap = {};
+      
+      const matches = event.matches || [];
+      matches.forEach(m => {
+        if (!statsMap[m.participantId]) {
+          statsMap[m.participantId] = { botin: 0, partidas: 0 };
+        }
+        statsMap[m.participantId].botin += m.botin || 0;
+        statsMap[m.participantId].partidas += 1;
+      });
+
+      let html = '';
+      
+      if (squads.length > 0) {
+        html += `<h3 style="margin-top:1.5rem;font-weight:600;">Resumen por escuadra</h3>`;
+        html += `<table class="ranking-table"><thead><tr><th>Escuadra</th><th>Miembros</th><th>Total Botín</th><th>Partidas</th></tr></thead><tbody>`;
+        squads.forEach(sq => {
+          const members = sq.memberIds || [];
+          let totalBotin = 0;
+          let totalPartidas = 0;
+          let memberNames = [];
+          members.forEach(pid => {
+            const p = participants.find(per => per.id === pid);
+            if (p) {
+              memberNames.push(p.nickname);
+              const stats = statsMap[pid] || { botin: 0, partidas: 0 };
+              totalBotin += stats.botin;
+              totalPartidas += stats.partidas;
+            }
+          });
+          html += `<tr>
+            <td><strong>${sq.name}</strong></td>
+            <td>${memberNames.join(', ') || 'Sin miembros'}</td>
+            <td><strong>${totalBotin}</strong></td>
+            <td>${totalPartidas}</td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+      }
+
+      if (squads.length > 0) {
+        html += `<h3 style="margin-top:1.5rem;font-weight:600;">Desglose por jugador</h3>`;
+        squads.forEach(sq => {
+          const members = sq.memberIds || [];
+          if (members.length === 0) return;
+          html += `<div style="margin:1rem 0;padding:0.5rem;background:#f8fafc;border-radius:8px;">`;
+          html += `<strong style="color:#0a2540;">${sq.name}</strong>`;
+          html += `<table class="ranking-table" style="margin-top:0.5rem;"><thead><tr><th>Jugador</th><th>Botín</th><th>Partidas</th></tr></thead><tbody>`;
+          members.forEach(pid => {
+            const p = participants.find(per => per.id === pid);
+            if (p) {
+              const stats = statsMap[pid] || { botin: 0, partidas: 0 };
+              html += `<tr><td>${p.nickname}</td><td>${stats.botin}</td><td>${stats.partidas}</td></tr>`;
+            }
+          });
+          html += `</tbody></table>`;
+          let totalBotin = 0;
+          let totalPartidas = 0;
+          members.forEach(pid => {
+            const stats = statsMap[pid] || { botin: 0, partidas: 0 };
+            totalBotin += stats.botin;
+            totalPartidas += stats.partidas;
+          });
+          html += `<div style="margin-top:0.3rem;font-weight:600;color:#4338ca;">Total escuadra: ${totalBotin} (${totalPartidas} partidas)</div>`;
+          html += `</div>`;
+        });
+      } else {
+        html += `<h3 style="margin-top:1.5rem;font-weight:600;">Ranking individual</h3>`;
+        html += `<table class="ranking-table"><thead><tr><th>#</th><th>Jugador</th><th>Botín</th><th>Partidas</th></tr></thead><tbody>`;
+        const sorted = participants.map(p => {
+          const stats = statsMap[p.id] || { botin: 0, partidas: 0 };
+          return { ...p, botin: stats.botin, partidas: stats.partidas };
+        }).sort((a,b) => b.botin - a.botin);
+        sorted.forEach((p, idx) => {
+          html += `<tr><td>${idx+1}</td><td>${p.nickname}</td><td>${p.botin}</td><td>${p.partidas}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+      }
+
+      document.getElementById('rankingContent').innerHTML = html;
+    } catch(e) {
+      showToast('Error al cargar ranking del evento: ' + e.message, 'error');
+    }
+  }
+
+  // ================================================================
+  // TOP
+  // ================================================================
+  async function loadTopTab() {
+    try {
+      const data = await apiCall('/top');
+      topData = data.data || {};
+      if (Object.keys(topData).length === 0) {
+        topData['F1'] = [
+          { id: '2115415933', name: '?TheGhost', almacenActual: '47.9M', num: '+58 4120814580', rango: 'LIDER', clan: 'SI', prevAlmacen: '47.9M', nacionalidad: 'VENEZUELA', horas: '690h', rango2: 'x5', rango3: '', jugadores: '1' },
+          { id: '827673899', name: 'EG • TIUMASTER', almacenActual: '4.2M', num: '+503 6171 0774', rango: 'COLIDER', clan: 'SI', prevAlmacen: '99.2M', nacionalidad: 'EL SALVADOR', horas: '1,1000h', rango2: 'AS II x4', rango3: '', jugadores: '2' },
+          { id: '2569009838', name: 'JUANARLO', almacenActual: '297.5M', num: '+57 300 1838453', rango: 'MIEMBRO', clan: 'SI', prevAlmacen: '302,5M', nacionalidad: 'COLOMBIA', horas: '1,2000h', rango2: 'x1', rango3: '', jugadores: '3' }
+        ];
+      }
+      const sheetSelector = document.getElementById('topSheetSelector');
+      const currentSheets = Object.keys(topData);
+      sheetSelector.innerHTML = '';
+      currentSheets.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        sheetSelector.appendChild(opt);
+      });
+      if (!topData[activeSheet]) {
+        activeSheet = currentSheets[0] || 'F1';
+        if (!topData[activeSheet]) topData[activeSheet] = [];
+      }
+      sheetSelector.value = activeSheet;
+      renderTopTable();
+    } catch(e) {
+      console.warn('Error cargando TOP:', e);
+      topData = { 'F1': [] };
+      activeSheet = 'F1';
+      renderTopTable();
+    }
+  }
+
+  function switchTopSheet() {
+    const sel = document.getElementById('topSheetSelector');
+    activeSheet = sel.value;
+    if (!topData[activeSheet]) {
+      topData[activeSheet] = [];
+    }
+    renderTopTable();
+  }
+
+  function renderTopTable() {
+    const tbody = document.getElementById('topBody');
+    const rows = topData[activeSheet] || [];
+    if (!rows || rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;color:#94a3b8;">No hay datos. Añade una fila o importa un Excel.</td></tr>';
+      return;
+    }
+    let html = '';
+    rows.forEach((row, index) => {
+      const clan = (row.clan || '').toUpperCase();
+      let rowClass = '';
+      if (clan === 'FUERA DEL CLAN') rowClass = 'top-row-out';
+      else if (clan === 'NO') rowClass = 'top-row-no';
+      
+      html += `
+        <tr draggable="true" data-index="${index}" class="${rowClass}" id="top-row-${index}">
+          <td><span class="drag-handle" draggable="false"><i class="fas fa-grip-lines"></i></span></td>
+          <td><input type="text" value="${row.id || ''}" data-field="id" data-index="${index}" /></td>
+          <td><input type="text" value="${row.name || ''}" data-field="name" data-index="${index}" /></td>
+          <td><input type="text" value="${row.almacenActual || ''}" data-field="almacenActual" data-index="${index}" /></td>
+          <td><input type="text" value="${row.num || ''}" data-field="num" data-index="${index}" /></td>
+          <td><input type="text" value="${row.rango || ''}" data-field="rango" data-index="${index}" /></td>
+          <td>
+            <select data-field="clan" data-index="${index}" style="width:100%;padding:0.2rem;">
+              <option value="SI" ${row.clan === 'SI' ? 'selected' : ''}>SI</option>
+              <option value="NO" ${row.clan === 'NO' ? 'selected' : ''}>NO</option>
+              <option value="FUERA DEL CLAN" ${row.clan === 'FUERA DEL CLAN' ? 'selected' : ''}>FUERA DEL CLAN</option>
+            </select>
+          </td>
+          <td><input type="text" value="${row.prevAlmacen || ''}" data-field="prevAlmacen" data-index="${index}" /></td>
+          <td><input type="text" value="${row.nacionalidad || ''}" data-field="nacionalidad" data-index="${index}" /></td>
+          <td><input type="text" value="${row.horas || ''}" data-field="horas" data-index="${index}" /></td>
+          <td><input type="text" value="${row.rango2 || ''}" data-field="rango2" data-index="${index}" /></td>
+          <td><input type="text" value="${row.rango3 || ''}" data-field="rango3" data-index="${index}" /></td>
+          <td><input type="text" value="${row.jugadores || ''}" data-field="jugadores" data-index="${index}" /></td>
+          <td><button class="btn-delete" onclick="topDeleteRow(${index})"><i class="fas fa-trash"></i></button></td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+
+    document.querySelectorAll('#topBody input').forEach(input => {
+      input.addEventListener('change', function() {
+        const index = parseInt(this.dataset.index);
+        const field = this.dataset.field;
+        topData[activeSheet][index][field] = this.value;
+      });
+    });
+    document.querySelectorAll('#topBody select').forEach(sel => {
+      sel.addEventListener('change', function() {
+        const index = parseInt(this.dataset.index);
+        const field = this.dataset.field;
+        topData[activeSheet][index][field] = this.value;
+      });
+    });
+
+    const rowsList = document.querySelectorAll('#topBody tr[draggable="true"]');
+    rowsList.forEach(row => {
+      row.addEventListener('dragstart', handleDragStart);
+      row.addEventListener('dragover', handleDragOver);
+      row.addEventListener('drop', handleDrop);
+      row.addEventListener('dragend', handleDragEnd);
+    });
+  }
+
+  let draggedRowIndex = null;
+
+  function handleDragStart(e) {
+    const row = e.target.closest('tr');
+    if (!row) return;
+    draggedRowIndex = parseInt(row.dataset.index);
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    const targetRow = e.target.closest('tr');
+    if (!targetRow) return;
+    const targetIndex = parseInt(targetRow.dataset.index);
+    if (draggedRowIndex === null || draggedRowIndex === targetIndex) return;
+    const rows = topData[activeSheet];
+    const [movedRow] = rows.splice(draggedRowIndex, 1);
+    rows.splice(targetIndex, 0, movedRow);
+    renderTopTable();
+    draggedRowIndex = null;
+  }
+
+  function handleDragEnd(e) {
+    draggedRowIndex = null;
+  }
+
+  function topAddRow() {
+    const newRow = {
+      id: '', name: '', almacenActual: '', num: '', rango: '', clan: 'SI',
+      prevAlmacen: '', nacionalidad: '', horas: '', rango2: '', rango3: '', jugadores: ''
+    };
+    topData[activeSheet].push(newRow);
+    renderTopTable();
+  }
+
+  function topDeleteRow(index) {
+    if (!confirm('¿Eliminar esta fila?')) return;
+    topData[activeSheet].splice(index, 1);
+    renderTopTable();
+  }
+
+  function topExportExcel() {
+    const wb = XLSX.utils.book_new();
+    const sheets = Object.keys(topData);
+    sheets.forEach(sheetName => {
+      const data = topData[sheetName] || [];
+      const ws = XLSX.utils.json_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    });
+    XLSX.writeFile(wb, 'TOP_Jugadores.xlsx');
+    showToast('Excel exportado correctamente');
+  }
+
+  function topImportExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const importedSheets = {};
+        workbook.SheetNames.forEach(sheetName => {
+          const sheet = workbook.Sheets[sheetName];
+          const json = XLSX.utils.sheet_to_json(sheet);
+          const rows = json.map(row => {
+            const keys = Object.keys(row);
+            const findKey = (possibleNames) => {
+              for (const name of possibleNames) {
+                const found = keys.find(k => k.trim().toUpperCase() === name.toUpperCase());
+                if (found) return found;
+              }
+              return null;
+            };
+            const idKey = findKey(['ID']);
+            const nameKey = findKey(['NAME', 'NOMBRE']);
+            const almacenKey = findKey(['ALMACEN ACTUAL', 'ALMACÉN ACTUAL', 'ALMACEN']);
+            const numKey = findKey(['NUM', 'NÚMERO', 'TELÉFONO']);
+            const rangoKey = findKey(['RANGO']);
+            const clanKey = findKey(['CLAN']);
+            const prevKey = findKey(['PREV ALMACEN', 'PREV ALMACÉN', 'ALMACEN ANTERIOR']);
+            const nacionalidadKey = findKey(['NACIONALIDAD']);
+            const horasKey = findKey(['HORAS']);
+            const jugadoresKey = findKey(['JUGADORES']);
+            const rangoColumns = keys.filter(k => k.trim().toUpperCase().includes('RANGO'));
+            return {
+              id: idKey ? String(row[idKey]) : '',
+              name: nameKey ? String(row[nameKey]) : '',
+              almacenActual: almacenKey ? String(row[almacenKey]) : '',
+              num: numKey ? String(row[numKey]) : '',
+              rango: rangoKey ? String(row[rangoKey]) : '',
+              clan: clanKey ? String(row[clanKey]) : 'SI',
+              prevAlmacen: prevKey ? String(row[prevKey]) : '',
+              nacionalidad: nacionalidadKey ? String(row[nacionalidadKey]) : '',
+              horas: horasKey ? String(row[horasKey]) : '',
+              rango2: rangoColumns.length > 1 ? String(row[rangoColumns[1]]) : '',
+              rango3: rangoColumns.length > 2 ? String(row[rangoColumns[2]]) : '',
+              jugadores: jugadoresKey ? String(row[jugadoresKey]) : ''
+            };
+          });
+          importedSheets[sheetName] = rows;
+        });
+        Object.keys(importedSheets).forEach(sheetName => {
+          topData[sheetName] = importedSheets[sheetName];
+        });
+        const sheetSelector = document.getElementById('topSheetSelector');
+        const currentSheets = Object.keys(topData);
+        sheetSelector.innerHTML = '';
+        currentSheets.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s;
+          opt.textContent = s;
+          sheetSelector.appendChild(opt);
+        });
+        if (!topData[activeSheet]) {
+          activeSheet = currentSheets[0] || 'F1';
+        }
+        sheetSelector.value = activeSheet;
+        renderTopTable();
+        const totalRows = Object.values(importedSheets).reduce((acc, rows) => acc + rows.length, 0);
+        showToast(`${totalRows} registros importados (${Object.keys(importedSheets).length} hojas)`);
+      } catch(err) {
+        showToast('Error al importar: ' + err.message, 'error');
+      }
+      event.target.value = '';
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  async function topSave() {
+    try {
+      await apiCall('/top', { method: 'POST', body: topData });
+      showToast('Datos TOP guardados correctamente');
+    } catch(e) {
+      showToast('Error al guardar: ' + e.message, 'error');
+    }
+  }
+
+  // ================================================================
+  // AÑADIR PARTICIPANTES
+  // ================================================================
+  async function openAddParticipantModal(eventId) {
+    if (currentUser.role === 'participante') {
+      return showToast('No tienes permisos para añadir participantes', 'error');
+    }
+    try {
+      const eventData = await apiCall(`/events/${eventId}`);
+      const event = eventData.data;
+      document.getElementById('addParticipantEventName').textContent = event.name;
+      document.getElementById('addParticipantEventId').value = eventId;
+
+      const existingIds = event.participantIds || [];
+      await loadPersonSelects(existingIds);
+
+      const squadSelect = document.getElementById('addParticipantSquadSelect');
+      squadSelect.innerHTML = '<option value="">Sin escuadra</option>';
+      const squads = event.squads || [];
+      squads.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `${s.name} (${s.memberIds.length}/${getSquadLimit(event.mode)})`;
+        squadSelect.appendChild(opt);
+      });
+
+      document.getElementById('addParticipantNewSquadInput').value = '';
+      document.getElementById('addParticipantModal').classList.add('active');
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  document.getElementById('closeAddParticipantModal').addEventListener('click', () => {
+    document.getElementById('addParticipantModal').classList.remove('active');
+  });
+
+  document.getElementById('saveAddParticipantBtn').addEventListener('click', async () => {
+    const eventId = document.getElementById('addParticipantEventId').value;
+    const personSelect = document.getElementById('addParticipantPersonSelect');
+    const selectedOptions = Array.from(personSelect.selectedOptions);
+    const personIds = selectedOptions.map(opt => opt.value).filter(v => v);
+    if (personIds.length === 0) return showToast('Selecciona al menos una persona', 'error');
+
+    let squadId = document.getElementById('addParticipantSquadSelect').value || null;
+    const newSquadName = document.getElementById('addParticipantNewSquadInput').value.trim();
+
+    try {
+      if (newSquadName) {
+        const newSquad = await apiCall(`/events/${eventId}/squads`, {
+          method: 'POST',
+          body: { name: newSquadName, leaderId: personIds[0], memberIds: personIds }
+        });
+        squadId = newSquad.data.id;
+      }
+      await apiCall(`/events/${eventId}/participants`, {
+        method: 'POST',
+        body: { personIds, squadId }
+      });
+      showToast(`${personIds.length} participante(s) añadido(s)`);
+      document.getElementById('addParticipantModal').classList.remove('active');
+      loadEvents();
+    } catch(e) { showToast(e.message, 'error'); }
+  });
+
+  // ================================================================
+  // LOGIN (con Remember Me)
+  // ================================================================
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const username = document.getElementById('loginUser').value.trim();
+    const password = document.getElementById('loginPass').value.trim();
+    const remember = document.getElementById('rememberMe').checked;
+    if (!username || !password) return showToast('Usuario y contraseña requeridos', 'error');
+    try {
+      const data = await apiCall('/auth/login', { method: 'POST', body: { username, password } });
+      authToken = data.data.token;
+      currentUser = data.data.user;
+      currentPersonId = currentUser.personId || null;
+      
+      localStorage.setItem('token', authToken);
+      localStorage.setItem('user', JSON.stringify(currentUser));
+
+      // Guardar credenciales si "Recordar sesión" está marcado
+      if (remember) {
+        localStorage.setItem('rememberUsername', username);
+        localStorage.setItem('rememberPassword', password);
+      } else {
+        localStorage.removeItem('rememberUsername');
+        localStorage.removeItem('rememberPassword');
+      }
+
+      document.getElementById('userNameDisplay').textContent = currentUser.username;
+
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'flex';
+      showToast('Bienvenido ' + currentUser.username);
+
+      renderTabs();
+      await loadCoordinationSelects();
+      await loadPersonSelects();
+      if (countriesData.length === 0) await loadCountries();
+      populateCountrySelect();
+      loadEvents();
+      if (currentUser.role === 'root' || currentUser.role === 'admin') {
+        loadOrganizations();
+        loadPersons();
+        loadUsers();
+        loadTopTab();
+      }
+      initRuleta();
+    } catch(e) {
+      showToast(e.message, 'error');
+    }
+  });
+
+  // ================================================================
+  // LOGOUT
+  // ================================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        authToken = null;
+        currentUser = null;
+        currentPersonId = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        // No borramos las credenciales de remember, para que sigan funcionando
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        showToast('✅ Sesión cerrada correctamente');
+      });
+    }
+  });
+
+  // ================================================================
+  // CIERRE DE MODALES
+  // ================================================================
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+  });
+
+  // ================================================================
+  // FORMULARIOS - NUEVA VERSIÓN (Google Forms style)
+  // ================================================================
+  let formsData = [];
+  let currentFormId = null;
+  let currentFormResponses = [];
+  let editingQuestionIndex = -1;
+
+  // ----- Cargar lista de formularios -----
+  async function loadForms() {
+    try {
+      const data = await apiCall('/forms');
+      formsData = data.data || [];
+      renderFormsGrid(formsData);
+    } catch (e) {
+      showToast('Error al cargar formularios: ' + e.message, 'error');
+    }
+  }
+
+  function renderFormsGrid(forms) {
+    const container = document.getElementById('formsGrid');
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+
+    if (!forms || forms.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8; padding:2rem; text-align:center;">No hay formularios disponibles. Crea uno.</p>';
+      return;
+    }
+
+    let html = '';
+    forms.forEach(f => {
+      const isPrivate = f.is_private ? '<span class="badge private"><i class="fas fa-lock"></i> Privado</span>' : '<span class="badge">Público</span>';
+      const qCount = f.questions ? f.questions.length : 0;
+      const actions = isAdmin ? `
+        <div class="actions">
+          <button class="btn-add-participant" onclick="event.stopPropagation(); openFormEditor('${f.id}')"><i class="fas fa-edit"></i> Editar</button>
+          <button class="btn-add-participant" onclick="event.stopPropagation(); viewFormResponses('${f.id}')"><i class="fas fa-list-ul"></i> Respuestas</button>
+          <button class="btn-delete" onclick="event.stopPropagation(); deleteForm('${f.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      ` : '';
+
+      html += `
+        <div class="form-card" onclick="openFormDetail('${f.id}')">
+          <div class="title">${f.title}</div>
+          <div class="desc">${f.description || 'Sin descripción'}</div>
+          <div class="meta">
+            <span>${qCount} preguntas</span>
+            ${isPrivate}
+          </div>
+          ${actions}
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  // ----- Abrir detalle de formulario (admin: ver encuestados) -----
+  async function openFormDetail(formId) {
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+    if (!isAdmin) {
+      // Redirigir a la vista pública para responder
+      window.location.href = `/form?id=${formId}`;
+      return;
+    }
+
+    try {
+      const data = await apiCall(`/forms/${formId}`);
+      const form = data.data;
+      if (!form) return showToast('Formulario no encontrado', 'error');
+
+      // Obtener respuestas
+      const respData = await apiCall(`/forms/${formId}/responses`);
+      currentFormResponses = respData.data || [];
+      currentFormId = formId;
+
+      // Mostrar detalle
+      document.getElementById('formsGrid').style.display = 'none';
+      document.getElementById('formDetailView').style.display = 'block';
+
+      document.getElementById('detailFormTitle').textContent = form.title;
+      document.getElementById('detailFormDesc').textContent = form.description || '';
+      document.getElementById('detailQuestionsCount').textContent = (form.questions || []).length;
+      document.getElementById('detailRespondentsCount').textContent = currentFormResponses.length;
+
+      // Renderizar grid de encuestados
+      renderRespondents(currentFormResponses, form);
+
+    } catch (e) {
+      showToast('Error al abrir detalle: ' + e.message, 'error');
+    }
+  }
+
+  function renderRespondents(responses, form) {
+    const container = document.getElementById('respondentsGrid');
+    if (!responses || responses.length === 0) {
+      container.innerHTML = '<p style="color:#94a3b8; padding:1rem;">Todavía no hay respuestas.</p>';
+      document.getElementById('respondentDetailView').style.display = 'none';
+      return;
+    }
+
+    let html = '';
+    responses.forEach((r, idx) => {
+      const name = r.respondent_name || 'Anónimo';
+      const date = new Date(r.created_at).toLocaleDateString();
+      const avatar = name.charAt(0).toUpperCase();
+      html += `
+        <div class="respondent-card" onclick="showRespondentAnswers('${r.id}')">
+          <div class="avatar">${avatar}</div>
+          <div class="info">
+            <div class="name">${name}</div>
+            <div class="date">${date}</div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+    document.getElementById('respondentDetailView').style.display = 'none';
+  }
+
+  // ----- Ver respuestas de un encuestado (modal) -----
+  async function showRespondentAnswers(responseId) {
+    try {
+      const response = currentFormResponses.find(r => r.id === responseId);
+      if (!response) return showToast('Respuesta no encontrada', 'error');
+
+      const formData = await apiCall(`/forms/${currentFormId}`);
+      const form = formData.data;
+      const questions = form.questions || [];
+
+      const container = document.getElementById('respondentAnswersContent');
+      const nameDisplay = document.getElementById('respondentNameDisplay');
+      nameDisplay.textContent = response.respondent_name || 'Anónimo';
+
+      let html = '';
+      questions.forEach(q => {
+        const answer = response.answers[q.id];
+        if (answer === undefined || answer === null) return;
+        const displayAnswer = Array.isArray(answer) ? answer.join(', ') : answer;
+        html += `
+          <div style="margin-bottom:1.2rem; padding-bottom:0.8rem; border-bottom:1px solid #f1f5f9;">
+            <div style="font-weight:500; color:#0a2540;">${q.question_text}</div>
+            <div style="color:#475569; margin-top:0.2rem;">${displayAnswer || '(respuesta vacía)'}</div>
+          </div>
+        `;
+      });
+
+      if (!html) {
+        html = '<p style="color:#94a3b8;">Esta persona no ha respondido ninguna pregunta.</p>';
+      }
+
+      container.innerHTML = html;
+      document.getElementById('respondentAnswersModal').classList.add('active');
+
+    } catch (e) {
+      showToast('Error al cargar respuestas: ' + e.message, 'error');
+    }
+  }
+
+  // ----- Cerrar detalle -----
+  function closeFormDetail() {
+    document.getElementById('formsGrid').style.display = 'grid';
+    document.getElementById('formDetailView').style.display = 'none';
+    document.getElementById('respondentDetailView').style.display = 'none';
+    loadForms();
+  }
+
+  function closeRespondentDetail() {
+    document.getElementById('respondentDetailView').style.display = 'none';
+    document.getElementById('respondentsGrid').style.display = 'grid';
+  }
+
+  // ----- Ver respuestas (admin) - botón "Respuestas" en tarjeta -----
+  async function viewFormResponses(formId) {
+    await openFormDetail(formId);
+  }
+
+  // ----- Eliminar formulario -----
+  async function deleteForm(id) {
+    if (!confirm('¿Eliminar este formulario y todas sus preguntas y respuestas?')) return;
+    try {
+      await apiCall(`/forms/${id}`, { method: 'DELETE' });
+      showToast('Formulario eliminado');
+      loadForms();
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  // ================================================================
+  // EDITOR DE FORMULARIOS (Google Forms style)
+  // ================================================================
+  let editorQuestions = [];
+  let editorFormId = null;
+
+  // Abrir el modal para crear/editar formulario
+  document.getElementById('openCreateForm').addEventListener('click', () => {
+    openFormEditor(null);
+  });
+
+  async function openFormEditor(formId = null) {
+    editorFormId = formId;
+    editorQuestions = [];
+
+    if (formId) {
+      try {
+        const data = await apiCall(`/forms/${formId}`);
+        const form = data.data;
+        document.getElementById('formModalTitle').textContent = 'Editar Formulario';
+        document.getElementById('formEditId').value = form.id;
+        document.getElementById('formTitle').value = form.title;
+        document.getElementById('formDescription').value = form.description || '';
+        document.getElementById('formPrivate').checked = form.is_private || false;
+        editorQuestions = form.questions || [];
+      } catch(e) {
+        showToast('Error al cargar formulario: ' + e.message, 'error');
+        return;
+      }
+    } else {
+      document.getElementById('formModalTitle').textContent = 'Nuevo Formulario';
+      document.getElementById('formEditId').value = '';
+      document.getElementById('formTitle').value = '';
+      document.getElementById('formDescription').value = '';
+      document.getElementById('formPrivate').checked = false;
+      editorQuestions = [];
+    }
+
+    renderQuestionsEditor();
+    document.getElementById('formModal').classList.add('active');
+  }
+
+  function renderQuestionsEditor() {
+    const container = document.getElementById('questionsEditor');
+    if (!editorQuestions || editorQuestions.length === 0) {
+      container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:1rem;">No hay preguntas. Añade una.</div>';
+      return;
+    }
+
+    let html = '';
+    editorQuestions.forEach((q, index) => {
+      const opts = q.options || [];
+      const optsHtml = opts.length ? opts.map(o => `<span style="background:#e2e8f0; padding:0.1rem 0.5rem; border-radius:12px; font-size:0.8rem;">${o}</span>`).join('') : '';
+
+      html += `
+        <div class="question-editor-item" data-index="${index}">
+          <span class="drag-handle"><i class="fas fa-grip-lines"></i></span>
+          <div class="question-fields">
+            <input type="text" class="q-text" value="${q.question_text}" placeholder="Texto de la pregunta" data-index="${index}" />
+            <select class="q-type" data-index="${index}">
+              <option value="text" ${q.question_type === 'text' ? 'selected' : ''}>Texto corto</option>
+              <option value="textarea" ${q.question_type === 'textarea' ? 'selected' : ''}>Texto largo</option>
+              <option value="select" ${q.question_type === 'select' ? 'selected' : ''}>Desplegable</option>
+              <option value="radio" ${q.question_type === 'radio' ? 'selected' : ''}>Opción única</option>
+              <option value="checkbox" ${q.question_type === 'checkbox' ? 'selected' : ''}>Selección múltiple</option>
+            </select>
+            <div class="options-input" style="${(q.question_type === 'text' || q.question_type === 'textarea') ? 'display:none;' : ''}">
+              <input type="text" class="q-options" value="${opts.join(', ')}" placeholder="Opciones (separadas por coma)" data-index="${index}" />
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.2rem;">
+              <input type="checkbox" class="q-required" ${q.is_required ? 'checked' : ''} data-index="${index}" />
+              <label style="font-size:0.8rem; font-weight:400; margin:0;">Obligatoria</label>
+            </div>
+          </div>
+          <div class="question-actions">
+            <button class="delete-q" onclick="removeQuestionFromEditor(${index})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.q-text').forEach(input => {
+      input.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        editorQuestions[idx].question_text = this.value;
+      });
+    });
+    container.querySelectorAll('.q-type').forEach(sel => {
+      sel.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        editorQuestions[idx].question_type = this.value;
+        const optionsInput = this.closest('.question-fields').querySelector('.options-input');
+        if (this.value === 'text' || this.value === 'textarea') {
+          optionsInput.style.display = 'none';
+        } else {
+          optionsInput.style.display = 'flex';
+        }
+      });
+    });
+    container.querySelectorAll('.q-options').forEach(input => {
+      input.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        const opts = this.value.split(',').map(s => s.trim()).filter(Boolean);
+        editorQuestions[idx].options = opts;
+      });
+    });
+    container.querySelectorAll('.q-required').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const idx = parseInt(this.dataset.index);
+        editorQuestions[idx].is_required = this.checked;
+      });
+    });
+  }
+
+  function addQuestionToEditor() {
+    editorQuestions.push({
+      question_text: 'Nueva pregunta',
+      question_type: 'text',
+      options: [],
+      is_required: false
+    });
+    renderQuestionsEditor();
+  }
+
+  function removeQuestionFromEditor(index) {
+    editorQuestions.splice(index, 1);
+    renderQuestionsEditor();
+  }
+
+  // Guardar formulario (desde el editor)
+  document.getElementById('saveFormBtn').addEventListener('click', async () => {
+    const id = document.getElementById('formEditId').value;
+    const title = document.getElementById('formTitle').value.trim();
+    const description = document.getElementById('formDescription').value.trim();
+    const is_private = document.getElementById('formPrivate').checked;
+
+    if (!title) return showToast('El título es requerido', 'error');
+
+    try {
+      let formId = id;
+      if (id) {
+        await apiCall(`/forms/${id}`, { method: 'PUT', body: { title, description, is_private } });
+        const existingForm = await apiCall(`/forms/${id}`);
+        const oldQuestions = existingForm.data.questions || [];
+        for (const q of oldQuestions) {
+          await apiCall(`/forms/${id}/questions/${q.id}`, { method: 'DELETE' });
+        }
+        for (const q of editorQuestions) {
+          await apiCall(`/forms/${id}/questions`, {
+            method: 'POST',
+            body: {
+              question_text: q.question_text,
+              question_type: q.question_type,
+              options: q.options,
+              is_required: q.is_required
+            }
+          });
+        }
+        showToast('Formulario actualizado');
+      } else {
+        const newForm = await apiCall('/forms', { method: 'POST', body: { title, description, is_private } });
+        formId = newForm.data.id;
+        for (const q of editorQuestions) {
+          await apiCall(`/forms/${formId}/questions`, {
+            method: 'POST',
+            body: {
+              question_text: q.question_text,
+              question_type: q.question_type,
+              options: q.options,
+              is_required: q.is_required
+            }
+          });
+        }
+        showToast('Formulario creado');
+      }
+
+      document.getElementById('formModal').classList.remove('active');
+      loadForms();
+    } catch(e) {
+      showToast('Error al guardar formulario: ' + e.message, 'error');
+    }
+  });
+
+  // Cerrar modales
+  document.getElementById('closeFormModal').addEventListener('click', () => {
+    document.getElementById('formModal').classList.remove('active');
+  });
+  document.getElementById('closeFormModal2').addEventListener('click', () => {
+    document.getElementById('formModal').classList.remove('active');
+  });
+  document.getElementById('closeRespondentAnswersModal').addEventListener('click', () => {
+    document.getElementById('respondentAnswersModal').classList.remove('active');
+  });
+// ================================================================
+// PERFIL
+// ================================================================
+let currentProfilePersonId = null;
+
+async function loadProfile(personId) {
+  const container = document.getElementById('profileContent');
+  container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando perfil...</div>';
+  
+  try {
+    const data = await apiCall(`/persons/${personId}/profile`);
+    const profile = data.data;
+    currentProfilePersonId = personId;
+    renderProfile(profile, false);
+  } catch (e) {
+    container.innerHTML = `<div style="color:#dc2626;">Error al cargar perfil: ${e.message}</div>`;
+  }
+}
+
+function renderProfile(profile, editable = false) {
+  const container = document.getElementById('profileContent');
+  const isOwn = currentUser && (currentUser.personId === profile.id || currentUser.id === profile.id);
+  const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+  const canEdit = editable || isOwn || isAdmin;
+
+  const avatarLetter = profile.firstName ? profile.firstName.charAt(0).toUpperCase() : '?';
+  const avatarHtml = profile.photoUrl 
+    ? `<img src="${profile.photoUrl}" alt="Avatar" />` 
+    : avatarLetter;
+
+  let squadsHtml = '';
+  if (profile.squads && profile.squads.length) {
+    squadsHtml = profile.squads.map(sq => 
+      `<span class="squad-tag">${sq.squadName} (${sq.eventName})</span>`
+    ).join('');
+  } else {
+    squadsHtml = '<span style="color:#94a3b8;">No está en ninguna escuadra</span>';
+  }
+
+  const fanHtml = `
+    <div class="profile-fan">
+      <div class="fan-item"><span class="label">Kamona</span><div class="value">${profile.fanKamona || 0}</div></div>
+      <div class="fan-item"><span class="label">Blackgold</span><div class="value">${profile.fanBlackgold || 0}</div></div>
+      <div class="fan-item"><span class="label">Lobos Blancos</span><div class="value">${profile.fanLobosBlancos || 0}</div></div>
+    </div>
+  `;
+
+  const editBtnHtml = canEdit ? `<button class="btn-create" onclick="toggleEditProfile()" style="margin-top:1rem;"><i class="fas fa-edit"></i> ${editable ? 'Cancelar edición' : 'Editar perfil'}</button>` : '';
+
+  let html = `
+    <div class="profile-card" id="profileCard">
+      <div class="profile-header">
+        <div class="profile-avatar">${avatarHtml}</div>
+        <div class="profile-info">
+          <h2>${profile.firstName} (${profile.nickname})</h2>
+          <div class="sub">${profile.organization ? profile.organization.name : 'Sin facción'} · ${profile.country || 'País no especificado'}</div>
+          <div class="sub" style="margin-top:0.2rem;"><i class="fas fa-warehouse"></i> Almacén: ${profile.almacen || '0'}</div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat"><span class="label">Reputación</span><div class="value">${profile.reputation || 0}</div></div>
+        <div class="profile-stat"><span class="label">Años en el clan</span><div class="value">${profile.joinedAt ? Math.floor((new Date() - new Date(profile.joinedAt)) / (1000*60*60*24*365)) : 0}</div></div>
+      </div>
+      <div class="profile-squads">
+        <strong>Escuadras:</strong>
+        <div style="margin-top:0.5rem;">${squadsHtml}</div>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <strong>Fanaticada en Arena Breakout:</strong>
+        ${fanHtml}
+      </div>
+      ${editBtnHtml}
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+function toggleEditProfile() {
+  const container = document.getElementById('profileContent');
+  const isEditing = document.getElementById('profileEditForm');
+  if (isEditing) {
+    loadProfile(currentProfilePersonId);
+    return;
+  }
+  // Obtener datos actuales
+  const profileData = window._profileData || {};
+  // Mostrar formulario de edición
+  const html = `
+    <div class="profile-card" id="profileEditForm">
+      <h3 style="margin-bottom:1rem;">Editar Perfil</h3>
+      <form onsubmit="saveProfile(event)">
+        <div class="profile-edit-form">
+          <div class="input-group">
+            <label>URL de la foto</label>
+            <input type="text" id="editPhotoUrl" value="${profileData.photoUrl || ''}" placeholder="https://ejemplo.com/foto.jpg" />
+          </div>
+          <div class="input-group">
+            <label>Reputación</label>
+            <input type="number" id="editReputation" value="${profileData.reputation || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fecha de ingreso (AAAA-MM-DD)</label>
+            <input type="date" id="editJoinedAt" value="${profileData.joinedAt ? profileData.joinedAt.split('T')[0] : ''}" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Kamona</label>
+            <input type="number" id="editFanKamona" value="${profileData.fanKamona || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Blackgold</label>
+            <input type="number" id="editFanBlackgold" value="${profileData.fanBlackgold || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Lobos Blancos</label>
+            <input type="number" id="editFanLobosBlancos" value="${profileData.fanLobosBlancos || 0}" min="0" />
+          </div>
+          <div style="display:flex; gap:1rem; margin-top:1rem;">
+            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Guardar cambios</button>
+            <button type="button" class="btn-cancel" onclick="toggleEditProfile()">Cancelar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+async function saveProfile(event) {
+  event.preventDefault();
+  const personId = currentProfilePersonId;
+  if (!personId) return showToast('Error: no se encontró el ID de la persona', 'error');
+
+  const photoUrl = document.getElementById('editPhotoUrl').value.trim() || null;
+  const reputation = parseInt(document.getElementById('editReputation').value) || 0;
+  const joinedAt = document.getElementById('editJoinedAt').value || null;
+  const fanKamona = parseInt(document.getElementById('editFanKamona').value) || 0;
+  const fanBlackgold = parseInt(document.getElementById('editFanBlackgold').value) || 0;
+  const fanLobosBlancos = parseInt(document.getElementById('editFanLobosBlancos').value) || 0;
+
+  try {
+    await apiCall(`/persons/${personId}/profile`, {
+      method: 'PUT',
+      body: { photoUrl, reputation, joinedAt, fanKamona, fanBlackgold, fanLobosBlancos }
+    });
+    showToast('Perfil actualizado correctamente', 'success');
+    loadProfile(personId);
+  } catch (e) {
+    showToast('Error al actualizar perfil: ' + e.message, 'error');
+  }
+}
+
+// ================================================================
+// PERFILES (admin)
+// ================================================================
+async function loadAllProfiles() {
+  try {
+    const data = await apiCall('/persons/profile/all');
+    const profiles = data.data;
+    const grid = document.getElementById('profilesGrid');
+    grid.innerHTML = '';
+    profiles.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'profile-card-mini';
+      card.innerHTML = `
+        <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#0a2540,#3b82f6);margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.5rem;">${p.firstName.charAt(0).toUpperCase()}</div>
+        <div style="margin-top:0.5rem;font-weight:600;">${p.firstName}</div>
+        <div style="font-size:0.8rem;color:#64748b;">${p.nickname}</div>
+      `;
+      card.addEventListener('click', () => viewProfileDetail(p.id));
+      grid.appendChild(card);
+    });
+  } catch (e) {
+    showToast('Error al cargar perfiles: ' + e.message, 'error');
+  }
+}
+
+async function viewProfileDetail(personId) {
+  document.getElementById('profilesGrid').style.display = 'none';
+  document.getElementById('profileDetailView').style.display = 'block';
+  try {
+    const data = await apiCall(`/persons/${personId}/profile`);
+    const profile = data.data;
+    window._profileData = profile;
+    const container = document.getElementById('profileDetailContent');
+    // Guardar el perfil actual para edición
+    container.innerHTML = '';
+    // Reutilizar la función renderProfile pero con editable=true
+    // Clonamos la función para que use el contenedor correcto
+    const tempContainer = document.createElement('div');
+    tempContainer.id = 'tempProfileContainer';
+    document.body.appendChild(tempContainer);
+    // Guardamos el perfil para que el botón de editar funcione
+    window._editingProfileId = personId;
+    
+    // Renderizar en el contenedor de detalle
+    const avatarLetter = profile.firstName ? profile.firstName.charAt(0).toUpperCase() : '?';
+    const avatarHtml = profile.photoUrl ? `<img src="${profile.photoUrl}" alt="Avatar" />` : avatarLetter;
+    let squadsHtml = '';
+    if (profile.squads && profile.squads.length) {
+      squadsHtml = profile.squads.map(sq => `<span class="squad-tag">${sq.squadName} (${sq.eventName})</span>`).join('');
+    } else {
+      squadsHtml = '<span style="color:#94a3b8;">No está en ninguna escuadra</span>';
+    }
+    const fanHtml = `
+      <div class="profile-fan">
+        <div class="fan-item"><span class="label">Kamona</span><div class="value">${profile.fanKamona || 0}</div></div>
+        <div class="fan-item"><span class="label">Blackgold</span><div class="value">${profile.fanBlackgold || 0}</div></div>
+        <div class="fan-item"><span class="label">Lobos Blancos</span><div class="value">${profile.fanLobosBlancos || 0}</div></div>
+      </div>
+    `;
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+    const editBtnHtml = isAdmin ? `<button class="btn-create" onclick="editProfileDetail()" style="margin-top:1rem;"><i class="fas fa-edit"></i> Editar perfil</button>` : '';
+
+    container.innerHTML = `
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">${avatarHtml}</div>
+          <div class="profile-info">
+            <h2>${profile.firstName} (${profile.nickname})</h2>
+            <div class="sub">${profile.organization ? profile.organization.name : 'Sin facción'} · ${profile.country || 'País no especificado'}</div>
+            <div class="sub" style="margin-top:0.2rem;"><i class="fas fa-warehouse"></i> Almacén: ${profile.almacen || '0'}</div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat"><span class="label">Reputación</span><div class="value">${profile.reputation || 0}</div></div>
+          <div class="profile-stat"><span class="label">Años en el clan</span><div class="value">${profile.joinedAt ? Math.floor((new Date() - new Date(profile.joinedAt)) / (1000*60*60*24*365)) : 0}</div></div>
+        </div>
+        <div class="profile-squads">
+          <strong>Escuadras:</strong>
+          <div style="margin-top:0.5rem;">${squadsHtml}</div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <strong>Fanaticada en Arena Breakout:</strong>
+          ${fanHtml}
+        </div>
+        ${editBtnHtml}
+      </div>
+    `;
+    // Guardar datos para edición
+    window._profileData = profile;
+  } catch (e) {
+    showToast('Error al cargar perfil: ' + e.message, 'error');
+  }
+}
+
+function editProfileDetail() {
+  const container = document.getElementById('profileDetailContent');
+  const profile = window._profileData;
+  if (!profile) return;
+  
+  const html = `
+    <div class="profile-card">
+      <h3 style="margin-bottom:1rem;">Editar Perfil de ${profile.firstName}</h3>
+      <form onsubmit="saveProfileDetail(event)">
+        <div class="profile-edit-form">
+          <div class="input-group">
+            <label>URL de la foto</label>
+            <input type="text" id="editDetailPhotoUrl" value="${profile.photoUrl || ''}" placeholder="https://ejemplo.com/foto.jpg" />
+          </div>
+          <div class="input-group">
+            <label>Reputación</label>
+            <input type="number" id="editDetailReputation" value="${profile.reputation || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fecha de ingreso (AAAA-MM-DD)</label>
+            <input type="date" id="editDetailJoinedAt" value="${profile.joinedAt ? profile.joinedAt.split('T')[0] : ''}" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Kamona</label>
+            <input type="number" id="editDetailFanKamona" value="${profile.fanKamona || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Blackgold</label>
+            <input type="number" id="editDetailFanBlackgold" value="${profile.fanBlackgold || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Lobos Blancos</label>
+            <input type="number" id="editDetailFanLobosBlancos" value="${profile.fanLobosBlancos || 0}" min="0" />
+          </div>
+          <div style="display:flex; gap:1rem; margin-top:1rem;">
+            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Guardar cambios</button>
+            <button type="button" class="btn-cancel" onclick="viewProfileDetail(window._editingProfileId)">Cancelar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+async function saveProfileDetail(event) {
+  event.preventDefault();
+  const personId = window._editingProfileId;
+  if (!personId) return showToast('Error: no se encontró el ID de la persona', 'error');
+
+  const photoUrl = document.getElementById('editDetailPhotoUrl').value.trim() || null;
+  const reputation = parseInt(document.getElementById('editDetailReputation').value) || 0;
+  const joinedAt = document.getElementById('editDetailJoinedAt').value || null;
+  const fanKamona = parseInt(document.getElementById('editDetailFanKamona').value) || 0;
+  const fanBlackgold = parseInt(document.getElementById('editDetailFanBlackgold').value) || 0;
+  const fanLobosBlancos = parseInt(document.getElementById('editDetailFanLobosBlancos').value) || 0;
+
+  try {
+    await apiCall(`/persons/${personId}/profile`, {
+      method: 'PUT',
+      body: { photoUrl, reputation, joinedAt, fanKamona, fanBlackgold, fanLobosBlancos }
+    });
+    showToast('Perfil actualizado correctamente', 'success');
+    viewProfileDetail(personId);
+  } catch (e) {
+    showToast('Error al actualizar perfil: ' + e.message, 'error');
+  }
+}
+
+function closeProfileDetail() {
+  document.getElementById('profilesGrid').style.display = 'grid';
+  document.getElementById('profileDetailView').style.display = 'none';
+}
+
+  // ================================================================
+  // MENÚ HAMBURGUESA PARA MÓVIL
+  // ================================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const navUser = document.getElementById('navUser');
+
+    if (menuToggle && navUser) {
+      menuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navUser.classList.toggle('open');
+        const icon = this.querySelector('i');
+        if (navUser.classList.contains('open')) {
+          icon.className = 'fas fa-times';
+        } else {
+          icon.className = 'fas fa-bars';
+        }
+      });
+
+      // Cerrar menú al hacer clic en un enlace o botón dentro de navUser
+      navUser.querySelectorAll('span, .logout-btn, a').forEach(el => {
+        el.addEventListener('click', function() {
+          navUser.classList.remove('open');
+          const icon = menuToggle.querySelector('i');
+          if (icon) icon.className = 'fas fa-bars';
+        });
+      });
+
+      // Cerrar menú al hacer clic fuera
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.navbar')) {
+          navUser.classList.remove('open');
+          const icon = menuToggle.querySelector('i');
+          if (icon) icon.className = 'fas fa-bars';
+        }
+      });
+    }
+  });
+
+  // ================================================================
+  // INICIALIZACIÓN DE LA PESTAÑA FORMS (ya en renderTabs)
+  // ================================================================
+  // Nota: la llamada a loadForms() ya está en renderTabs al hacer clic en "forms"
+</script>
+</body>
+</html>
