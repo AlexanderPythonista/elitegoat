@@ -15,6 +15,12 @@ export const Person = {
       country: p.country || '',
       coordinationId: p.coordination_id,
       userId: p.user_id,
+      photoUrl: p.photo_url || null,
+      reputation: p.reputation || 0,
+      joinedAt: p.joined_at || p.created_at,
+      fanKamona: p.fan_kamona || 0,
+      fanBlackgold: p.fan_blackgold || 0,
+      fanLobosBlancos: p.fan_lobos_blancos || 0,
       createdAt: p.created_at
     }));
   },
@@ -34,6 +40,12 @@ export const Person = {
         country: data.country || '',
         coordinationId: data.coordination_id,
         userId: data.user_id,
+        photoUrl: data.photo_url || null,
+        reputation: data.reputation || 0,
+        joinedAt: data.joined_at || data.created_at,
+        fanKamona: data.fan_kamona || 0,
+        fanBlackgold: data.fan_blackgold || 0,
+        fanLobosBlancos: data.fan_lobos_blancos || 0,
         createdAt: data.created_at
       };
     }
@@ -53,6 +65,12 @@ export const Person = {
       country: p.country || '',
       coordinationId: p.coordination_id,
       userId: p.user_id,
+      photoUrl: p.photo_url || null,
+      reputation: p.reputation || 0,
+      joinedAt: p.joined_at || p.created_at,
+      fanKamona: p.fan_kamona || 0,
+      fanBlackgold: p.fan_blackgold || 0,
+      fanLobosBlancos: p.fan_lobos_blancos || 0,
       createdAt: p.created_at
     }));
   },
@@ -70,6 +88,12 @@ export const Person = {
       country: p.country || '',
       coordinationId: p.coordination_id,
       userId: p.user_id,
+      photoUrl: p.photo_url || null,
+      reputation: p.reputation || 0,
+      joinedAt: p.joined_at || p.created_at,
+      fanKamona: p.fan_kamona || 0,
+      fanBlackgold: p.fan_blackgold || 0,
+      fanLobosBlancos: p.fan_lobos_blancos || 0,
       createdAt: p.created_at
     }));
   },
@@ -80,7 +104,6 @@ export const Person = {
       if (existing) throw new Error('El ID ya está en uso');
     }
 
-    // 1. Insertar persona con user_id = null
     const newPerson = {
       id: data.id || crypto.randomUUID(),
       first_name: data.firstName,
@@ -88,6 +111,12 @@ export const Person = {
       country: data.country || '',
       coordination_id: data.coordinationId || null,
       user_id: null,
+      photo_url: data.photoUrl || null,
+      reputation: data.reputation || 0,
+      joined_at: data.joinedAt || new Date().toISOString(),
+      fan_kamona: data.fanKamona || 0,
+      fan_blackgold: data.fanBlackgold || 0,
+      fan_lobos_blancos: data.fanLobosBlancos || 0,
       created_at: new Date().toISOString()
     };
 
@@ -98,16 +127,11 @@ export const Person = {
       .single();
     if (error) throw new Error(error.message);
 
-    console.log('📝 Persona insertada:', result);
-
-    // 2. Si no tiene userId, crear usuario en Auth y en tabla users
+    // Si no tiene userId, crear usuario en Auth y en tabla users
     if (!data.userId) {
       try {
         const email = `${data.id || result.id}@eventpro.local`;
         const password = data.id || result.id;
-        console.log(`🔐 Creando usuario en Auth con email: ${email}`);
-        
-        // 2a. Crear en auth.users
         const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
           email,
           password,
@@ -115,10 +139,8 @@ export const Person = {
           email_confirm: true
         });
         if (authError) throw new Error(authError.message);
-        console.log(`✅ Usuario creado en Auth: ${authUser.user.id}`);
 
-        // 2b. Insertar en la tabla users personalizada (ANTES de actualizar persons)
-        const { error: insertUserError } = await supabase
+        await supabase
           .from('users')
           .insert([{
             id: authUser.user.id,
@@ -128,35 +150,35 @@ export const Person = {
             is_active: true,
             created_at: new Date().toISOString()
           }]);
-        if (insertUserError) {
-          console.error('❌ Error insertando en users:', insertUserError);
-          throw new Error(`Error insertando en users: ${insertUserError.message}`);
-        }
-        console.log(`✅ Usuario insertado en tabla users: ${authUser.user.id}`);
 
-        // 2c. Ahora sí, actualizar persons con el user_id (la clave foránea ya existe)
-        const { error: updateError } = await supabase
+        await supabase
           .from(TABLE)
           .update({ user_id: authUser.user.id })
           .eq('id', result.id);
-        if (updateError) {
-          console.error('❌ Error actualizando persons con user_id:', updateError);
-          throw new Error(`Error actualizando persons: ${updateError.message}`);
-        }
-        console.log(`✅ Persona actualizada con user_id: ${authUser.user.id}`);
 
-        // 2d. Recuperar la persona completa con el user_id actualizado
         const fullPerson = await this.findById(result.id);
         return fullPerson;
       } catch (e) {
-        console.error('❌ Error en el flujo de creación de usuario:', e);
-        // Si falla, devolver la persona sin userId (pero no debería)
+        console.error('Error creando usuario:', e);
         return result;
       }
     }
 
-    // Si ya tenía userId (caso raro), devolver la persona
-    return result;
+    return {
+      ...result,
+      firstName: result.first_name || result.id || '?',
+      nickname: result.nickname || result.id || '?',
+      country: result.country || '',
+      coordinationId: result.coordination_id,
+      userId: result.user_id,
+      photoUrl: result.photo_url || null,
+      reputation: result.reputation || 0,
+      joinedAt: result.joined_at || result.created_at,
+      fanKamona: result.fan_kamona || 0,
+      fanBlackgold: result.fan_blackgold || 0,
+      fanLobosBlancos: result.fan_lobos_blancos || 0,
+      createdAt: result.created_at
+    };
   },
 
   async update(id, updateData) {
@@ -166,6 +188,12 @@ export const Person = {
     if (updateData.country !== undefined) updates.country = updateData.country;
     if (updateData.coordinationId !== undefined) updates.coordination_id = updateData.coordinationId;
     if (updateData.userId !== undefined) updates.user_id = updateData.userId;
+    if (updateData.photoUrl !== undefined) updates.photo_url = updateData.photoUrl;
+    if (updateData.reputation !== undefined) updates.reputation = updateData.reputation;
+    if (updateData.joinedAt !== undefined) updates.joined_at = updateData.joinedAt;
+    if (updateData.fanKamona !== undefined) updates.fan_kamona = updateData.fanKamona;
+    if (updateData.fanBlackgold !== undefined) updates.fan_blackgold = updateData.fanBlackgold;
+    if (updateData.fanLobosBlancos !== undefined) updates.fan_lobos_blancos = updateData.fanLobosBlancos;
 
     const { data, error } = await supabase
       .from(TABLE)
@@ -181,6 +209,12 @@ export const Person = {
       country: data.country || '',
       coordinationId: data.coordination_id,
       userId: data.user_id,
+      photoUrl: data.photo_url || null,
+      reputation: data.reputation || 0,
+      joinedAt: data.joined_at || data.created_at,
+      fanKamona: data.fan_kamona || 0,
+      fanBlackgold: data.fan_blackgold || 0,
+      fanLobosBlancos: data.fan_lobos_blancos || 0,
       createdAt: data.created_at
     };
   },
@@ -210,6 +244,12 @@ export const Person = {
       country: data.country || '',
       coordinationId: data.coordination_id,
       userId: data.user_id,
+      photoUrl: data.photo_url || null,
+      reputation: data.reputation || 0,
+      joinedAt: data.joined_at || data.created_at,
+      fanKamona: data.fan_kamona || 0,
+      fanBlackgold: data.fan_blackgold || 0,
+      fanLobosBlancos: data.fan_lobos_blancos || 0,
       createdAt: data.created_at
     };
   },
@@ -229,6 +269,12 @@ export const Person = {
       country: data.country || '',
       coordinationId: data.coordination_id,
       userId: data.user_id,
+      photoUrl: data.photo_url || null,
+      reputation: data.reputation || 0,
+      joinedAt: data.joined_at || data.created_at,
+      fanKamona: data.fan_kamona || 0,
+      fanBlackgold: data.fan_blackgold || 0,
+      fanLobosBlancos: data.fan_lobos_blancos || 0,
       createdAt: data.created_at
     };
   }

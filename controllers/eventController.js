@@ -64,7 +64,6 @@ export const getMyEvents = async (req, res) => {
       events = await Event.findActiveByCreator(req.user.id);
     }
 
-    // Enriquecer con participantes (asegurar firstName y nickname)
     const enriched = await Promise.all(events.map(async (ev) => {
       const participantIds = ev.participantIds || [];
       const participants = await Promise.all(
@@ -411,7 +410,7 @@ export const removeParticipantFromEvent = async (req, res) => {
 };
 
 // ================================================================
-// PARTIDAS (MATCHES)
+// PARTIDAS (MATCHES) - CON VALIDACIÓN DE ESCUADRA PARA PARTICIPANTES
 // ================================================================
 
 export const addMatches = async (req, res) => {
@@ -430,9 +429,19 @@ export const addMatches = async (req, res) => {
       return res.status(403).json({ success: false, message: 'No autorizado para registrar partidas' });
     }
 
+    // Validación para participantes (no admin/root)
     if (!isCreator && !isAdmin) {
-      if (!Array.isArray(participantIds) || participantIds.length !== 1 || participantIds[0] !== personId) {
-        return res.status(403).json({ success: false, message: 'Solo puedes registrar tus propias partidas' });
+      // Buscar la escuadra del usuario en este evento
+      const userSquad = (event.squads || []).find(sq => (sq.memberIds || []).includes(personId));
+      if (!userSquad) {
+        return res.status(403).json({ success: false, message: 'No perteneces a ninguna escuadra en este evento' });
+      }
+
+      // Verificar que todos los participantIds pertenecen a la misma escuadra
+      const squadMemberIds = userSquad.memberIds || [];
+      const allInSquad = participantIds.every(pid => squadMemberIds.includes(pid));
+      if (!allInSquad) {
+        return res.status(403).json({ success: false, message: 'Solo puedes registrar partidas para miembros de tu escuadra' });
       }
     }
 

@@ -24,6 +24,9 @@
     .input-group label { font-weight:500; font-size:0.85rem; color:#334155; margin-bottom:0.3rem; }
     .input-group input, .input-group select { padding:0.9rem 1rem; border:1.5px solid #e2e8f0; border-radius:16px; font-size:1rem; transition:0.2s; background:#fafcff; width:100%; }
     .input-group input:focus, .input-group select:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 4px rgba(59,130,246,0.15); }
+    .login-remember { display:flex; align-items:center; gap:0.5rem; margin-bottom:1.25rem; cursor:pointer; }
+    .login-remember input[type="checkbox"] { width:auto; height:1.2rem; width:1.2rem; margin:0; }
+    .login-remember label { font-size:0.9rem; color:#475569; cursor:pointer; }
     .btn-primary { background:#0a2540; color:#fff; border:none; padding:0.9rem 1.5rem; border-radius:40px; font-weight:600; font-size:1rem; cursor:pointer; width:100%; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
     .btn-primary:hover { background:#1e3a5f; transform:scale(1.02); box-shadow:0 8px 20px rgba(10,37,64,0.15); }
 
@@ -36,6 +39,21 @@
     .navbar-user span { font-weight:500; color:#1e293b; background:#f1f5f9; padding:0.4rem 1rem; border-radius:40px; font-size:0.9rem; }
     .logout-btn { background:none; border:none; color:#64748b; font-size:1.2rem; cursor:pointer; transition:0.2s; }
     .logout-btn:hover { color:#ef4444; }
+
+    /* === NUEVO: Menú hamburguesa === */
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #0a2540;
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      transition: color 0.3s;
+    }
+    .menu-toggle:hover {
+      color: #3b82f6;
+    }
 
     .content { padding:2rem 2.5rem; flex:1; }
     .content-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; }
@@ -430,15 +448,6 @@
       justify-content: center;
     }
 
-    @media (max-width:650px) {
-      .navbar{ padding:0.8rem 1.2rem; }
-      .content{ padding:1.2rem; }
-      .events-grid{ grid-template-columns:1fr; }
-      .stats-form { grid-template-columns:1fr; }
-      .ruleta-container { flex-direction: column; }
-      .ruleta-grafico canvas { max-width: 100%; }
-    }
-
     /* ===== FORMULARIOS ===== */
     .forms-grid .form-card {
       background: #fff;
@@ -591,6 +600,237 @@
     .question-editor-item .question-actions .delete-q:hover {
       background: #fee2e2;
     }
+    /* ===== PERFIL ===== */
+.profile-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  border: 1px solid #edf2f7;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0a2540, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.profile-info h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+.profile-info .sub {
+  color: #64748b;
+  font-size: 1rem;
+}
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.profile-stat {
+  background: #f8fafc;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.profile-stat .label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.profile-stat .value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0a2540;
+}
+.profile-squads {
+  margin-top: 1.5rem;
+}
+.profile-squads .squad-tag {
+  display: inline-block;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin: 0.2rem 0.4rem 0.2rem 0;
+}
+.profile-fan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.profile-fan .fan-item {
+  background: #f8fafc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  min-width: 120px;
+}
+.profile-fan .fan-item .label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+.profile-fan .fan-item .value {
+  font-weight: 600;
+}
+.profile-edit-form .input-group {
+  margin-bottom: 1rem;
+}
+.profile-edit-form label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.profile-edit-form input, .profile-edit-form select {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+.profile-card-mini {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.2s;
+}
+.profile-card-mini:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+    /* ===== RESPONSIVE NAV ===== */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .navbar-user {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 1rem 0 0.5rem;
+        border-top: 1px solid #eef2f6;
+        margin-top: 1rem;
+      }
+      .navbar-user.open {
+        display: flex;
+      }
+
+      .navbar-user span,
+      .navbar-user .logout-btn,
+      .navbar-user a {
+        padding: 0.5rem 1rem;
+        text-align: center;
+        border-radius: 8px;
+      }
+      .navbar-user a {
+        background: #f1f5f9;
+        color: #0a2540;
+      }
+
+      .navbar {
+        flex-wrap: wrap;
+      }
+
+      .content {
+        padding: 1rem 1.2rem;
+      }
+      .events-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-tabs {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .nav-tabs button {
+        text-align: left;
+        padding: 0.6rem 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+      .nav-tabs button.active {
+        background: #0a2540;
+        color: #fff;
+      }
+      .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 0.8rem;
+      }
+      .content-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      .btn-create {
+        justify-content: center;
+      }
+      .profile-card {
+        padding: 1rem;
+      }
+      .profile-stats {
+        grid-template-columns: 1fr;
+      }
+      .forms-grid {
+        grid-template-columns: 1fr;
+      }
+      .respondents-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-fan {
+        flex-direction: column;
+      }
+      .profile-fan .fan-item {
+        min-width: unset;
+      }
+    }
   </style>
 </head>
 <body>
@@ -608,6 +848,10 @@
         <label><i class="fas fa-lock"></i> Contraseña</label>
         <input type="password" id="loginPass" placeholder="Ingrese Contraseña" />
       </div>
+      <div class="login-remember">
+        <input type="checkbox" id="rememberMe" />
+        <label for="rememberMe">Recordar sesión</label>
+      </div>
       <button class="btn-primary" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Iniciar sesión</button>
     </div>
   </div>
@@ -616,10 +860,13 @@
   <div class="dashboard" id="dashboard">
     <nav class="navbar">
       <div class="navbar-brand"><i class="fas fa-flag-checkered"></i> EventPro</div>
-      <div class="navbar-user">
+      <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="navbar-user" id="navUser">
         <span><i class="fas fa-user-circle"></i> <span id="userNameDisplay">Root</span></span>
         <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
-        <a href="/" class="btn-add-participant" style="text-decoration:none;"><i class="fas fa-home"></i> Inicio</a>
+        <a href="/" class="btn-add-participant" style="text-decoration:none; text-align:center;"><i class="fas fa-home"></i> Inicio</a>
       </div>
     </nav>
     <div class="content">
@@ -781,6 +1028,27 @@
           </div>
         </div>
       </div>
+      <!-- Tab: Perfil -->
+<div class="tab-content" id="tab-perfil">
+  <div class="content-header">
+    <h2><i class="fas fa-user-circle"></i> Mi Perfil</h2>
+  </div>
+  <div id="profileContent">
+    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando perfil...</div>
+  </div>
+</div>
+
+<!-- Tab: Perfiles (solo admin) -->
+<div class="tab-content" id="tab-perfiles">
+  <div class="content-header">
+    <h2><i class="fas fa-users-cog"></i> Todos los Perfiles</h2>
+  </div>
+  <div id="profilesGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.5rem; margin-top:1rem;"></div>
+  <div id="profileDetailView" style="display:none; margin-top:1rem;">
+    <button class="btn-add-participant" onclick="closeProfileDetail()" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
+    <div id="profileDetailContent"></div>
+  </div>
+</div>
     </div>
   </div>
 </div>
@@ -1360,8 +1628,17 @@
   }
 
   // ================================================================
-  // PERSISTENCIA DE SESIÓN
+  // PERSISTENCIA DE SESIÓN Y REMEMBER ME
   // ================================================================
+  // Cargar credenciales guardadas
+  const savedUsername = localStorage.getItem('rememberUsername');
+  const savedPassword = localStorage.getItem('rememberPassword');
+  if (savedUsername && savedPassword) {
+    document.getElementById('loginUser').value = savedUsername;
+    document.getElementById('loginPass').value = savedPassword;
+    document.getElementById('rememberMe').checked = true;
+  }
+
   const savedToken = localStorage.getItem('token');
   const savedUser = localStorage.getItem('user');
   if (savedToken && savedUser) {
@@ -1511,53 +1788,62 @@
   }
 
   // ================================================================
-  // RENDER TABS (incluye llamada a loadForms)
+  // RENDER TABS (excluye formularios para participantes)
   // ================================================================
-  function renderTabs() {
-    const container = document.getElementById('navTabs');
-    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
-    let tabs = '';
-    if (isAdmin) {
-      tabs = `
-        <button data-tab="organizations"><i class="fas fa-building"></i> Organizaciones</button>
-        <button data-tab="persons"><i class="fas fa-users"></i> Personas</button>
-        <button data-tab="events"><i class="fas fa-calendar-check"></i> Eventos</button>
-        <button data-tab="ranking"><i class="fas fa-chart-simple"></i> Ranking</button>
-        <button data-tab="top"><i class="fas fa-trophy"></i> TOP</button>
-        <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
-        <button data-tab="forms"><i class="fas fa-edit"></i> Formularios</button>
-        <button data-tab="users"><i class="fas fa-user-shield"></i> Usuarios</button>
-        <button data-tab="logs"><i class="fas fa-history"></i> Historial</button>
-      `;
-    } else {
-      tabs = `
-        <button data-tab="events"><i class="fas fa-calendar-check"></i> Eventos</button>
-        <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
-        <button data-tab="forms"><i class="fas fa-edit"></i> Formularios</button>
-      `;
-    }
-    container.innerHTML = tabs;
-    document.querySelectorAll('.nav-tabs button').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        const tab = this.dataset.tab;
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        const target = document.getElementById('tab-'+tab);
-        if (target) target.classList.add('active');
-        if (tab === 'organizations') loadOrganizations();
-        else if (tab === 'persons') { loadPersons(); loadCoordinationSelects(); }
-        else if (tab === 'events') loadEvents();
-        else if (tab === 'ranking') loadRankingTab();
-        else if (tab === 'top') loadTopTab();
-        else if (tab === 'users') loadUsers();
-        else if (tab === 'logs') loadLogs();
-        else if (tab === 'ruleta') { drawRuleta(); }
-        else if (tab === 'forms') { loadForms(); }
-      });
-    });
+ function renderTabs() {
+  const container = document.getElementById('navTabs');
+  const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+  let tabs = '';
+  if (isAdmin) {
+    tabs = `
+      <button data-tab="organizations"><i class="fas fa-building"></i> Organizaciones</button>
+      <button data-tab="persons"><i class="fas fa-users"></i> Personas</button>
+      <button data-tab="events"><i class="fas fa-calendar-check"></i> Eventos</button>
+      <button data-tab="ranking"><i class="fas fa-chart-simple"></i> Ranking</button>
+      <button data-tab="top"><i class="fas fa-trophy"></i> TOP</button>
+      <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
+      <button data-tab="forms"><i class="fas fa-edit"></i> Formularios</button>
+      <button data-tab="perfil"><i class="fas fa-user"></i> Perfil</button>
+      <button data-tab="perfiles"><i class="fas fa-users-cog"></i> Perfiles</button>
+      <button data-tab="users"><i class="fas fa-user-shield"></i> Usuarios</button>
+      <button data-tab="logs"><i class="fas fa-history"></i> Historial</button>
+    `;
+  } else {
+    tabs = `
+      <button data-tab="events"><i class="fas fa-calendar-check"></i> Eventos</button>
+      <button data-tab="ruleta"><i class="fas fa-circle-notch"></i> Ruleta</button>
+      <button data-tab="perfil"><i class="fas fa-user"></i> Perfil</button>
+    `;
   }
-
+  container.innerHTML = tabs;
+  document.querySelectorAll('.nav-tabs button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const tab = this.dataset.tab;
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      const target = document.getElementById('tab-'+tab);
+      if (target) target.classList.add('active');
+      if (tab === 'organizations') loadOrganizations();
+      else if (tab === 'persons') { loadPersons(); loadCoordinationSelects(); }
+      else if (tab === 'events') loadEvents();
+      else if (tab === 'ranking') loadRankingTab();
+      else if (tab === 'top') loadTopTab();
+      else if (tab === 'users') loadUsers();
+      else if (tab === 'logs') loadLogs();
+      else if (tab === 'ruleta') { drawRuleta(); }
+      else if (tab === 'forms') { loadForms(); }
+      else if (tab === 'perfil') { 
+        if (currentUser) {
+          const personId = currentUser.personId || currentUser.id;
+          if (personId) loadProfile(personId);
+          else showToast('No se encontró tu perfil', 'error');
+        }
+      }
+      else if (tab === 'perfiles') { loadAllProfiles(); }
+    });
+  });
+}
   // ================================================================
   // ORGANIZACIONES
   // ================================================================
@@ -2476,15 +2762,35 @@
   });
 
   // ================================================================
-  // SUBIR IMAGEN / ESTADÍSTICAS
+  // SUBIR IMAGEN / ESTADÍSTICAS (con filtro de escuadra para participantes)
   // ================================================================
   function openStatsModal(eventId, personId, personName) {
-    if (currentUser.role === 'participante') {
-      if (personId !== currentPersonId) {
-        showToast('No tienes permiso para ver estadísticas de otros participantes', 'error');
-        return;
-      }
+    // Si es participante, solo puede ver miembros de su escuadra
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+    if (!isAdmin && personId !== currentPersonId) {
+      // Si intenta ver estadísticas de otro, redirigimos a su propia escuadra
+      // Buscamos su escuadra en el evento
+      apiCall(`/events/${eventId}`).then(data => {
+        const event = data.data;
+        const squads = event.squads || [];
+        let userSquad = null;
+        for (const sq of squads) {
+          if ((sq.memberIds || []).includes(currentPersonId)) {
+            userSquad = sq;
+            break;
+          }
+        }
+        if (!userSquad) {
+          showToast('No perteneces a ninguna escuadra en este evento', 'error');
+          return;
+        }
+        // Abrir modal con solo los miembros de su escuadra
+        openStatsModalForSquad(event, userSquad);
+      }).catch(e => showToast(e.message, 'error'));
+      return;
     }
+
+    // Admin o el propio participante viendo sus propias estadísticas
     statsEventId = eventId;
     statsSquadId = null;
     document.getElementById('statsEventId').value = eventId;
@@ -2494,7 +2800,9 @@
       const participants = event.participants || [];
       const container = document.getElementById('statsParticipantsContainer');
       container.innerHTML = '';
-      if (currentUser.role === 'participante') {
+
+      if (!isAdmin) {
+        // Participante viendo sus propias estadísticas: solo él
         const self = participants.find(p => p.id === personId);
         if (self) {
           container.innerHTML = `
@@ -2507,6 +2815,7 @@
           container.innerHTML = '<span style="color:#94a3b8;">No perteneces a este evento</span>';
         }
       } else {
+        // Admin: muestra todos los participantes
         participants.forEach(p => {
           const checked = (p.id === personId) ? 'checked' : '';
           container.innerHTML += `
@@ -2524,6 +2833,39 @@
       document.querySelector('#uploadStatsModal h3').textContent = 'Subir imagen / Ingresar estadísticas';
       document.getElementById('uploadStatsModal').classList.add('active');
     }).catch(e => showToast(e.message, 'error'));
+  }
+
+  // Función auxiliar para abrir modal con los miembros de una escuadra específica
+  function openStatsModalForSquad(event, squad) {
+    statsEventId = event.id;
+    statsSquadId = squad.id;
+    document.getElementById('statsEventId').value = event.id;
+    document.getElementById('statsSquadId').value = squad.id;
+
+    const participants = event.participants || [];
+    const memberIds = squad.memberIds || [];
+    const container = document.getElementById('statsParticipantsContainer');
+    container.innerHTML = '';
+
+    // Mostrar solo los miembros de la escuadra
+    participants.forEach(p => {
+      if (memberIds.includes(p.id)) {
+        const checked = (p.id === currentPersonId) ? 'checked' : 'checked'; // Todos seleccionados por defecto
+        container.innerHTML += `
+          <label>
+            <input type="checkbox" value="${p.id}" ${checked} />
+            ${p.nickname}
+          </label>
+        `;
+      }
+    });
+
+    updateStatsForms();
+    document.getElementById('statsImageInput').value = '';
+    document.getElementById('extractedTextDisplay').style.display = 'none';
+    document.getElementById('extractedTextDisplay').textContent = '';
+    document.querySelector('#uploadStatsModal h3').textContent = `Subir imagen / Ingresar estadísticas - Escuadra: ${squad.name}`;
+    document.getElementById('uploadStatsModal').classList.add('active');
   }
 
   function openUploadImageForSquad(eventId, squadId, squadName) {
@@ -2692,6 +3034,7 @@
     if (forms.length === 0) return showToast('No hay participantes seleccionados', 'error');
 
     const matches = [];
+    let valid = true;
     forms.forEach(form => {
       const participantId = form.dataset.participantId;
       const botin = parseFloat(form.querySelector('.stat-botin').value) || 0;
@@ -2700,6 +3043,13 @@
       const minutos = parseInt(form.querySelector('.stat-minutos').value) || 0;
       const segundos = parseInt(form.querySelector('.stat-segundos').value) || 0;
       const resultado = form.querySelector('.stat-resultado').value || '';
+
+      if (isNaN(botin) || isNaN(elimContratistas) || isNaN(elimOtros) || isNaN(minutos) || isNaN(segundos)) {
+        showToast('Error: algunos valores no son números válidos', 'error');
+        valid = false;
+        return;
+      }
+
       matches.push({
         participantId,
         squadId,
@@ -2712,7 +3062,7 @@
       });
     });
 
-    if (matches.length === 0) return showToast('No hay datos para guardar', 'error');
+    if (!valid || matches.length === 0) return;
 
     const fileInput = document.getElementById('statsImageInput');
     const file = fileInput.files[0];
@@ -2744,7 +3094,15 @@
       }
       showToast(`${matches.length} partida(s) registrada(s) correctamente`, 'success');
       document.getElementById('uploadStatsModal').classList.remove('active');
-      loadEvents();
+      loadEvents(); // Recargar eventos
+
+      // Si el modal de ranking está abierto, cerrarlo y volver a abrirlo
+      if (document.getElementById('rankingModal').classList.contains('active')) {
+        document.getElementById('rankingModal').classList.remove('active');
+        if (currentRankingEventId) {
+          viewRankingModal(currentRankingEventId);
+        }
+      }
     } catch(e) {
       showToast('Error al guardar partidas: ' + e.message, 'error');
     }
@@ -3282,11 +3640,12 @@
   });
 
   // ================================================================
-  // LOGIN
+  // LOGIN (con Remember Me)
   // ================================================================
   document.getElementById('loginBtn').addEventListener('click', async () => {
     const username = document.getElementById('loginUser').value.trim();
     const password = document.getElementById('loginPass').value.trim();
+    const remember = document.getElementById('rememberMe').checked;
     if (!username || !password) return showToast('Usuario y contraseña requeridos', 'error');
     try {
       const data = await apiCall('/auth/login', { method: 'POST', body: { username, password } });
@@ -3296,6 +3655,16 @@
       
       localStorage.setItem('token', authToken);
       localStorage.setItem('user', JSON.stringify(currentUser));
+
+      // Guardar credenciales si "Recordar sesión" está marcado
+      if (remember) {
+        localStorage.setItem('rememberUsername', username);
+        localStorage.setItem('rememberPassword', password);
+      } else {
+        localStorage.removeItem('rememberUsername');
+        localStorage.removeItem('rememberPassword');
+      }
+
       document.getElementById('userNameDisplay').textContent = currentUser.username;
 
       document.getElementById('loginScreen').style.display = 'none';
@@ -3333,6 +3702,7 @@
         currentPersonId = null;
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        // No borramos las credenciales de remember, para que sigan funcionando
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('loginScreen').style.display = 'flex';
         showToast('✅ Sesión cerrada correctamente');
@@ -3727,6 +4097,364 @@
   });
   document.getElementById('closeRespondentAnswersModal').addEventListener('click', () => {
     document.getElementById('respondentAnswersModal').classList.remove('active');
+  });
+// ================================================================
+// PERFIL
+// ================================================================
+let currentProfilePersonId = null;
+
+async function loadProfile(personId) {
+  const container = document.getElementById('profileContent');
+  container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando perfil...</div>';
+  
+  try {
+    const data = await apiCall(`/persons/${personId}/profile`);
+    const profile = data.data;
+    currentProfilePersonId = personId;
+    renderProfile(profile, false);
+  } catch (e) {
+    container.innerHTML = `<div style="color:#dc2626;">Error al cargar perfil: ${e.message}</div>`;
+  }
+}
+
+function renderProfile(profile, editable = false) {
+  const container = document.getElementById('profileContent');
+  const isOwn = currentUser && (currentUser.personId === profile.id || currentUser.id === profile.id);
+  const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+  const canEdit = editable || isOwn || isAdmin;
+
+  const avatarLetter = profile.firstName ? profile.firstName.charAt(0).toUpperCase() : '?';
+  const avatarHtml = profile.photoUrl 
+    ? `<img src="${profile.photoUrl}" alt="Avatar" />` 
+    : avatarLetter;
+
+  let squadsHtml = '';
+  if (profile.squads && profile.squads.length) {
+    squadsHtml = profile.squads.map(sq => 
+      `<span class="squad-tag">${sq.squadName} (${sq.eventName})</span>`
+    ).join('');
+  } else {
+    squadsHtml = '<span style="color:#94a3b8;">No está en ninguna escuadra</span>';
+  }
+
+  const fanHtml = `
+    <div class="profile-fan">
+      <div class="fan-item"><span class="label">Kamona</span><div class="value">${profile.fanKamona || 0}</div></div>
+      <div class="fan-item"><span class="label">Blackgold</span><div class="value">${profile.fanBlackgold || 0}</div></div>
+      <div class="fan-item"><span class="label">Lobos Blancos</span><div class="value">${profile.fanLobosBlancos || 0}</div></div>
+    </div>
+  `;
+
+  const editBtnHtml = canEdit ? `<button class="btn-create" onclick="toggleEditProfile()" style="margin-top:1rem;"><i class="fas fa-edit"></i> ${editable ? 'Cancelar edición' : 'Editar perfil'}</button>` : '';
+
+  let html = `
+    <div class="profile-card" id="profileCard">
+      <div class="profile-header">
+        <div class="profile-avatar">${avatarHtml}</div>
+        <div class="profile-info">
+          <h2>${profile.firstName} (${profile.nickname})</h2>
+          <div class="sub">${profile.organization ? profile.organization.name : 'Sin facción'} · ${profile.country || 'País no especificado'}</div>
+          <div class="sub" style="margin-top:0.2rem;"><i class="fas fa-warehouse"></i> Almacén: ${profile.almacen || '0'}</div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat"><span class="label">Reputación</span><div class="value">${profile.reputation || 0}</div></div>
+        <div class="profile-stat"><span class="label">Años en el clan</span><div class="value">${profile.joinedAt ? Math.floor((new Date() - new Date(profile.joinedAt)) / (1000*60*60*24*365)) : 0}</div></div>
+      </div>
+      <div class="profile-squads">
+        <strong>Escuadras:</strong>
+        <div style="margin-top:0.5rem;">${squadsHtml}</div>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <strong>Fanaticada en Arena Breakout:</strong>
+        ${fanHtml}
+      </div>
+      ${editBtnHtml}
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+function toggleEditProfile() {
+  const container = document.getElementById('profileContent');
+  const isEditing = document.getElementById('profileEditForm');
+  if (isEditing) {
+    loadProfile(currentProfilePersonId);
+    return;
+  }
+  // Obtener datos actuales
+  const profileData = window._profileData || {};
+  // Mostrar formulario de edición
+  const html = `
+    <div class="profile-card" id="profileEditForm">
+      <h3 style="margin-bottom:1rem;">Editar Perfil</h3>
+      <form onsubmit="saveProfile(event)">
+        <div class="profile-edit-form">
+          <div class="input-group">
+            <label>URL de la foto</label>
+            <input type="text" id="editPhotoUrl" value="${profileData.photoUrl || ''}" placeholder="https://ejemplo.com/foto.jpg" />
+          </div>
+          <div class="input-group">
+            <label>Reputación</label>
+            <input type="number" id="editReputation" value="${profileData.reputation || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fecha de ingreso (AAAA-MM-DD)</label>
+            <input type="date" id="editJoinedAt" value="${profileData.joinedAt ? profileData.joinedAt.split('T')[0] : ''}" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Kamona</label>
+            <input type="number" id="editFanKamona" value="${profileData.fanKamona || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Blackgold</label>
+            <input type="number" id="editFanBlackgold" value="${profileData.fanBlackgold || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Lobos Blancos</label>
+            <input type="number" id="editFanLobosBlancos" value="${profileData.fanLobosBlancos || 0}" min="0" />
+          </div>
+          <div style="display:flex; gap:1rem; margin-top:1rem;">
+            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Guardar cambios</button>
+            <button type="button" class="btn-cancel" onclick="toggleEditProfile()">Cancelar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+async function saveProfile(event) {
+  event.preventDefault();
+  const personId = currentProfilePersonId;
+  if (!personId) return showToast('Error: no se encontró el ID de la persona', 'error');
+
+  const photoUrl = document.getElementById('editPhotoUrl').value.trim() || null;
+  const reputation = parseInt(document.getElementById('editReputation').value) || 0;
+  const joinedAt = document.getElementById('editJoinedAt').value || null;
+  const fanKamona = parseInt(document.getElementById('editFanKamona').value) || 0;
+  const fanBlackgold = parseInt(document.getElementById('editFanBlackgold').value) || 0;
+  const fanLobosBlancos = parseInt(document.getElementById('editFanLobosBlancos').value) || 0;
+
+  try {
+    await apiCall(`/persons/${personId}/profile`, {
+      method: 'PUT',
+      body: { photoUrl, reputation, joinedAt, fanKamona, fanBlackgold, fanLobosBlancos }
+    });
+    showToast('Perfil actualizado correctamente', 'success');
+    loadProfile(personId);
+  } catch (e) {
+    showToast('Error al actualizar perfil: ' + e.message, 'error');
+  }
+}
+
+// ================================================================
+// PERFILES (admin)
+// ================================================================
+async function loadAllProfiles() {
+  try {
+    const data = await apiCall('/persons/profile/all');
+    const profiles = data.data;
+    const grid = document.getElementById('profilesGrid');
+    grid.innerHTML = '';
+    profiles.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'profile-card-mini';
+      card.innerHTML = `
+        <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#0a2540,#3b82f6);margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.5rem;">${p.firstName.charAt(0).toUpperCase()}</div>
+        <div style="margin-top:0.5rem;font-weight:600;">${p.firstName}</div>
+        <div style="font-size:0.8rem;color:#64748b;">${p.nickname}</div>
+      `;
+      card.addEventListener('click', () => viewProfileDetail(p.id));
+      grid.appendChild(card);
+    });
+  } catch (e) {
+    showToast('Error al cargar perfiles: ' + e.message, 'error');
+  }
+}
+
+async function viewProfileDetail(personId) {
+  document.getElementById('profilesGrid').style.display = 'none';
+  document.getElementById('profileDetailView').style.display = 'block';
+  try {
+    const data = await apiCall(`/persons/${personId}/profile`);
+    const profile = data.data;
+    window._profileData = profile;
+    const container = document.getElementById('profileDetailContent');
+    // Guardar el perfil actual para edición
+    container.innerHTML = '';
+    // Reutilizar la función renderProfile pero con editable=true
+    // Clonamos la función para que use el contenedor correcto
+    const tempContainer = document.createElement('div');
+    tempContainer.id = 'tempProfileContainer';
+    document.body.appendChild(tempContainer);
+    // Guardamos el perfil para que el botón de editar funcione
+    window._editingProfileId = personId;
+    
+    // Renderizar en el contenedor de detalle
+    const avatarLetter = profile.firstName ? profile.firstName.charAt(0).toUpperCase() : '?';
+    const avatarHtml = profile.photoUrl ? `<img src="${profile.photoUrl}" alt="Avatar" />` : avatarLetter;
+    let squadsHtml = '';
+    if (profile.squads && profile.squads.length) {
+      squadsHtml = profile.squads.map(sq => `<span class="squad-tag">${sq.squadName} (${sq.eventName})</span>`).join('');
+    } else {
+      squadsHtml = '<span style="color:#94a3b8;">No está en ninguna escuadra</span>';
+    }
+    const fanHtml = `
+      <div class="profile-fan">
+        <div class="fan-item"><span class="label">Kamona</span><div class="value">${profile.fanKamona || 0}</div></div>
+        <div class="fan-item"><span class="label">Blackgold</span><div class="value">${profile.fanBlackgold || 0}</div></div>
+        <div class="fan-item"><span class="label">Lobos Blancos</span><div class="value">${profile.fanLobosBlancos || 0}</div></div>
+      </div>
+    `;
+    const isAdmin = currentUser && (currentUser.role === 'root' || currentUser.role === 'admin');
+    const editBtnHtml = isAdmin ? `<button class="btn-create" onclick="editProfileDetail()" style="margin-top:1rem;"><i class="fas fa-edit"></i> Editar perfil</button>` : '';
+
+    container.innerHTML = `
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">${avatarHtml}</div>
+          <div class="profile-info">
+            <h2>${profile.firstName} (${profile.nickname})</h2>
+            <div class="sub">${profile.organization ? profile.organization.name : 'Sin facción'} · ${profile.country || 'País no especificado'}</div>
+            <div class="sub" style="margin-top:0.2rem;"><i class="fas fa-warehouse"></i> Almacén: ${profile.almacen || '0'}</div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat"><span class="label">Reputación</span><div class="value">${profile.reputation || 0}</div></div>
+          <div class="profile-stat"><span class="label">Años en el clan</span><div class="value">${profile.joinedAt ? Math.floor((new Date() - new Date(profile.joinedAt)) / (1000*60*60*24*365)) : 0}</div></div>
+        </div>
+        <div class="profile-squads">
+          <strong>Escuadras:</strong>
+          <div style="margin-top:0.5rem;">${squadsHtml}</div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <strong>Fanaticada en Arena Breakout:</strong>
+          ${fanHtml}
+        </div>
+        ${editBtnHtml}
+      </div>
+    `;
+    // Guardar datos para edición
+    window._profileData = profile;
+  } catch (e) {
+    showToast('Error al cargar perfil: ' + e.message, 'error');
+  }
+}
+
+function editProfileDetail() {
+  const container = document.getElementById('profileDetailContent');
+  const profile = window._profileData;
+  if (!profile) return;
+  
+  const html = `
+    <div class="profile-card">
+      <h3 style="margin-bottom:1rem;">Editar Perfil de ${profile.firstName}</h3>
+      <form onsubmit="saveProfileDetail(event)">
+        <div class="profile-edit-form">
+          <div class="input-group">
+            <label>URL de la foto</label>
+            <input type="text" id="editDetailPhotoUrl" value="${profile.photoUrl || ''}" placeholder="https://ejemplo.com/foto.jpg" />
+          </div>
+          <div class="input-group">
+            <label>Reputación</label>
+            <input type="number" id="editDetailReputation" value="${profile.reputation || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fecha de ingreso (AAAA-MM-DD)</label>
+            <input type="date" id="editDetailJoinedAt" value="${profile.joinedAt ? profile.joinedAt.split('T')[0] : ''}" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Kamona</label>
+            <input type="number" id="editDetailFanKamona" value="${profile.fanKamona || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Blackgold</label>
+            <input type="number" id="editDetailFanBlackgold" value="${profile.fanBlackgold || 0}" min="0" />
+          </div>
+          <div class="input-group">
+            <label>Fanaticada Lobos Blancos</label>
+            <input type="number" id="editDetailFanLobosBlancos" value="${profile.fanLobosBlancos || 0}" min="0" />
+          </div>
+          <div style="display:flex; gap:1rem; margin-top:1rem;">
+            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Guardar cambios</button>
+            <button type="button" class="btn-cancel" onclick="viewProfileDetail(window._editingProfileId)">Cancelar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+async function saveProfileDetail(event) {
+  event.preventDefault();
+  const personId = window._editingProfileId;
+  if (!personId) return showToast('Error: no se encontró el ID de la persona', 'error');
+
+  const photoUrl = document.getElementById('editDetailPhotoUrl').value.trim() || null;
+  const reputation = parseInt(document.getElementById('editDetailReputation').value) || 0;
+  const joinedAt = document.getElementById('editDetailJoinedAt').value || null;
+  const fanKamona = parseInt(document.getElementById('editDetailFanKamona').value) || 0;
+  const fanBlackgold = parseInt(document.getElementById('editDetailFanBlackgold').value) || 0;
+  const fanLobosBlancos = parseInt(document.getElementById('editDetailFanLobosBlancos').value) || 0;
+
+  try {
+    await apiCall(`/persons/${personId}/profile`, {
+      method: 'PUT',
+      body: { photoUrl, reputation, joinedAt, fanKamona, fanBlackgold, fanLobosBlancos }
+    });
+    showToast('Perfil actualizado correctamente', 'success');
+    viewProfileDetail(personId);
+  } catch (e) {
+    showToast('Error al actualizar perfil: ' + e.message, 'error');
+  }
+}
+
+function closeProfileDetail() {
+  document.getElementById('profilesGrid').style.display = 'grid';
+  document.getElementById('profileDetailView').style.display = 'none';
+}
+
+  // ================================================================
+  // MENÚ HAMBURGUESA PARA MÓVIL
+  // ================================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const navUser = document.getElementById('navUser');
+
+    if (menuToggle && navUser) {
+      menuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navUser.classList.toggle('open');
+        const icon = this.querySelector('i');
+        if (navUser.classList.contains('open')) {
+          icon.className = 'fas fa-times';
+        } else {
+          icon.className = 'fas fa-bars';
+        }
+      });
+
+      // Cerrar menú al hacer clic en un enlace o botón dentro de navUser
+      navUser.querySelectorAll('span, .logout-btn, a').forEach(el => {
+        el.addEventListener('click', function() {
+          navUser.classList.remove('open');
+          const icon = menuToggle.querySelector('i');
+          if (icon) icon.className = 'fas fa-bars';
+        });
+      });
+
+      // Cerrar menú al hacer clic fuera
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.navbar')) {
+          navUser.classList.remove('open');
+          const icon = menuToggle.querySelector('i');
+          if (icon) icon.className = 'fas fa-bars';
+        }
+      });
+    }
   });
 
   // ================================================================

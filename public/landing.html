@@ -156,6 +156,21 @@
       color: #040404;
     }
 
+    /* Botón hamburguesa (oculto en desktop) */
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #db7245;
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      transition: color 0.3s;
+    }
+    .menu-toggle:hover {
+      color: #fff;
+    }
+
     /* ============================================================
        HERO
        ============================================================ */
@@ -273,7 +288,7 @@
     }
 
     /* ============================================================
-       SECTION: GAMES (solo iconos, sin imágenes rotas)
+       SECTION: GAMES
        ============================================================ */
     .games-grid {
       display: grid;
@@ -299,7 +314,6 @@
       box-shadow: 0 12px 30px rgba(219, 114, 69, 0.08);
     }
 
-    /* Icono de juego más grande y con fondo circular */
     .game-card .game-icon {
       font-size: 4rem;
       color: #db7245;
@@ -327,7 +341,7 @@
     }
 
     /* ============================================================
-       SECTION: INTEGRANTES (toda la tarjeta clickeable)
+       SECTION: INTEGRANTES
        ============================================================ */
     .integrantes-grid {
       display: grid;
@@ -344,7 +358,7 @@
       text-align: center;
       transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
       backdrop-filter: blur(2px);
-      cursor: pointer;  /* indica que es clickeable */
+      cursor: pointer;
     }
     .integrante-card:hover {
       transform: translateY(-4px);
@@ -450,30 +464,115 @@
        RESPONSIVE
        ============================================================ */
     @media (max-width: 768px) {
+      /* Mostrar botón hamburguesa */
+      .menu-toggle {
+        display: block;
+      }
+
+      /* Ocultar enlaces por defecto en móvil */
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 0.8rem;
+        width: 100%;
+        padding: 1.5rem 0 0.5rem;
+        background: rgba(4, 4, 4, 0.95);
+        backdrop-filter: blur(6px);
+        border-top: 1px solid rgba(219, 114, 69, 0.15);
+        margin-top: 1rem;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        font-size: 1rem;
+        padding: 0.5rem 0;
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+      }
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+
+      .nav-links .btn-outline {
+        border: 1.5px solid #db7245;
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        color: #db7245;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-block;
+        width: auto;
+        margin: 0 auto;
+      }
+      .nav-links .btn-outline:hover {
+        background: #db7245;
+        color: #040404;
+      }
+
+      /* Ajustes generales */
+      .navbar .container {
+        flex-wrap: wrap;
+      }
+
       .hero h1 {
         font-size: 2.8rem;
       }
+      .hero p {
+        font-size: 1rem;
+        padding: 0 1rem;
+      }
+      .hero .btn-primary {
+        font-size: 1rem;
+        padding: 0.7rem 2rem;
+      }
+
       .about-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
       }
-      .navbar .container {
-        flex-direction: column;
-        gap: 1rem;
+      .about-text p {
+        max-width: 100%;
       }
-      .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
+
       .games-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
       }
       .integrantes-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1.5rem;
       }
+
       .contact-item {
         width: 100%;
         justify-content: center;
+        padding: 0.8rem 1.5rem;
+      }
+
+      .section {
+        padding: 3rem 0;
+      }
+      .section-title {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      .container {
+        padding: 0 1.2rem;
+      }
+      .logo {
+        font-size: 1.4rem;
+      }
+      .logo img {
+        height: 35px;
       }
     }
   </style>
@@ -500,7 +599,10 @@
         <img src="https://wunfoxghrqmumalnygmg.supabase.co/storage/v1/object/public/img/elite.jpeg" alt="Elite Goat" />
         <span class="logo-text">Elite Goat</span>
       </div>
-      <nav class="nav-links">
+      <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="nav-links" id="navLinks">
         <a href="#about">Nosotros</a>
         <a href="#games">Juegos</a>
         <a href="#integrantes">Integrantes</a>
@@ -562,43 +664,37 @@
   </section>
 
   <!-- ============================================================
-       GAMES (solo iconos, sin imágenes rotas)
+       GAMES
        ============================================================ -->
   <section class="section" id="games">
     <div class="container">
       <h2 class="section-title">Nuestros <span>juegos</span></h2>
       <div class="games-grid">
-        <!-- Arena Breakout -->
         <div class="game-card">
           <i class="fas fa-crosshairs game-icon"></i>
           <h4>Arena Breakout</h4>
           <p>FPS táctico</p>
         </div>
-        <!-- War Thunder -->
         <div class="game-card">
           <i class="fas fa-plane game-icon"></i>
           <h4>War Thunder</h4>
           <p>Combate vehicular</p>
         </div>
-        <!-- Blood Strike -->
         <div class="game-card">
           <i class="fas fa-skull game-icon"></i>
           <h4>Blood Strike</h4>
           <p>Battle Royale</p>
         </div>
-        <!-- Call of Duty -->
         <div class="game-card">
           <i class="fas fa-gamepad game-icon"></i>
           <h4>Call of Duty</h4>
           <p>FPS clásico</p>
         </div>
-        <!-- Rainbow Six Siege -->
         <div class="game-card">
           <i class="fas fa-helmet-safety game-icon"></i>
           <h4>Rainbow Six</h4>
           <p>Operaciones tácticas</p>
         </div>
-        <!-- Counter-Strike -->
         <div class="game-card">
           <i class="fas fa-robot game-icon"></i>
           <h4>Counter-Strike</h4>
@@ -609,7 +705,7 @@
   </section>
 
   <!-- ============================================================
-       INTEGRANTES (toda la tarjeta clickeable)
+       INTEGRANTES
        ============================================================ -->
   <section class="section" id="integrantes">
     <div class="container">
@@ -660,36 +756,51 @@
             <a href="https://www.tiktok.com/@theghostab" target="_blank">@theghostab</a>
           </div>
         </div>
-                <!-- BrianMZ -->
+        <!-- BrianMZ -->
         <div class="integrante-card" data-url="https://www.tiktok.com/@brianmz_ab">
-          <div class="avatar">L</div>
+          <div class="avatar">B</div>
           <div class="name">BrianMZ</div>
           <div class="tiktok">
             <i class="fab fa-tiktok"></i>
-            <a href="https://www.tiktok.com/brianmz_ab" target="_blank">brianmz_ab</a>
+            <a href="https://www.tiktok.com/@brianmz_ab" target="_blank">@brianmz_ab</a>
           </div>
         </div>
-                        <!-- DOX -->
+        <!-- DOX -->
         <div class="integrante-card" data-url="https://www.tiktok.com/@doxtreme_live">
-          <div class="avatar">L</div>
+          <div class="avatar">D</div>
           <div class="name">DOX</div>
           <div class="tiktok">
             <i class="fab fa-tiktok"></i>
             <a href="https://www.tiktok.com/@doxtreme_live" target="_blank">@doxtreme_live</a>
           </div>
         </div>
-                        <!-- Cesar -->
+        <!-- JOISETDRAGO -->
         <div class="integrante-card" data-url="https://www.tiktok.com/@.joisethdrago">
-          <div class="avatar">L</div>
+          <div class="avatar">J</div>
           <div class="name">JOISETDRAGO</div>
           <div class="tiktok">
             <i class="fab fa-tiktok"></i>
             <a href="https://www.tiktok.com/@.joisethdrago" target="_blank">@.joisethdrago</a>
           </div>
         </div>
-  
-        <!-- Mystic -->
-
+        <!-- Sen2Kbron -->
+        <div class="integrante-card" data-url="https://www.tiktok.com/@sen2kbron08">
+          <div class="avatar">S</div>
+          <div class="name">Sen2Kbron</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <a href="https://www.tiktok.com/@sen2kbron08" target="_blank">@sen2kbron08</a>
+          </div>
+        </div>
+        <!-- Mystic (placeholder) -->
+        <div class="integrante-card" data-url="#">
+          <div class="avatar">T</div>
+          <div class="name">TU</div>
+          <div class="tiktok">
+            <i class="fab fa-tiktok"></i>
+            <span>Unete y seras el proximo en nuestas filas</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -736,14 +847,47 @@
   </footer>
 
   <!-- ============================================================
-       SCRIPT: click en toda la tarjeta de integrante
+       SCRIPT: Menú hamburguesa y click en tarjetas
        ============================================================ -->
   <script>
+    // Menú hamburguesa
+    const toggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      navLinks.classList.toggle('open');
+      // Cambiar ícono
+      const icon = this.querySelector('i');
+      if (navLinks.classList.contains('open')) {
+        icon.className = 'fas fa-times';
+      } else {
+        icon.className = 'fas fa-bars';
+      }
+    });
+
+    // Cerrar menú al hacer clic en un enlace
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', function() {
+        navLinks.classList.remove('open');
+        const icon = toggle.querySelector('i');
+        icon.className = 'fas fa-bars';
+      });
+    });
+
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.navbar')) {
+        navLinks.classList.remove('open');
+        const icon = toggle.querySelector('i');
+        icon.className = 'fas fa-bars';
+      }
+    });
+
+    // Click en tarjetas de integrantes (redirige a TikTok)
     document.querySelectorAll('.integrante-card').forEach(card => {
       card.addEventListener('click', function(e) {
-        // Si el clic fue directamente sobre un enlace (o dentro de él), no interferimos
         if (e.target.closest('a')) return;
-        // Obtenemos la URL del atributo data-url o del primer enlace interno
         const url = this.dataset.url || this.querySelector('.tiktok a')?.href;
         if (url && url !== '#') {
           window.open(url, '_blank');

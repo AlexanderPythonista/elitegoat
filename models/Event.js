@@ -1,280 +1,394 @@
-import { readJSON, writeJSON, findById, removeById } from './base.js';
-import { v4 as uuidv4 } from 'uuid';
-import { Person } from './Person.js';
+import { supabase } from '../config/supabase.js';
 
-const FILE = 'events.json';
+const EVENTS_TABLE = 'events';
+const SQUADS_TABLE = 'squads';
+const PARTICIPANTS_TABLE = 'event_participants';
+const MATCHES_TABLE = 'matches';
+const SQUAD_MEMBERS_TABLE = 'squad_members';
 
 export const Event = {
   async findAll() {
-    return await readJSON(FILE);
+    const { data, error } = await supabase
+      .from(EVENTS_TABLE)
+      .select(`
+        *,
+        squads (
+          *,
+          members:squad_members (person_id)
+        ),
+        participants:event_participants (person_id),
+        matches (*)
+      `)
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+
+    return data.map(ev => ({
+      ...ev,
+      squads: (ev.squads || []).map(sq => ({
+        ...sq,
+        leaderId: sq.leader_id,
+        memberIds: (sq.members || []).map(m => m.person_id)
+      })),
+      participantIds: (ev.participants || []).map(p => p.person_id),
+      participants: ev.participants || [],
+      matches: ev.matches || []
+    }));
   },
 
   async findById(id) {
-    const events = await this.findAll();
-    return findById(events, id);
+    const { data, error } = await supabase
+      .from(EVENTS_TABLE)
+      .select(`
+        *,
+        squads (
+          *,
+          members:squad_members (person_id)
+        ),
+        participants:event_participants (person_id),
+        matches (*)
+      `)
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) return null;
+
+    return {
+      ...data,
+      squads: (data.squads || []).map(sq => ({
+        ...sq,
+        leaderId: sq.leader_id,
+        memberIds: (sq.members || []).map(m => m.person_id)
+      })),
+      participantIds: (data.participants || []).map(p => p.person_id),
+      participants: data.participants || [],
+      matches: data.matches || []
+    };
   },
 
-  async findByCreator(userId) {
-    const events = await this.findAll();
-    return events.filter(e => e.createdBy === userId);
+  async findActiveByCreatorOrParticipant(personId, userId) {
+    const { data, error } = await supabase
+      .from(EVENTS_TABLE)
+      .select(`
+        *,
+        squads (
+          *,
+          members:squad_members (person_id)
+        ),
+        participants:event_participants (person_id),
+        matches (*)
+      `)
+      .eq('status', 'activo')
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+
+    const filtered = data.filter(ev => {
+      const isCreator = ev.created_by === userId;
+      const participantIds = (ev.participants || []).map(p => p.person_id);
+      const isParticipant = participantIds.includes(personId);
+      return isCreator || isParticipant;
+    });
+
+    return filtered.map(ev => ({
+      ...ev,
+      squads: (ev.squads || []).map(sq => ({
+        ...sq,
+        leaderId: sq.leader_id,
+        memberIds: (sq.members || []).map(m => m.person_id)
+      })),
+      participantIds: (ev.participants || []).map(p => p.person_id),
+      participants: ev.participants || [],
+      matches: ev.matches || []
+    }));
   },
 
   async findActiveByCreator(userId) {
-    const events = await this.findAll();
-    return events.filter(e => e.createdBy === userId && e.status === 'activo');
-  },
+    const { data, error } = await supabase
+      .from(EVENTS_TABLE)
+      .select(`
+        *,
+        squads (
+          *,
+          members:squad_members (person_id)
+        ),
+        participants:event_participants (person_id),
+        matches (*)
+      `)
+      .eq('created_by', userId)
+      .eq('status', 'activo')
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
 
-  // Eventos activos donde el usuario es creador O participante
-  async findActiveByCreatorOrParticipant(personId, userId) {
-    const events = await this.findAll();
-    return events.filter(e => {
-      if (e.status !== 'activo') return false;
-      if (e.createdBy === userId) return true;
-      const participantIds = e.participantIds || [];
-      return participantIds.includes(personId);
-    });
+    return data.map(ev => ({
+      ...ev,
+      squads: (ev.squads || []).map(sq => ({
+        ...sq,
+        leaderId: sq.leader_id,
+        memberIds: (sq.members || []).map(m => m.person_id)
+      })),
+      participantIds: (ev.participants || []).map(p => p.person_id),
+      participants: ev.participants || [],
+      matches: ev.matches || []
+    }));
   },
 
   async create(data) {
-    const events = await this.findAll();
-    const newEvent = {
-      id: uuidv4(),
-      ...data,
-      status: 'activo',
+    const { data: result, error } = await supabase
+      .from(EVENTS_TABLE)
+      .insert([{
+        name: data.name,
+        type: data.type,
+        mode: data.mode,
+        max_participants: data.maxParticipants || 50,
+        created_by: data.createdBy,
+        status: 'activo',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return {
+      ...result,
       squads: [],
       participantIds: [],
-      participantStats: {},
-      matches: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      matches: []
     };
-    events.push(newEvent);
-    await writeJSON(FILE, events);
-    return newEvent;
   },
 
   async update(id, updateData) {
-    const events = await this.findAll();
-    const event = findById(events, id);
-    if (!event) return null;
-    Object.assign(event, updateData, { updatedAt: new Date().toISOString() });
-    if (!event.squads) event.squads = [];
-    if (!event.participantIds) event.participantIds = [];
-    if (!event.participantStats) event.participantStats = {};
-    if (!event.matches) event.matches = [];
-    await writeJSON(FILE, events);
-    return event;
+    const updates = {
+      name: updateData.name,
+      type: updateData.type,
+      mode: updateData.mode,
+      max_participants: updateData.maxParticipants,
+      status: updateData.status,
+      updated_at: new Date().toISOString()
+    };
+    const { data, error } = await supabase
+      .from(EVENTS_TABLE)
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
   },
 
   async delete(id) {
-    const events = await this.findAll();
-    const removed = removeById(events, id);
-    if (removed) {
-      await writeJSON(FILE, events);
-      return true;
-    }
-    return false;
+    const { error } = await supabase
+      .from(EVENTS_TABLE)
+      .delete()
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+    return true;
   },
 
-  // ---- Escuadras con validaciones ----
+  // ---- ESCUADRAS ----
   async addSquad(eventId, squadData) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) throw new Error('Evento no encontrado');
+    const { data: squad, error } = await supabase
+      .from(SQUADS_TABLE)
+      .insert([{
+        event_id: eventId,
+        name: squadData.name,
+        leader_id: squadData.leaderId || null,
+        images: []
+      }])
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
 
-    // Validar líder si se proporciona
-    if (squadData.leaderId) {
-      const person = await Person.findById(squadData.leaderId);
-      if (!person) throw new Error('Líder no existe');
-    }
-    // Validar miembros
     if (squadData.memberIds && squadData.memberIds.length) {
-      for (const pid of squadData.memberIds) {
-        const person = await Person.findById(pid);
-        if (!person) throw new Error(`Miembro ${pid} no existe`);
+      const members = squadData.memberIds.map(pid => ({
+        squad_id: squad.id,
+        person_id: pid
+      }));
+      const { error: memError } = await supabase
+        .from(SQUAD_MEMBERS_TABLE)
+        .insert(members);
+      if (memError) {
+        console.error('❌ Error al insertar miembros:', memError);
+        throw new Error(memError.message);
       }
     }
-
-    if (!event.squads) event.squads = [];
-    const newSquad = {
-      id: uuidv4(),
-      name: squadData.name,
-      leaderId: squadData.leaderId || null,
-      memberIds: squadData.memberIds || [],
-      images: []
-    };
-    event.squads.push(newSquad);
-    await writeJSON(FILE, events);
-    return newSquad;
+    return this.getSquadById(squad.id);
   },
 
   async updateSquad(eventId, squadId, updateData) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) throw new Error('Evento no encontrado');
-    if (!event.squads) event.squads = [];
-    const squad = event.squads.find(s => s.id === squadId);
-    if (!squad) return null;
+    const { data: squad, error } = await supabase
+      .from(SQUADS_TABLE)
+      .update({
+        name: updateData.name,
+        leader_id: updateData.leaderId || null
+      })
+      .eq('id', squadId)
+      .eq('event_id', eventId)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
 
-    // Validar líder si se proporciona
-    if (updateData.leaderId) {
-      const person = await Person.findById(updateData.leaderId);
-      if (!person) throw new Error('Líder no existe');
-    }
-    // Validar miembros
-    if (updateData.memberIds && updateData.memberIds.length) {
-      for (const pid of updateData.memberIds) {
-        const person = await Person.findById(pid);
-        if (!person) throw new Error(`Miembro ${pid} no existe`);
+    if (updateData.memberIds !== undefined) {
+      await supabase
+        .from(SQUAD_MEMBERS_TABLE)
+        .delete()
+        .eq('squad_id', squadId);
+
+      if (updateData.memberIds.length) {
+        const members = updateData.memberIds.map(pid => ({
+          squad_id: squadId,
+          person_id: pid
+        }));
+        const { error: memError } = await supabase
+          .from(SQUAD_MEMBERS_TABLE)
+          .insert(members);
+        if (memError) throw new Error(memError.message);
       }
     }
-
-    Object.assign(squad, updateData);
-    await writeJSON(FILE, events);
-    return squad;
+    return this.getSquadById(squadId);
   },
 
   async removeSquad(eventId, squadId) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) return null;
-    if (!event.squads) event.squads = [];
-    event.squads = event.squads.filter(s => s.id !== squadId);
-    await writeJSON(FILE, events);
-    return event;
+    const { error } = await supabase
+      .from(SQUADS_TABLE)
+      .delete()
+      .eq('id', squadId)
+      .eq('event_id', eventId);
+    if (error) throw new Error(error.message);
+    return true;
   },
 
-  // ---- Imágenes en escuadra ----
+  async getSquadById(squadId) {
+    const { data: squad, error } = await supabase
+      .from(SQUADS_TABLE)
+      .select('*')
+      .eq('id', squadId)
+      .single();
+    if (error) throw new Error(error.message);
+
+    const { data: members, error: memError } = await supabase
+      .from(SQUAD_MEMBERS_TABLE)
+      .select('person_id')
+      .eq('squad_id', squadId);
+    if (memError) throw new Error(memError.message);
+
+    return {
+      ...squad,
+      leaderId: squad.leader_id,
+      memberIds: members.map(m => m.person_id)
+    };
+  },
+
+  // ---- IMÁGENES EN ESCUADRA ----
   async addImageToSquad(eventId, squadId, imageUrl) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) return null;
-    const squad = event.squads.find(s => s.id === squadId);
-    if (!squad) return null;
-    if (!squad.images) squad.images = [];
-    squad.images.push(imageUrl);
-    await writeJSON(FILE, events);
-    return squad;
+    const { data: squad, error } = await supabase
+      .from(SQUADS_TABLE)
+      .select('images')
+      .eq('id', squadId)
+      .eq('event_id', eventId)
+      .single();
+    if (error) throw new Error(error.message);
+    const images = squad.images || [];
+    images.push(imageUrl);
+    const { error: updateError } = await supabase
+      .from(SQUADS_TABLE)
+      .update({ images })
+      .eq('id', squadId);
+    if (updateError) throw new Error(updateError.message);
+    return { images };
   },
 
   async removeImageFromSquad(eventId, squadId, imageIndex) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) return null;
-    const squad = event.squads.find(s => s.id === squadId);
-    if (!squad) return null;
-    if (!squad.images) squad.images = [];
-    squad.images.splice(imageIndex, 1);
-    await writeJSON(FILE, events);
-    return squad;
+    const { data: squad, error } = await supabase
+      .from(SQUADS_TABLE)
+      .select('images')
+      .eq('id', squadId)
+      .eq('event_id', eventId)
+      .single();
+    if (error) throw new Error(error.message);
+    const images = squad.images || [];
+    if (imageIndex >= 0 && imageIndex < images.length) {
+      images.splice(imageIndex, 1);
+      const { error: updateError } = await supabase
+        .from(SQUADS_TABLE)
+        .update({ images })
+        .eq('id', squadId);
+      if (updateError) throw new Error(updateError.message);
+    }
+    return { images };
   },
 
-  // ---- Participantes con validaciones ----
+  // ---- PARTICIPANTES ----
   async addParticipant(eventId, personId) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) throw new Error('Evento no encontrado');
-    const person = await Person.findById(personId);
-    if (!person) throw new Error('Persona no encontrada');
-
-    if (!event.participantIds) event.participantIds = [];
-    if (!event.participantIds.includes(personId)) {
-      event.participantIds.push(personId);
-      await writeJSON(FILE, events);
-    }
-    return event;
+    const { error } = await supabase
+      .from(PARTICIPANTS_TABLE)
+      .insert([{ event_id: eventId, person_id: personId }]);
+    if (error) throw new Error(error.message);
+    return true;
   },
 
   async removeParticipant(eventId, personId) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) return null;
-    if (!event.participantIds) event.participantIds = [];
-    event.participantIds = event.participantIds.filter(id => id !== personId);
-    if (event.squads) {
-      event.squads.forEach(s => {
-        s.memberIds = (s.memberIds || []).filter(id => id !== personId);
-        if (s.leaderId === personId) s.leaderId = null;
-      });
+    const { data: squads } = await supabase
+      .from(SQUADS_TABLE)
+      .select('id')
+      .eq('event_id', eventId);
+    for (const sq of squads) {
+      await supabase
+        .from(SQUAD_MEMBERS_TABLE)
+        .delete()
+        .match({ squad_id: sq.id, person_id: personId });
     }
-    await writeJSON(FILE, events);
-    return event;
+    const { error } = await supabase
+      .from(PARTICIPANTS_TABLE)
+      .delete()
+      .match({ event_id: eventId, person_id: personId });
+    if (error) throw new Error(error.message);
+    return true;
   },
 
   async addMemberToSquad(eventId, squadId, personId) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) throw new Error('Evento no encontrado');
-    const person = await Person.findById(personId);
-    if (!person) throw new Error('Persona no encontrada');
+    const { data: part, error: partError } = await supabase
+      .from(PARTICIPANTS_TABLE)
+      .select('person_id')
+      .match({ event_id: eventId, person_id: personId })
+      .maybeSingle();
+    if (partError) throw new Error(partError.message);
+    if (!part) throw new Error('La persona no es participante del evento');
 
-    if (!event.squads) event.squads = [];
-    const squad = event.squads.find(s => s.id === squadId);
-    if (!squad) throw new Error('Escuadra no encontrada');
-    if (!squad.memberIds) squad.memberIds = [];
-    if (!squad.memberIds.includes(personId)) {
-      squad.memberIds.push(personId);
-      await writeJSON(FILE, events);
-    }
-    return event;
+    const { error } = await supabase
+      .from(SQUAD_MEMBERS_TABLE)
+      .insert([{ squad_id: squadId, person_id: personId }]);
+    if (error) throw new Error(error.message);
+    return true;
   },
 
-  async removeMemberFromSquad(eventId, squadId, personId) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) return null;
-    if (!event.squads) event.squads = [];
-    const squad = event.squads.find(s => s.id === squadId);
-    if (!squad) return null;
-    if (!squad.memberIds) squad.memberIds = [];
-    squad.memberIds = squad.memberIds.filter(id => id !== personId);
-    await writeJSON(FILE, events);
-    return event;
-  },
-
-  // ---- Estadísticas de participantes ----
-  async updateParticipantStats(eventId, personId, stats) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) return null;
-    if (!event.participantStats) event.participantStats = {};
-    if (!event.participantStats[personId]) event.participantStats[personId] = {};
-    Object.assign(event.participantStats[personId], stats);
-    await writeJSON(FILE, events);
-    return event;
-  },
-
-  // ---- Partidas (matches) con validaciones ----
+  // ---- PARTIDAS (MATCHES) ----
   async addMatches(eventId, matchesData) {
-    const events = await this.findAll();
-    const event = findById(events, eventId);
-    if (!event) throw new Error('Evento no encontrado');
-
-    // Validar participantes y escuadras
-    const allPersons = await Person.findAll();
     for (const m of matchesData) {
-      if (!allPersons.find(p => p.id === m.participantId)) {
-        throw new Error(`Participante ${m.participantId} no existe`);
-      }
-      if (m.squadId) {
-        const squadExists = event.squads.some(s => s.id === m.squadId);
-        if (!squadExists) throw new Error(`Escuadra ${m.squadId} no existe en este evento`);
+      const { error } = await supabase
+        .from(MATCHES_TABLE)
+        .insert([{
+          event_id: eventId,
+          participant_id: m.participantId,
+          squad_id: m.squadId || null,
+          botin: m.botin || 0,
+          elim_contratistas: m.elimContratistas || 0,
+          elim_otros: m.elimOtros || 0,
+          minutos: m.minutos || 0,
+          segundos: m.segundos || 0,
+          resultado: m.resultado || '',
+          timestamp: new Date().toISOString()
+        }]);
+      if (error) {
+        console.error('❌ Error insertando match:', error);
+        throw new Error(error.message);
       }
     }
-
-    if (!event.matches) event.matches = [];
-    matchesData.forEach(m => {
-      event.matches.push({
-        id: uuidv4(),
-        ...m,
-        timestamp: new Date().toISOString()
-      });
-    });
-    await writeJSON(FILE, events);
-    return event;
+    return true;
   },
 
-  // ---- Ranking de escuadras ----
+  async updateParticipantStats(eventId, personId, stats) {
+    return true;
+  },
+
   getSquadRanking(event) {
     const squads = event.squads || [];
     const matches = event.matches || [];
@@ -282,7 +396,7 @@ export const Event = {
       const memberIds = squad.memberIds || [];
       let totalBotin = 0;
       const memberStats = memberIds.map(pid => {
-        const memberMatches = matches.filter(m => m.participantId === pid);
+        const memberMatches = matches.filter(m => m.participant_id === pid);
         const total = memberMatches.reduce((sum, m) => sum + (m.botin || 0), 0);
         totalBotin += total;
         return { participantId: pid, totalBotin: total };
@@ -298,12 +412,11 @@ export const Event = {
     return squadStats;
   },
 
-  // ---- Estadísticas agregadas por participante ----
   getParticipantStats(event) {
     const statsMap = {};
     (event.matches || []).forEach(m => {
-      if (!statsMap[m.participantId]) {
-        statsMap[m.participantId] = {
+      if (!statsMap[m.participant_id]) {
+        statsMap[m.participant_id] = {
           partidas: 0,
           botin: 0,
           elimContratistas: 0,
@@ -314,14 +427,14 @@ export const Event = {
           derrotas: 0
         };
       }
-      statsMap[m.participantId].partidas += 1;
-      statsMap[m.participantId].botin += m.botin || 0;
-      statsMap[m.participantId].elimContratistas += m.elimContratistas || 0;
-      statsMap[m.participantId].elimOtros += m.elimOtros || 0;
-      statsMap[m.participantId].minutos += m.minutos || 0;
-      statsMap[m.participantId].segundos += m.segundos || 0;
-      if (m.resultado === 'Victoria') statsMap[m.participantId].victorias += 1;
-      else if (m.resultado === 'Derrota') statsMap[m.participantId].derrotas += 1;
+      statsMap[m.participant_id].partidas += 1;
+      statsMap[m.participant_id].botin += m.botin || 0;
+      statsMap[m.participant_id].elimContratistas += m.elim_contratistas || 0;
+      statsMap[m.participant_id].elimOtros += m.elim_otros || 0;
+      statsMap[m.participant_id].minutos += m.minutos || 0;
+      statsMap[m.participant_id].segundos += m.segundos || 0;
+      if (m.resultado === 'Victoria') statsMap[m.participant_id].victorias += 1;
+      else if (m.resultado === 'Derrota') statsMap[m.participant_id].derrotas += 1;
     });
     return statsMap;
   }

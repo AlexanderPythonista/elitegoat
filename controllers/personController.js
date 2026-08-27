@@ -14,14 +14,14 @@ async function enrichPerson(person) {
   let organization = null;
   let user = null;
 
-  if (person.coordination_id) {
-    coordination = await Coordination.findById(person.coordination_id);
+  if (person.coordinationId) {
+    coordination = await Coordination.findById(person.coordinationId);
     if (coordination && coordination.organization_id) {
       organization = await Organization.findById(coordination.organization_id);
     }
   }
-  if (person.user_id) {
-    user = await User.findById(person.user_id);
+  if (person.userId) {
+    user = await User.findById(person.userId);
     if (user) {
       const { password_hash, ...userWithoutPassword } = user;
       user = userWithoutPassword;
@@ -30,12 +30,18 @@ async function enrichPerson(person) {
 
   return {
     id: person.id,
-    firstName: person.first_name || person.id || '?',
-    nickname: person.nickname || person.id || '?',
-    country: person.country || '',
-    coordinationId: person.coordination_id,
-    userId: person.user_id,
-    createdAt: person.created_at,
+    firstName: person.firstName,
+    nickname: person.nickname,
+    country: person.country,
+    coordinationId: person.coordinationId,
+    userId: person.userId,
+    photoUrl: person.photoUrl,
+    reputation: person.reputation,
+    joinedAt: person.joinedAt,
+    fanKamona: person.fanKamona,
+    fanBlackgold: person.fanBlackgold,
+    fanLobosBlancos: person.fanLobosBlancos,
+    createdAt: person.createdAt,
     coordination,
     organization,
     user
@@ -43,14 +49,141 @@ async function enrichPerson(person) {
 }
 
 // ================================================================
-// CRUD Personas
+// OBTENER PERFIL COMPLETO (incluye TOP y escuadras)
+// ================================================================
+export const getProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const person = await Person.findById(id);
+    if (!person) {
+      return res.status(404).json({ success: false, message: 'Persona no encontrada' });
+    }
+
+    // Enriquecer con coordinación y organización
+    const enriched = await enrichPerson(person);
+
+    // Obtener escuadras en las que participa (eventos activos)
+    const { data: squadMemberships, error: squadError } = await supabase
+      .from('squad_members')
+      .select('squad_id, squads(event_id, name, events(name, mode, status))')
+      .eq('person_id', id);
+    if (squadError) throw new Error(squadError.message);
+
+    const squads = squadMemberships.map(sm => ({
+      squadId: sm.squad_id,
+      squadName: sm.squads?.name || 'Sin nombre',
+      eventId: sm.squads?.event_id,
+      eventName: sm.squads?.events?.name || 'Evento sin nombre',
+      eventMode: sm.squads?.events?.mode || 'individual',
+      eventStatus: sm.squads?.events?.status || 'desconocido'
+    }));
+
+    // Obtener datos de TOP (almacen y país) desde la hoja activa
+    const { data: topData, error: topError } = await supabase
+      .from('top_sheets')
+      .select('data')
+      .eq('id', 'top')
+      .maybeSingle();
+    if (topError) throw new Error(topError.message);
+
+    let almacen = '0';
+    let topCountry = '';
+    if (topData && topData.data) {
+      const sheets = topData.data;
+      for (const sheetName of Object.keys(sheets)) {
+        const rows = sheets[sheetName] || [];
+        const found = rows.find(row => String(row.id) === String(id));
+        if (found) {
+          almacen = found.almacenActual || '0';
+          topCountry = found.nacionalidad || '';
+          break;
+        }
+      }
+    }
+
+    // Si no tiene país en persona, usar el de TOP
+    const finalCountry = person.country || topCountry;
+
+    res.json({
+      success: true,
+      data: {
+        ...enriched,
+        country: finalCountry,
+        almacen,
+        squads
+      }
+    });
+  } catch (error) {
+    console.error('Error en getProfile:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ================================================================
+// ACTUALIZAR PERFIL (solo el propio usuario o admin/root)
+// ================================================================
+export const updateProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { photoUrl, reputation, joinedAt, fanKamona, fanBlackgold, fanLobosBlancos } = req.body;
+
+    // Verificar permisos: solo el propio usuario o admin/root
+    const isSelf = req.user.id === id || req.user.personId === id;
+    const isAdmin = req.user.role === 'root' || req.user.role === 'admin';
+    if (!isSelf && !isAdmin) {
+      return res.status(403).json({ success: false, message: 'No tienes permisos para editar este perfil' });
+    }
+
+    let updateData = {};
+    // Permitir actualizar todos los campos del perfil (tanto admin como el propio usuario)
+    if (photoUrl !== undefined) updateData.photoUrl = photoUrl;
+    if (reputation !== undefined) updateData.reputation = reputation;
+    if (joinedAt !== undefined) updateData.joinedAt = joinedAt;
+    if (fanKamona !== undefined) updateData.fanKamona = fanKamona;
+    if (fanBlackgold !== undefined) updateData.fanBlackgold = fanBlackgold;
+    if (fanLobosBlancos !== undefined) updateData.fanLobosBlancos = fanLobosBlancos;
+
+    const updated = await Person.update(id, updateData);
+    await Log.create({
+      userId: req.user.id,
+      action: 'update_profile',
+      target: id,
+      details: updateData
+    });
+
+    const enriched = await enrichPerson(updated);
+    res.json({ success: true, data: enriched });
+  } catch (error) {
+    console.error('Error en updateProfile:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ================================================================
+// OBTENER TODOS LOS PERFILES (solo admin/root)
+// ================================================================
+export const getAllProfiles = async (req, res) => {
+  try {
+    if (req.user.role !== 'root' && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'No autorizado' });
+    }
+    const persons = await Person.findAll();
+    const enriched = await Promise.all(persons.map(enrichPerson));
+    res.json({ success: true, data: enriched });
+  } catch (error) {
+    console.error('Error en getAllProfiles:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ================================================================
+// CRUD PERSONAS (existente)
 // ================================================================
 
 export const createPerson = async (req, res) => {
   try {
-    const { id, firstName, nickname, country, coordinationId } = req.body;
+    const { id, firstName, nickname, country, coordinationId, photoUrl, reputation, joinedAt, fanKamona, fanBlackgold, fanLobosBlancos } = req.body;
 
-    // Validar que la coordinación existe (si se proporciona)
     if (coordinationId) {
       const coord = await Coordination.findById(coordinationId);
       if (!coord) {
@@ -58,7 +191,6 @@ export const createPerson = async (req, res) => {
       }
     }
 
-    // Validar que el ID no esté en uso (si se proporciona)
     if (id) {
       const existing = await Person.findById(id);
       if (existing) {
@@ -66,10 +198,20 @@ export const createPerson = async (req, res) => {
       }
     }
 
-    // Crear la persona (el modelo se encarga de crear el usuario en Auth y en la tabla users)
-    const person = await Person.create({ id, firstName, nickname, country, coordinationId }, req.user.id);
+    const person = await Person.create({
+      id,
+      firstName,
+      nickname,
+      country,
+      coordinationId,
+      photoUrl,
+      reputation,
+      joinedAt,
+      fanKamona,
+      fanBlackgold,
+      fanLobosBlancos
+    }, req.user.id);
 
-    // Registrar log
     await Log.create({
       userId: req.user.id,
       action: 'create_person',
@@ -77,11 +219,10 @@ export const createPerson = async (req, res) => {
       details: { firstName, nickname, userId: person.userId }
     });
 
-    // Enriquecer y devolver
     const enriched = await enrichPerson(person);
     res.status(201).json({ success: true, data: enriched });
   } catch (error) {
-    console.error('❌ Error en createPerson:', error);
+    console.error('Error en createPerson:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -92,7 +233,7 @@ export const getPersons = async (req, res) => {
     const enriched = await Promise.all(persons.map(enrichPerson));
     res.json({ success: true, data: enriched });
   } catch (error) {
-    console.error('❌ Error en getPersons:', error);
+    console.error('Error en getPersons:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -106,50 +247,55 @@ export const getPerson = async (req, res) => {
     const enriched = await enrichPerson(person);
     res.json({ success: true, data: enriched });
   } catch (error) {
-    console.error('❌ Error en getPerson:', error);
+    console.error('Error en getPerson:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
 export const updatePerson = async (req, res) => {
   try {
-    const { firstName, nickname, country, coordinationId } = req.body;
+    const { firstName, nickname, country, coordinationId, photoUrl, reputation, joinedAt, fanKamona, fanBlackgold, fanLobosBlancos } = req.body;
     const person = await Person.findById(req.params.id);
     if (!person) {
       return res.status(404).json({ success: false, message: 'Persona no encontrada' });
     }
 
-    // Si cambia la coordinación, actualizar relaciones en ambas tablas
-    if (coordinationId !== undefined && coordinationId !== person.coordination_id) {
-      // Remover de la coordinación anterior (si existía)
-      if (person.coordination_id) {
-        await Coordination.removePerson(person.coordination_id, req.params.id);
+    // Si cambia la coordinación, actualizar relaciones
+    if (coordinationId !== undefined && coordinationId !== person.coordinationId) {
+      if (person.coordinationId) {
+        await Coordination.removePerson(person.coordinationId, req.params.id);
       }
-      // Agregar a la nueva coordinación (si se proporciona)
       if (coordinationId) {
         await Coordination.addPerson(coordinationId, req.params.id);
       }
     }
 
-    // Actualizar la persona
-    const updated = await Person.update(req.params.id, { firstName, nickname, country, coordinationId });
+    const updated = await Person.update(req.params.id, {
+      firstName,
+      nickname,
+      country,
+      coordinationId,
+      photoUrl,
+      reputation,
+      joinedAt,
+      fanKamona,
+      fanBlackgold,
+      fanLobosBlancos
+    });
 
-    // Si cambia el nombre, actualizar también el username en la tabla users y en auth.users
+    // Si cambia el nombre, actualizar también el username en users y auth
     if (firstName && firstName !== person.first_name) {
-      if (person.user_id) {
-        // Actualizar en la tabla users personalizada
+      if (person.userId) {
         await supabase
           .from('users')
           .update({ username: firstName })
-          .eq('id', person.user_id);
-        // Actualizar en auth.users (metadatos)
-        await supabase.auth.admin.updateUserById(person.user_id, {
+          .eq('id', person.userId);
+        await supabase.auth.admin.updateUserById(person.userId, {
           user_metadata: { username: firstName }
         });
       }
     }
 
-    // Registrar log
     await Log.create({
       userId: req.user.id,
       action: 'update_person',
@@ -157,11 +303,10 @@ export const updatePerson = async (req, res) => {
       details: { firstName, nickname, coordinationId }
     });
 
-    // Enriquecer y devolver
     const enriched = await enrichPerson(updated);
     res.json({ success: true, data: enriched });
   } catch (error) {
-    console.error('❌ Error en updatePerson:', error);
+    console.error('Error en updatePerson:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -173,26 +318,20 @@ export const deletePerson = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Persona no encontrada' });
     }
 
-    // Si tiene coordinación, removerla
-    if (person.coordination_id) {
-      await Coordination.removePerson(person.coordination_id, req.params.id);
+    if (person.coordinationId) {
+      await Coordination.removePerson(person.coordinationId, req.params.id);
     }
 
-    // Si tiene usuario asociado, eliminarlo de auth.users y de la tabla users
-    if (person.user_id) {
-      // Eliminar de auth.users
-      await supabase.auth.admin.deleteUser(person.user_id);
-      // Eliminar de la tabla users personalizada
+    if (person.userId) {
+      await supabase.auth.admin.deleteUser(person.userId);
       await supabase
         .from('users')
         .delete()
-        .eq('id', person.user_id);
+        .eq('id', person.userId);
     }
 
-    // Eliminar la persona
     await Person.delete(req.params.id);
 
-    // Registrar log
     await Log.create({
       userId: req.user.id,
       action: 'delete_person',
@@ -202,7 +341,7 @@ export const deletePerson = async (req, res) => {
 
     res.json({ success: true, message: 'Persona eliminada correctamente' });
   } catch (error) {
-    console.error('❌ Error en deletePerson:', error);
+    console.error('Error en deletePerson:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -213,7 +352,7 @@ export const getPersonsWithoutCoordination = async (req, res) => {
     const enriched = await Promise.all(persons.map(enrichPerson));
     res.json({ success: true, data: enriched });
   } catch (error) {
-    console.error('❌ Error en getPersonsWithoutCoordination:', error);
+    console.error('Error en getPersonsWithoutCoordination:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
