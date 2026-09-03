@@ -1,6 +1,7 @@
 import { Organization } from '../models/Organization.js';
 import { Coordination } from '../models/Coordination.js';
 import { Person } from '../models/Person.js';
+import { supabase } from '../config/supabase.js';
 
 export const createOrganization = async (req, res) => {
   try {
@@ -14,9 +15,81 @@ export const createOrganization = async (req, res) => {
 
 export const getOrganizations = async (req, res) => {
   try {
-    const orgs = await Organization.findAll();
-    res.json({ success: true, data: orgs });
+    const [orgs, persons, coordsResult, directResult] = await Promise.all([
+      Organization.findAll(),
+      Person.findAll(),
+      supabase.from('coordinations').select('*'),
+      supabase.from('organization_persons').select('organization_id, person_id')
+    ]);
+    if (coordsResult.error) throw new Error(coordsResult.error.message);
+    if (directResult.error) throw new Error(directResult.error.message);
+
+    const coords = coordsResult.data || [];
+    const directLinks = directResult.data || [];
+    const personMap = new Map(persons.map(p => [String(p.id), p]));
+    const directByOrg = new Map();
+    directLinks.forEach(link => {
+      const key = String(link.organization_id);
+      if (!directByOrg.has(key)) directByOrg.set(key, new Set());
+      directByOrg.get(key).add(String(link.person_id));
+    });
+
+    const coordsByOrg = new Map();
+    coords.forEach(c => {
+      const key = String(c.organization_id);
+      if (!coordsByOrg.has(key)) coordsByOrg.set(key, []);
+      coordsByOrg.get(key).push(c);
+    });
+
+    const enriched = orgs.map(org => {
+      const orgId = String(org.id);
+      const orgCoords = coordsByOrg.get(orgId) || [];
+      const ids = new Set(directByOrg.get(orgId) || []);
+
+      // Una persona pertenece a la organización aunque no exista en
+      // organization_persons si su coordination_id apunta a una coordinación
+      // de esta organización (por ejemplo F1/F2).
+      const orgCoordIds = new Set(orgCoords.map(c => String(c.id)));
+      persons.forEach(p => {
+        if (p.coordinationId && orgCoordIds.has(String(p.coordinationId))) ids.add(String(p.id));
+      });
+
+      const personsForOrg = Array.from(ids)
+        .map(id => personMap.get(id))
+        .filter(Boolean);
+
+      const coordinations = orgCoords.map(c => {
+        const members = persons.filter(p => p.coordinationId && String(p.coordinationId) === String(c.id));
+        const leader = personMap.get(String(c.leader_id));
+        const coLeader = personMap.get(String(c.co_leader_id));
+        return {
+          ...c,
+          leaderId: c.leader_id,
+          coLeaderId: c.co_leader_id,
+          leader,
+          coLeader,
+          members,
+          personIds: members.map(p => p.id)
+        };
+      });
+
+      const leader = personMap.get(String(org.leader_id));
+      const coLeader = personMap.get(String(org.co_leader_id));
+      return {
+        ...org,
+        leader,
+        coLeader,
+        leaderId: org.leader_id,
+        coLeaderId: org.co_leader_id,
+        persons: personsForOrg,
+        personIds: personsForOrg.map(p => p.id),
+        coordinations
+      };
+    });
+
+    res.json({ success: true, data: enriched });
   } catch (error) {
+    console.error('Error getOrganizations:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

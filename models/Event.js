@@ -394,29 +394,59 @@ export const Event = {
     const matches = event.matches || [];
     const squadStats = squads.map(squad => {
       const memberIds = squad.memberIds || [];
+      const squadMatches = matches.filter(m => String(m.squad_id || m.squadId || '') === String(squad.id));
       let totalBotin = 0;
+      let totalElimContratistas = 0;
+      let totalElimOtros = 0;
+      let totalPartidas = 0;
       const memberStats = memberIds.map(pid => {
-        const memberMatches = matches.filter(m => m.participant_id === pid);
-        const total = memberMatches.reduce((sum, m) => sum + (m.botin || 0), 0);
-        totalBotin += total;
-        return { participantId: pid, totalBotin: total };
+        const memberMatches = matches.filter(m => String(m.participant_id || m.participantId || '') === String(pid)
+          && (!m.squad_id || String(m.squad_id) === String(squad.id)));
+        const stats = memberMatches.reduce((acc, m) => {
+          acc.botin += Number(m.botin || 0);
+          acc.elimContratistas += Number(m.elim_contratistas ?? m.elimContratistas ?? 0);
+          acc.elimOtros += Number(m.elim_otros ?? m.elimOtros ?? 0);
+          acc.partidas += 1;
+          if ((m.resultado || '') === 'Victoria') acc.victorias += 1;
+          if ((m.resultado || '') === 'Derrota') acc.derrotas += 1;
+          return acc;
+        }, { botin: 0, elimContratistas: 0, elimOtros: 0, partidas: 0, victorias: 0, derrotas: 0 });
+        totalBotin += stats.botin;
+        totalElimContratistas += stats.elimContratistas;
+        totalElimOtros += stats.elimOtros;
+        totalPartidas += stats.partidas;
+        return { participantId: pid, ...stats, totalBotin: stats.botin };
       });
+      // Fallback for matches assigned to the squad but whose participant isn't
+      // currently in memberIds, so the stored event data is never silently lost.
+      if (memberStats.length === 0 && squadMatches.length) {
+        totalBotin = squadMatches.reduce((a,m) => a + Number(m.botin || 0), 0);
+        totalElimContratistas = squadMatches.reduce((a,m) => a + Number(m.elim_contratistas ?? 0), 0);
+        totalElimOtros = squadMatches.reduce((a,m) => a + Number(m.elim_otros ?? 0), 0);
+        totalPartidas = squadMatches.length;
+      }
       return {
         squadId: squad.id,
         squadName: squad.name,
         memberStats,
-        totalBotin
+        totalBotin,
+        totalElimContratistas,
+        totalElimOtros,
+        totalEliminaciones: totalElimContratistas + totalElimOtros,
+        totalPartidas
       };
     });
-    squadStats.sort((a, b) => b.totalBotin - a.totalBotin);
+    squadStats.sort((a, b) => (b.totalBotin + b.totalEliminaciones * 5) - (a.totalBotin + a.totalEliminaciones * 5));
     return squadStats;
   },
 
   getParticipantStats(event) {
     const statsMap = {};
     (event.matches || []).forEach(m => {
-      if (!statsMap[m.participant_id]) {
-        statsMap[m.participant_id] = {
+      const pid = m.participant_id || m.participantId;
+      if (!pid) return;
+      if (!statsMap[pid]) {
+        statsMap[pid] = {
           partidas: 0,
           botin: 0,
           elimContratistas: 0,
@@ -427,14 +457,14 @@ export const Event = {
           derrotas: 0
         };
       }
-      statsMap[m.participant_id].partidas += 1;
-      statsMap[m.participant_id].botin += m.botin || 0;
-      statsMap[m.participant_id].elimContratistas += m.elim_contratistas || 0;
-      statsMap[m.participant_id].elimOtros += m.elim_otros || 0;
-      statsMap[m.participant_id].minutos += m.minutos || 0;
-      statsMap[m.participant_id].segundos += m.segundos || 0;
-      if (m.resultado === 'Victoria') statsMap[m.participant_id].victorias += 1;
-      else if (m.resultado === 'Derrota') statsMap[m.participant_id].derrotas += 1;
+      statsMap[pid].partidas += 1;
+      statsMap[pid].botin += Number(m.botin || 0);
+      statsMap[pid].elimContratistas += Number(m.elim_contratistas ?? m.elimContratistas ?? 0);
+      statsMap[pid].elimOtros += Number(m.elim_otros ?? m.elimOtros ?? 0);
+      statsMap[pid].minutos += Number(m.minutos || 0);
+      statsMap[pid].segundos += Number(m.segundos || 0);
+      if (m.resultado === 'Victoria') statsMap[pid].victorias += 1;
+      else if (m.resultado === 'Derrota') statsMap[pid].derrotas += 1;
     });
     return statsMap;
   }

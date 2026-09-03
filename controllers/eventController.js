@@ -212,7 +212,14 @@ export const getEventRanking = async (req, res) => {
       };
     });
     ranking.sort((a, b) => b.stats.score - a.stats.score);
-    res.json({ success: true, data: ranking });
+    const squadRanking = Event.getSquadRanking(event).map(sq => ({
+      ...sq,
+      members: sq.memberStats.map(ms => ({
+        ...ms,
+        participant: validParticipants.find(p => String(p.id) === String(ms.participantId)) || null
+      }))
+    }));
+    res.json({ success: true, data: ranking, squadRanking, source: 'events.matches' });
   } catch (error) {
     console.error('Error getEventRanking:', error);
     res.status(500).json({ success: false, message: error.message });
