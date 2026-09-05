@@ -1058,29 +1058,6 @@ body.top-fullscreen-mode #topAddColumnBtn {
   margin:0;
 }
 </style>
-<style id="sheet-cell-selection">
-#topTable tbody td{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
-#topTable tbody td.sheet-selected{outline:2px solid #1976d2!important;outline-offset:-2px!important;background:rgba(25,118,210,.12)!important;}
-#topTable tbody td.sheet-active{box-shadow:inset 0 0 0 2px #1976d2;}
-</style>
-
-<style id="sheet-advanced-selection-css">
-#topTable td.sheet-selected {
-  outline: 1px solid #1976d2 !important;
-  outline-offset: -1px;
-  background-color: rgba(25,118,210,.12) !important;
-}
-#topTable td.sheet-active {
-  outline: 2px solid #1976d2 !important;
-  outline-offset: -2px;
-  background-color: rgba(25,118,210,.16) !important;
-}
-#topTable td.sheet-cut {
-  outline: 2px dashed #1976d2 !important;
-}
-</style>
-
-
 <style id="modern-dashboard-nav-orgs">
 .nav-tabs{display:flex;align-items:center;gap:.45rem;margin-bottom:1.5rem;border:1px solid #e6ebf2;padding:.55rem;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);border-radius:16px;box-shadow:0 8px 25px rgba(15,23,42,.06);overflow-x:auto;scrollbar-width:none;}
 .nav-tabs::-webkit-scrollbar{display:none}.nav-tabs button{display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap;border:0!important;padding:.68rem 1rem!important;border-radius:11px!important;color:#64748b!important;background:transparent!important;font-weight:650;transition:.2s ease;}.nav-tabs button:hover{background:#f1f5f9!important;color:#0f2942!important;transform:none!important}.nav-tabs button.active{background:linear-gradient(135deg,#0a2540,#163f64)!important;color:#fff!important;box-shadow:0 5px 14px rgba(10,37,64,.2)}
@@ -1115,6 +1092,31 @@ body.top-fullscreen-mode #topAddColumnBtn {
     flex: 0 0 auto !important;
   }
 }
+</style>
+
+
+<style id="top-update-modal-css">
+.btn-update{
+  border:0;border-radius:8px;padding:.45rem .55rem;cursor:pointer;
+  background:#2563eb;color:#fff;margin-right:.25rem;
+}
+.btn-update:hover{filter:brightness(.92);}
+.top-update-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem 1rem;
+}
+.top-update-field{display:flex;flex-direction:column;gap:.25rem;}
+.top-update-field label{font-size:.78rem;font-weight:700;color:#475569;}
+.top-update-field input,.top-update-field select{
+  width:100%;box-sizing:border-box;padding:.55rem .65rem;border:1px solid #dbe2ea;
+  border-radius:8px;background:#fff;
+}
+.top-update-paste{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;align-items:start;}
+.top-update-paste textarea{
+  width:100%;min-height:210px;resize:vertical;box-sizing:border-box;
+  padding:.8rem;border:1px solid #cbd5e1;border-radius:10px;font-family:monospace;
+}
+.top-update-modal-content{width:min(1050px,94vw);max-height:90vh;overflow:auto;}
+@media(max-width:700px){.top-update-grid{grid-template-columns:1fr}.top-update-paste{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -1230,11 +1232,13 @@ body.top-fullscreen-mode #topAddColumnBtn {
             <label style="font-weight:600; margin-right:0.5rem;">Hoja:</label>
             <select id="topSheetSelector" style="padding:0.4rem 1rem; border-radius:12px; border:1px solid #e2e8f0; background:#fff;" onchange="switchTopSheet()"></select>
             <button class="btn-create" onclick="topAddRow()"><i class="fas fa-plus"></i> Añadir fila</button>
+            <button class="btn-create" onclick="topAddRows(10)" style="background:#0f766e;"><i class="fas fa-layer-group"></i> Añadir 10 filas</button>
             <button class="btn-create" onclick="topExportExcel()" style="background:#16a34a;"><i class="fas fa-file-excel"></i> Exportar</button>
             <button class="btn-create" onclick="document.getElementById('topFileInput').click()" style="background:#3b82f6;"><i class="fas fa-upload"></i> Importar</button>
             <input type="file" id="topFileInput" accept=".xlsx,.xls" style="display:none" onchange="topImportExcel(event)" />
             <button class="btn-create" onclick="topSave()" style="background:#8b5cf6;"><i class="fas fa-save"></i> Guardar</button>
         <button id="topAddColumnBtn" class="btn-create" onclick="openAddColumnModal()"><i class="fas fa-plus"></i> Añadir columna</button>
+            <button id="topAddHeaderBtn" class="btn-create" onclick="openAddHeaderModal()"><i class="fas fa-heading"></i> Añadir encabezado</button>
             <button class="btn-create top-fullscreen-btn" onclick="toggleTopFullscreen()" style="background:#0a2540;"><i class="fas fa-expand"></i> Pantalla completa</button>
             <button class="btn-create exit-fullscreen-btn" onclick="toggleTopFullscreen()" style="background:#ef4444;"><i class="fas fa-compress"></i> Salir</button>
           </div>
@@ -1243,21 +1247,27 @@ body.top-fullscreen-mode #topAddColumnBtn {
           <table class="top-table" id="topTable">
             <thead>
               <tr id="topTableHead">
-                <th style="width:30px;"><span class="drag-handle" style="cursor:grab;"><i class="fas fa-grip-lines"></i></span><span class="col-resizer"></span></th>
+                <th style="width:30px;"><span class="drag-handle"><i class="fas fa-grip-lines"></i></span><span class="col-resizer"></span></th>
                 <th data-col="id"><span class="col-label">ID</span><span class="col-resizer"></span></th>
                 <th data-col="name"><span class="col-label">NAME</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="almacenActual"><span class="col-label">ALMACEN ACTUAL</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="num"><span class="col-label">NUM</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="rango"><span class="col-label">RANGO</span><span class="col-resizer"></span></th>
+                <th data-col="almacenActual"><span class="col-label">ALMACEN</span><span class="col-resizer"></span></th>
+                <th data-col="rango"><span class="col-label">RANGO</span><span class="col-resizer"></span></th>
+                <th data-col="contratistasDerrotados"><span class="col-label">.Contratistas derrotados.</span><span class="col-resizer"></span></th>
                 <th data-col="clan"><span class="col-label">CLAN</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="prevAlmacen"><span class="col-label">PREV ALMACEN</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="nacionalidad"><span class="col-label">NACIONALIDAD</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="horas"><span class="col-label">HORAS</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="rango2"><span class="col-label">RANGO</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="rango3"><span class="col-label">RANGO</span><span class="col-resizer"></span></th>
-                <th class="hide-mobile" data-col="jugadores"><span class="col-label">JUGADORES</span><span class="col-resizer"></span></th>
-                <th data-col="acciones" class="actions-header"><span class="col-label">Acciones</span><span class="col-resizer"></span></th>
-              </tr>
+                <th data-col="prevAlmacen"><span class="col-label">PREV ALMACEN</span><span class="col-resizer"></span></th>
+                <th data-col="nacionalidad"><span class="col-label">NACIONALIDAD</span><span class="col-resizer"></span></th>
+                <th data-col="horas"><span class="col-label">HORAS</span><span class="col-resizer"></span></th>
+                <th data-col="jugadores"><span class="col-label">JUGADORES</span><span class="col-resizer"></span></th>
+                <th data-col="botinExtrai"><span class="col-label">Botin Extraido</span><span class="col-resizer"></span></th>
+                <th data-col="kdAlmacen"><span class="col-label">Grado</span><span class="col-resizer"></span></th>
+                <th data-col="tasaExtraccion"><span class="col-label">Tasa de extraccion</span><span class="col-resizer"></span></th>
+                <th data-col="asaltos"><span class="col-label">Asaltos</span><span class="col-resizer"></span></th>
+                <th data-col="bajas"><span class="col-label">Bajas</span><span class="col-resizer"></span></th>
+                <th data-col="mediaK0"><span class="col-label">Media de K/0</span><span class="col-resizer"></span></th>
+                <th data-col="totalObtenido"><span class="col-label">Total obtenido</span><span class="col-resizer"></span></th>
+                <th data-col="objetosDevueltos"><span class="col-label">Objetos devueltos</span><span class="col-resizer"></span></th>
+                <th data-col="num"><span class="col-label">NUM</span><span class="col-resizer"></span></th>
+                <th data-col="acciones" class="actions-header"><span class="col-label">ACCIONES</span><span class="col-resizer"></span></th>
             </thead>
             <tbody id="topBody"></tbody>
           </table>
@@ -1753,6 +1763,46 @@ body.top-fullscreen-mode #topAddColumnBtn {
   </div>
 </div>
 
+
+<div class="modal" id="addHeaderModal"><div class="modal-content"><h3><i class="fas fa-heading"></i> Añadir encabezado</h3><div class="input-group"><label>Nombre del encabezado</label><input id="newHeaderName" type="text" placeholder="Ej. Puntos"></div><div class="modal-footer"><button class="btn-cancel" onclick="closeAddHeaderModal()">Cancelar</button><button class="btn-submit" onclick="addTopHeader()">Añadir</button></div></div></div>
+
+<div class="modal" id="topUpdateModal">
+  <div class="modal-content top-update-modal-content">
+    <div class="content-header" style="margin-bottom:1rem;">
+      <h3><i class="fas fa-rotate"></i> Actualizar datos del jugador</h3>
+      <button class="btn-cancel" onclick="closeTopUpdateModal()">Cerrar</button>
+    </div>
+    <div class="top-update-paste">
+      <textarea id="topUpdateRaw" placeholder="Pega aquí los datos de UNA persona, por ejemplo:
+
+Nombre: Johnny_009
+ID de jugador: 3773473560
+Almacén (Valor del depósito): 128,7 M
+Rango: Leyenda (5 estrellas)
+Contratistas derrotados: 270
+Clan: ELITE GOAT F1
+Horas jugadas (Tiempo de juego): 672 h
+..."></textarea>
+      <button class="btn-create" onclick="validateTopUpdate()" style="height:fit-content;background:#2563eb;">
+        <i class="fas fa-check"></i> Validar
+      </button>
+    </div>
+    <div style="margin:1rem 0 .7rem;font-weight:800;color:#0f172a;">
+      Datos detectados — puedes revisarlos antes de actualizar
+    </div>
+    <div class="top-update-grid">
+      <div class="top-update-field"><label>ID</label><input id="topUpdate_id" type="text" /></div><div class="top-update-field"><label>NAME</label><input id="topUpdate_name" type="text" /></div><div class="top-update-field"><label>ALMACEN</label><input id="topUpdate_almacenActual" type="text" /></div><div class="top-update-field"><label>RANGO</label><input id="topUpdate_rango" type="text" /></div><div class="top-update-field"><label>Contratistas derrotados</label><input id="topUpdate_contratistasDerrotados" type="text" /></div><div class="top-update-field"><label>CLAN</label><select id="topUpdate_clan">
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+              <option value="FUERA DEL CLAN">FUERA DEL CLAN</option>
+            </select></div><div class="top-update-field"><label>PREV ALMACEN</label><input id="topUpdate_prevAlmacen" type="text" /></div><div class="top-update-field"><label>NACIONALIDAD</label><input id="topUpdate_nacionalidad" type="text" /></div><div class="top-update-field"><label>HORAS</label><input id="topUpdate_horas" type="text" /></div><div class="top-update-field"><label>JUGADORES</label><input id="topUpdate_jugadores" type="text" /></div><div class="top-update-field"><label>Botin Extrai.</label><input id="topUpdate_botinExtrai" type="text" /></div><div class="top-update-field"><label>KD ALMACEN</label><input id="topUpdate_kdAlmacen" type="text" /></div><div class="top-update-field"><label>Tasa de extraccion</label><input id="topUpdate_tasaExtraccion" type="text" /></div><div class="top-update-field"><label>Asaltos</label><input id="topUpdate_asaltos" type="text" /></div><div class="top-update-field"><label>Bajas</label><input id="topUpdate_bajas" type="text" /></div><div class="top-update-field"><label>Media de K/0</label><input id="topUpdate_mediaK0" type="text" /></div><div class="top-update-field"><label>Total obtenido</label><input id="topUpdate_totalObtenido" type="text" /></div><div class="top-update-field"><label>Objetos devueltos</label><input id="topUpdate_objetosDevueltos" type="text" /></div><div class="top-update-field"><label>NUM</label><input id="topUpdate_num" type="text" /></div>
+    </div>
+    <div class="modal-footer" style="margin-top:1rem;">
+      <button class="btn-cancel" onclick="closeTopUpdateModal()">Cancelar</button>
+      <button class="btn-submit" onclick="applyTopUpdate()"><i class="fas fa-save"></i> Actualizar jugador</button>
+    </div>
+  </div>
+</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
@@ -3847,6 +3897,7 @@ function escapeHtml(value) {
             input.addEventListener('change', function() {
                 const rowIdx = parseInt(row.dataset.index);
                 topData[activeSheet][rowIdx][this.dataset.col] = this.value;
+                topSave();
             });
 
             td.appendChild(input);
@@ -3858,6 +3909,10 @@ function escapeHtml(value) {
     applyColumnColors();
     initColumnResizing();
 }
+
+  function openAddHeaderModal(){document.getElementById('newHeaderName').value='';document.getElementById('addHeaderModal').classList.add('active');}
+  function closeAddHeaderModal(){document.getElementById('addHeaderModal').classList.remove('active');}
+  function addTopHeader(){const label=document.getElementById('newHeaderName').value.trim();if(!label)return showToast('El nombre del encabezado es requerido','error');const key='header_'+Date.now();customColumns.push({key,label,color:'default',type:'text'});saveCustomColumns();(topData[activeSheet]||[]).forEach(r=>r[key]='');renderTopTable();closeAddHeaderModal();showToast('Encabezado añadido','success');}
 
   function openAddColumnModal() {
     document.getElementById('newColName').value = '';
@@ -3996,28 +4051,29 @@ function escapeHtml(value) {
       html += `
         <tr draggable="true" data-index="${index}" class="${rowClass}" id="top-row-${index}">
           <td><span class="drag-handle" draggable="false"><i class="fas fa-grip-lines"></i></span></td>
-          <td>
-            <input type="text" value="${row.id || ''}" data-field="id" data-index="${index}" />
-            <button class="copy-id-btn" onclick="copyId('${row.id || ''}')" title="Copiar ID"><i class="fas fa-copy"></i></button>
-          </td>
+          <td><input type="text" value="${row.id || ''}" data-field="id" data-index="${index}" /><button class="copy-id-btn" onclick="copyId('${row.id || ''}')" title="Copiar ID"><i class="fas fa-copy"></i></button></td>
           <td><input type="text" value="${row.name || ''}" data-field="name" data-index="${index}" /></td>
           <td><input type="text" value="${row.almacenActual || ''}" data-field="almacenActual" data-index="${index}" /></td>
-          <td><input type="text" value="${row.num || ''}" data-field="num" data-index="${index}" /></td>
           <td><input type="text" value="${row.rango || ''}" data-field="rango" data-index="${index}" /></td>
-          <td>
-            <select data-field="clan" data-index="${index}" style="width:100%;padding:0.2rem;">
-              <option value="SI" ${row.clan === 'SI' ? 'selected' : ''}>SI</option>
-              <option value="NO" ${row.clan === 'NO' ? 'selected' : ''}>NO</option>
-              <option value="FUERA DEL CLAN" ${row.clan === 'FUERA DEL CLAN' ? 'selected' : ''}>FUERA DEL CLAN</option>
-            </select>
-          </td>
+          <td><input type="text" value="${row.contratistasDerrotados || ''}" data-field="contratistasDerrotados" data-index="${index}" /></td>
+          <td><select data-field="clan" data-index="${index}" style="width:100%;padding:0.2rem;"><option value="SI" ${row.clan === 'SI' ? 'selected' : ''}>SI</option><option value="NO" ${row.clan === 'NO' ? 'selected' : ''}>NO</option><option value="FUERA DEL CLAN" ${row.clan === 'FUERA DEL CLAN' ? 'selected' : ''}>FUERA DEL CLAN</option></select></td>
           <td><input type="text" value="${row.prevAlmacen || ''}" data-field="prevAlmacen" data-index="${index}" /></td>
           <td><input type="text" value="${row.nacionalidad || ''}" data-field="nacionalidad" data-index="${index}" /></td>
           <td><input type="text" value="${row.horas || ''}" data-field="horas" data-index="${index}" /></td>
-          <td><input type="text" value="${row.rango2 || ''}" data-field="rango2" data-index="${index}" /></td>
-          <td><input type="text" value="${row.rango3 || ''}" data-field="rango3" data-index="${index}" /></td>
           <td><input type="text" value="${row.jugadores || ''}" data-field="jugadores" data-index="${index}" /></td>
-          <td class="actions-cell" data-column="acciones"><button class="btn-delete" onclick="topDeleteRow(${index})"><i class="fas fa-trash"></i></button></td>
+          <td><input type="text" value="${row.botinExtrai || ''}" data-field="botinExtrai" data-index="${index}" /></td>
+          <td><input type="text" value="${row.kdAlmacen || ''}" data-field="kdAlmacen" data-index="${index}" /></td>
+          <td><input type="text" value="${row.tasaExtraccion || ''}" data-field="tasaExtraccion" data-index="${index}" /></td>
+          <td><input type="text" value="${row.asaltos || ''}" data-field="asaltos" data-index="${index}" /></td>
+          <td><input type="text" value="${row.bajas || ''}" data-field="bajas" data-index="${index}" /></td>
+          <td><input type="text" value="${row.mediaK0 || ''}" data-field="mediaK0" data-index="${index}" /></td>
+          <td><input type="text" value="${row.totalObtenido || ''}" data-field="totalObtenido" data-index="${index}" /></td>
+          <td><input type="text" value="${row.objetosDevueltos || ''}" data-field="objetosDevueltos" data-index="${index}" /></td>
+          <td><input type="text" value="${row.num || ''}" data-field="num" data-index="${index}" /></td>
+          <td class="actions-cell" data-column="acciones">
+            <button class="btn-update" onclick="openTopUpdateModal(${index})" title="Actualizar datos"><i class="fas fa-rotate"></i></button>
+            <button class="btn-delete" onclick="topDeleteRow(${index})" title="Eliminar"><i class="fas fa-trash"></i></button>
+          </td>
         </tr>
       `;
     });
@@ -4028,6 +4084,7 @@ function escapeHtml(value) {
         const index = parseInt(this.dataset.index);
         const field = this.dataset.field;
         topData[activeSheet][index][field] = this.value;
+        topSave();
       });
     });
     document.querySelectorAll('#topBody select').forEach(sel => {
@@ -4035,6 +4092,7 @@ function escapeHtml(value) {
         const index = parseInt(this.dataset.index);
         const field = this.dataset.field;
         topData[activeSheet][index][field] = this.value;
+        topSave();
       });
     });
 
@@ -4098,14 +4156,211 @@ function escapeHtml(value) {
     draggedRowIndex = null;
   }
 
-  function topAddRow() {
-    const newRow = {
-      id: '', name: '', almacenActual: '', num: '', rango: '', clan: 'SI',
-      prevAlmacen: '', nacionalidad: '', horas: '', rango2: '', rango3: '', jugadores: ''
+
+  // ================================================================
+  // ACTUALIZAR DATOS TOP DESDE TEXTO
+  // ================================================================
+  let topUpdateIndex = null;
+
+  function openTopUpdateModal(index) {
+    const row = topData[activeSheet]?.[index];
+    if (!row) return showToast('Jugador no encontrado', 'error');
+    topUpdateIndex = index;
+
+    const set = (key, value) => {
+      const el = document.getElementById('topUpdate_' + key);
+      if (el) el.value = value ?? '';
     };
-    topData[activeSheet].push(newRow);
+
+    set('id', row.id);
+    set('name', row.name);
+    set('almacenActual', row.almacenActual);
+    set('rango', row.rango);
+    set('contratistasDerrotados', row.contratistasDerrotados);
+    set('clan', row.clan || 'SI');
+    set('prevAlmacen', row.prevAlmacen || '');
+    set('nacionalidad', row.nacionalidad);
+    set('horas', row.horas);
+    set('jugadores', row.jugadores);
+    set('botinExtrai', row.botinExtrai);
+    set('kdAlmacen', row.kdAlmacen);
+    set('tasaExtraccion', row.tasaExtraccion);
+    set('asaltos', row.asaltos);
+    set('bajas', row.bajas);
+    set('mediaK0', row.mediaK0);
+    set('totalObtenido', row.totalObtenido);
+    set('objetosDevueltos', row.objetosDevueltos);
+    set('num', row.num);
+
+    document.getElementById('topUpdateRaw').value = '';
+    document.getElementById('topUpdateModal').classList.add('active');
+  }
+
+  function closeTopUpdateModal() {
+    document.getElementById('topUpdateModal')?.classList.remove('active');
+    topUpdateIndex = null;
+  }
+
+  function topUpdateNormalize(text) {
+    return String(text ?? '')
+      .replace(/\r/g, '')
+      .replace(/[：]/g, ':')
+      .replace(/\u00a0/g, ' ')
+      .replace(/[ \t]+/g, ' ')
+      .trim();
+  }
+
+  function topUpdateExtract(text, labels) {
+    const source = String(text ?? '')
+      .replace(/\r/g, '')
+      .replace(/\u00a0/g, ' ');
+
+    // Accepted format:
+    // "Nombre: Johnny_009"
+    // "ID de jugador: 3773473560"
+    // "Almacén (Valor del depósito): 128,7 M"
+    // A trailing quote is optional, so both quoted and unquoted lines work.
+    const lines = source.split('\n');
+
+    for (const rawLine of lines) {
+      let line = rawLine.trim();
+      line = line.replace(/^["']\s*/, '').replace(/\s*["']\s*,?\s*$/, '');
+      line = line.replace(/[：]/g, ':');
+
+      for (const label of labels) {
+        const cleanLabel = label.replace(/\\\(/g, '(').replace(/\\\)/g, ')');
+        const re = new RegExp('^' + cleanLabel + '\\s*:\\s*(.*?)\\s*$', 'i');
+        const m = line.match(re);
+        if (m) return m[1].trim().replace(/[,\s]+$/, '');
+      }
+    }
+
+    // Fallback for pasted text where several quoted fields are on one line.
+    for (const label of labels) {
+      const escaped = label;
+      const re = new RegExp("[\\\"']\\s*" + escaped + "\\s*:\\s*([\\s\\S]*?)\\s*[\\\"']", "i");
+      const m = source.match(re);
+      if (m) return m[1].trim().replace(/[,\s]+$/, '');
+    }
+
+    return '';
+  }
+
+
+  function topUpdateSetParsed(key, value) {
+    const el = document.getElementById('topUpdate_' + key);
+    if (el) el.value = value ?? '';
+  }
+
+  function validateTopUpdate() {
+    const raw = document.getElementById('topUpdateRaw').value.trim();
+    if (!raw) return showToast('Pega primero los datos del jugador', 'error');
+
+    // Use label-by-label extraction with tolerant punctuation/spacing.
+    const get = (...labels) => topUpdateExtract(raw, labels);
+
+    const id = get('ID de jugador', 'ID');
+    const name = get('Nombre');
+    const almacen = get('Almacén \\(Valor del depósito\\)', 'Almacén');
+    const rango = get('Rango');
+    const contratistas = get('Contratistas derrotados');
+    const clan = get('Clan');
+    const horas = get('Horas jugadas \\(Tiempo de juego\\)');
+    const jugadores = get('Jugadores \\(Militantes eliminados\\)');
+    const botin = get('Botín extraído \\(Botín encontrado\\)');
+    const kd = get('K/D \\(Media de K/D\\)', 'K/D', 'Media de K/D');
+    const tasa = get('Tasa de extracción');
+    const asaltos = get('Asaltos');
+    const bajas = get('Bajas');
+    const total = get('Total obtenido');
+    const devueltos = get('Valor compañeros \\(Valor de objetos devueltos\\)', 'Valor compañeros', 'Valor de los objetos devueltos');
+    const nacionalidad = get('Nacionalidad');
+    const num = get('NUM');
+
+    const values = {id,name,almacenActual:almacen,rango,contratistasDerrotados:contratistas,
+      clan:clan || 'SI',nacionalidad,horas,jugadores,botinExtrai:botin,kdAlmacen:kd,
+      tasaExtraccion:tasa,asaltos,bajas,mediaK0:kd,totalObtenido:total,
+      objetosDevueltos:devueltos,num};
+
+    // The supplied format labels K/D as Media de K/D; keep it in KD ALMACEN and Media de K/0.
+    Object.entries(values).forEach(([k,v]) => {
+      if (v !== '') topUpdateSetParsed(k,v);
+    });
+
+    // PREV ALMACEN is intentionally NOT taken from pasted text.
+    // It must be the value the row had before this update.
+    const current = topData[activeSheet]?.[topUpdateIndex];
+    if (current) topUpdateSetParsed('prevAlmacen', current.almacenActual || '');
+
+    const missing = [];
+    if (!id) missing.push('ID');
+    if (!name) missing.push('NAME');
+    if (!almacen) missing.push('ALMACEN');
+    if (!clan) missing.push('CLAN');
+    if (missing.length) showToast('Validado con campos faltantes: ' + missing.join(', '), 'error');
+    else showToast('Datos distribuidos correctamente', 'success');
+  }
+
+  function applyTopUpdate() {
+    if (topUpdateIndex === null) return;
+    const current = topData[activeSheet]?.[topUpdateIndex];
+    if (!current) return showToast('Jugador no encontrado', 'error');
+
+    const get = key => document.getElementById('topUpdate_' + key)?.value ?? '';
+
+    // IMPORTANT: PREV ALMACEN always stores the old warehouse before replacing it.
+    const oldAlmacen = current.almacenActual || '';
+    const next = {
+      ...current,
+      id:get('id'), name:get('name'), almacenActual:get('almacenActual'),
+      rango:get('rango'), contratistasDerrotados:get('contratistasDerrotados'),
+      clan:get('clan'), prevAlmacen:oldAlmacen,
+      nacionalidad:get('nacionalidad'), horas:get('horas'), jugadores:get('jugadores'),
+      botinExtrai:get('botinExtrai'), kdAlmacen:get('kdAlmacen'),
+      tasaExtraccion:get('tasaExtraccion'), asaltos:get('asaltos'), bajas:get('bajas'),
+      mediaK0:get('mediaK0'), totalObtenido:get('totalObtenido'),
+      objetosDevueltos:get('objetosDevueltos'), num:get('num')
+    };
+
+    topData[activeSheet][topUpdateIndex] = next;
+    renderTopTable();
+    closeTopUpdateModal();
+
+    // Persist immediately so the update isn't lost on reload.
+    topSave();
+    showToast('Datos del jugador actualizados', 'success');
+  }
+
+  function createEmptyTopRow() {
+    return {
+      id: '', name: '', almacenActual: '', rango: '', contratistasDerrotados: '', clan: 'SI',
+      prevAlmacen: '', nacionalidad: '', horas: '', jugadores: '', botinExtrai: '', kdAlmacen: '',
+      tasaExtraccion: '', asaltos: '', bajas: '', mediaK0: '', totalObtenido: '',
+      objetosDevueltos: '', num: ''
+    };
+  }
+
+  function topAddRow() {
+    if (!topData[activeSheet]) topData[activeSheet] = [];
+    topData[activeSheet].push(createEmptyTopRow());
     renderTopTable();
     initColumnResizing();
+
+    // Enfocar automáticamente la primera celda editable de la nueva fila.
+    const lastRow = document.querySelector('#topBody tr[data-index]:last-child');
+    const firstInput = lastRow?.querySelector('input[data-field="id"]');
+    if (firstInput) firstInput.focus();
+  }
+
+  function topAddRows(count = 10) {
+    if (!topData[activeSheet]) topData[activeSheet] = [];
+    const amount = Math.max(1, parseInt(count, 10) || 1);
+    for (let i = 0; i < amount; i++) {
+      topData[activeSheet].push(createEmptyTopRow());
+    }
+    renderTopTable();
+    initColumnResizing();
+    showToast(`${amount} filas añadidas`, 'success');
   }
 
   function topDeleteRow(index) {
@@ -4117,14 +4372,23 @@ function escapeHtml(value) {
 
   function topExportExcel() {
     const wb = XLSX.utils.book_new();
-    const sheets = Object.keys(topData);
-    sheets.forEach(sheetName => {
-      const data = topData[sheetName] || [];
-      const ws = XLSX.utils.json_to_sheet(data);
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const fixed = [
+      ['ID','id'],['NAME','name'],['ALMACEN','almacenActual'],['RANGO','rango'],
+      ['.Contratistas derrotados.','contratistasDerrotados'],['CLAN','clan'],
+      ['.PREV ALMACEN .','prevAlmacen'],['NACIONALIDAD','nacionalidad'],['HORAS','horas'],
+      ['JUGADORES','jugadores'],['.Botin Extrai.','botinExtrai'],['KD ALMACEN','kdAlmacen'],
+      ['Tasa de extraccion','tasaExtraccion'],['Asaltos','asaltos'],['Bajas','bajas'],
+      ['Media de K/0','mediaK0'],['Total obtenido','totalObtenido'],
+      ['Objetos devueltos','objetosDevueltos'],['NUM','num']
+    ];
+    Object.keys(topData).forEach(sheetName => {
+      const rows=topData[sheetName]||[], cols=[...fixed,...customColumns.map(c=>[c.label,c.key])];
+      const ws=XLSX.utils.aoa_to_sheet([cols.map(c=>c[0]),...rows.map(r=>cols.map(c=>r[c[1]]??''))]);
+      cols.forEach((_,c)=>{const x=ws[XLSX.utils.encode_cell({r:0,c})];if(x)x.s={font:{bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'0A2540'}},alignment:{horizontal:'center'}}});
+      rows.forEach((r,i)=>{const clan=String(r.clan||'').toUpperCase();if(clan==='NO'||clan==='FUERA DEL CLAN')for(let c=0;c<cols.length;c++){const x=ws[XLSX.utils.encode_cell({r:i+1,c})];if(x)x.s={fill:{fgColor:{rgb:'FFC7CE'}},font:{color:{rgb:'9C0006'}}}}});
+      XLSX.utils.book_append_sheet(wb,ws,String(sheetName).slice(0,31));
     });
-    XLSX.writeFile(wb, 'TOP_Jugadores.xlsx');
-    showToast('Excel exportado correctamente');
+    XLSX.writeFile(wb,'TOP_Jugadores.xlsx');showToast('Excel exportado correctamente');
   }
 
   function topImportExcel(event) {
@@ -5268,307 +5532,11 @@ new MutationObserver(() => ensureTopActionsLast()).observe(document.body, {
 
 
 
-<script id="sheet-advanced-selection-js">
-(function () {
-  let selected = new Set();
-  let activeCell = null;
-  let anchorCell = null;
-  let dragging = false;
-  let dragPointerId = null;
-  let cutMode = false;
-
-  function getTable() { return document.getElementById('topTable'); }
-  function getRows() {
-    const t = getTable();
-    return t ? Array.from(t.querySelectorAll('tbody tr[data-index]')) : [];
-  }
-
-  function getCell(e) {
-    let cell = e?.target?.closest?.('#topTable tbody td');
-    if (!cell) return null;
-    if (cell.querySelector('.column-resize-handle') &&
-        e.target.closest('.column-resize-handle')) return null;
-    if (e.target.closest('button')) return null;
-    return cell;
-  }
-
-  function pos(cell) {
-    const row = cell.closest('tr');
-    return {
-      r: getRows().indexOf(row),
-      c: Array.from(row.children).indexOf(cell)
-    };
-  }
-
-  function key(p) { return p.r + ':' + p.c; }
-
-  function clearSelection() {
-    selected.forEach(c => c.classList.remove('sheet-selected', 'sheet-active', 'sheet-cut'));
-    selected.clear();
-    cutMode = false;
-  }
-
-  function addCell(cell) {
-    if (!cell) return;
-    selected.add(cell);
-    cell.classList.add('sheet-selected');
-  }
-
-  function range(a, b, additive) {
-    if (!additive) clearSelection();
-
-    const p1 = pos(a), p2 = pos(b);
-    if (p1.r < 0 || p2.r < 0) return;
-
-    const r1 = Math.min(p1.r, p2.r), r2 = Math.max(p1.r, p2.r);
-    const c1 = Math.min(p1.c, p2.c), c2 = Math.max(p1.c, p2.c);
-    const rows = getRows();
-
-    for (let r = r1; r <= r2; r++) {
-      for (let c = c1; c <= c2; c++) {
-        const cell = rows[r]?.children[c];
-        if (cell) addCell(cell);
-      }
-    }
-    activeCell = b;
-    anchorCell = a;
-    if (activeCell) activeCell.classList.add('sheet-active');
-  }
-
-  function toggle(cell) {
-    if (selected.has(cell)) {
-      selected.delete(cell);
-      cell.classList.remove('sheet-selected', 'sheet-active', 'sheet-cut');
-    } else {
-      addCell(cell);
-    }
-    activeCell = cell;
-    anchorCell = cell;
-  }
-
-  function valueOf(cell) {
-    const input = cell.querySelector('input, textarea, select');
-    return input ? input.value : (cell.innerText || '').trim();
-  }
-
-  function setValue(cell, value) {
-    const input = cell.querySelector('input, textarea, select');
-    if (input) {
-      input.value = value;
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    } else {
-      cell.textContent = value;
-    }
-  }
-
-  function matrix() {
-    const ps = Array.from(selected).map(pos);
-    if (!ps.length) return null;
-
-    const r1 = Math.min(...ps.map(p => p.r));
-    const r2 = Math.max(...ps.map(p => p.r));
-    const c1 = Math.min(...ps.map(p => p.c));
-    const c2 = Math.max(...ps.map(p => p.c));
-    const rows = getRows();
-
-    const data = [];
-    for (let r = r1; r <= r2; r++) {
-      const line = [];
-      for (let c = c1; c <= c2; c++) {
-        line.push(valueOf(rows[r]?.children[c]));
-      }
-      data.push(line);
-    }
-    return { r1, r2, c1, c2, data };
-  }
-
-  function selectByKeyboard(additive, extend) {
-    if (!activeCell) return;
-    const rows = getRows();
-    const p = pos(activeCell);
-    let r = p.r, c = p.c;
-
-    if (extend && anchorCell) {
-      const a = pos(anchorCell);
-      if (window._sheetKey === 'ArrowUp') r = Math.max(0, p.r - 1);
-      if (window._sheetKey === 'ArrowDown') r = Math.min(rows.length - 1, p.r + 1);
-      if (window._sheetKey === 'ArrowLeft') c = Math.max(0, p.c - 1);
-      if (window._sheetKey === 'ArrowRight') c = Math.min(rows.length - 1 >= 0 ? rows[r].children.length - 1 : 0, p.c + 1);
-      const target = rows[r]?.children[c];
-      if (target) range(anchorCell, target, additive);
-    } else {
-      const target = rows[r]?.children[c];
-      if (target) range(target, target, additive);
-    }
-  }
-
-  document.addEventListener('pointerdown', function (e) {
-    const cell = getCell(e);
-    if (!cell) return;
-
-    // Ctrl/Cmd = add/remove individual cell or range.
-    // Shift = extend from the current anchor, like a spreadsheet.
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      toggle(cell);
-      dragging = false;
-      return;
-    }
-
-    if (e.shiftKey && anchorCell) {
-      e.preventDefault();
-      range(anchorCell, cell, false);
-      dragging = false;
-      return;
-    }
-
-    e.preventDefault();
-    clearSelection();
-    addCell(cell);
-    activeCell = cell;
-    anchorCell = cell;
-    dragging = true;
-    dragPointerId = e.pointerId;
-  }, {passive:false});
-
-  document.addEventListener('pointerover', function (e) {
-    if (!dragging) return;
-    if (dragPointerId !== null && e.pointerId !== dragPointerId) return;
-    const cell = getCell(e);
-    if (cell && anchorCell) range(anchorCell, cell, false);
-  });
-
-  document.addEventListener('pointerup', function () {
-    dragging = false;
-    dragPointerId = null;
-  });
-
-  document.addEventListener('keydown', async function (e) {
-    if (!activeCell) return;
-
-    const mod = e.ctrlKey || e.metaKey;
-
-    // Copy selected values.
-    if (mod && e.key.toLowerCase() === 'c') {
-      const m = matrix();
-      if (!m) return;
-      e.preventDefault();
-      try { await navigator.clipboard.writeText(m.data.map(row => row.join('\t')).join('\n')); } catch (_) {}
-      cutMode = false;
-      selected.forEach(c => c.classList.remove('sheet-cut'));
-      return;
-    }
-
-    // Cut selected values.
-    if (mod && e.key.toLowerCase() === 'x') {
-      const m = matrix();
-      if (!m) return;
-      e.preventDefault();
-      try { await navigator.clipboard.writeText(m.data.map(row => row.join('\t')).join('\n')); } catch (_) {}
-      cutMode = true;
-      selected.forEach(c => c.classList.add('sheet-cut'));
-      return;
-    }
-
-    // Paste TSV/rows into selected top-left cell.
-    if (mod && e.key.toLowerCase() === 'v') {
-      e.preventDefault();
-      try {
-        const text = await navigator.clipboard.readText();
-        pasteText(text);
-      } catch (_) {}
-      return;
-    }
-
-    // Delete selected values.
-    if (e.key === 'Delete' || e.key === 'Backspace') {
-      if (selected.size) {
-        e.preventDefault();
-        selected.forEach(c => setValue(c, ''));
-      }
-      return;
-    }
-
-    // Shift + arrows extends selection. Ctrl/Cmd + arrows moves to edge.
-    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
-      e.preventDefault();
-      window._sheetKey = e.key;
-
-      if (e.shiftKey) {
-        const rows = getRows();
-        const p = pos(activeCell);
-        let r = p.r, c = p.c;
-        if (e.key === 'ArrowUp') r--;
-        if (e.key === 'ArrowDown') r++;
-        if (e.key === 'ArrowLeft') c--;
-        if (e.key === 'ArrowRight') c++;
-
-        r = Math.max(0, Math.min(rows.length - 1, r));
-        c = Math.max(0, Math.min(rows[r].children.length - 1, c));
-        const target = rows[r]?.children[c];
-        if (target) range(anchorCell || activeCell, target, false);
-      } else {
-        const rows = getRows();
-        const p = pos(activeCell);
-        let r = p.r, c = p.c;
-        if (e.key === 'ArrowUp') r--;
-        if (e.key === 'ArrowDown') r++;
-        if (e.key === 'ArrowLeft') c--;
-        if (e.key === 'ArrowRight') c++;
-        r = Math.max(0, Math.min(rows.length - 1, r));
-        c = Math.max(0, Math.min(rows[r].children.length - 1, c));
-        const target = rows[r]?.children[c];
-        if (target) range(target, target, false);
-      }
-    }
-  });
-
-  async function pasteText(text) {
-    if (!activeCell) return;
-    const lines = text.replace(/\r/g, '').split('\n');
-    if (lines.length && lines[lines.length - 1] === '') lines.pop();
-
-    const rows = getRows();
-    const startPos = pos(activeCell);
-
-    lines.forEach((line, rr) => {
-      const vals = line.split('\t');
-      vals.forEach((val, cc) => {
-        const cell = rows[startPos.r + rr]?.children[startPos.c + cc];
-        if (cell) setValue(cell, val);
-      });
-    });
-
-    // If this was a cut, clear the original cells after paste.
-    if (cutMode) {
-      // Original selection is still highlighted, so clear only cells not
-      // overlapping the paste destination.
-      cutMode = false;
-      selected.forEach(c => c.classList.remove('sheet-cut'));
-    }
-  }
-
-  // Clicking outside clears selection.
-  document.addEventListener('pointerdown', function (e) {
-    if (!e.target.closest('#topTable')) {
-      clearSelection();
-      activeCell = null;
-      anchorCell = null;
-    }
-  });
-
-  function install() {
-    const t = getTable();
-    if (!t) return;
-    t.querySelectorAll('tbody td').forEach(td => td.classList.add('sheet-selectable'));
-  }
-
-  install();
-  document.addEventListener('DOMContentLoaded', install);
-  new MutationObserver(install).observe(document.body, {childList:true, subtree:true});
-})();
-</script>
-
 </body>
 </html>
+<script>
+document.addEventListener('click', function(e) {
+  const m = document.getElementById('topUpdateModal');
+  if (m && e.target === m) closeTopUpdateModal();
+});
+</script>
