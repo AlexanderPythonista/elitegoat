@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formularios - EventPro</title>
+  <title>Formularios e Inscripciones · Clan Elite Goat</title>
+  <meta name="description" content="Formularios oficiales de registro, postulaciones e inscripción a eventos del clan Elite Goat." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://eventos-beta-six.vercel.app/form" />
+  <link rel="icon" type="image/jpeg" href="https://wunfoxghrqmumalnygmg.supabase.co/storage/v1/object/public/img/elite.jpeg" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
   <style>
@@ -257,6 +261,16 @@
     toast.textContent = msg;
     document.body.appendChild(toast);
     setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+  }
+
+  // Adaptar enlaces si se abre como archivo local (file://)
+  if (window.location.protocol === 'file:') {
+    document.querySelectorAll('a[href]').forEach(el => {
+      const href = el.getAttribute('href');
+      if (href === '/') el.setAttribute('href', 'landing.html');
+      else if (href === '/app') el.setAttribute('href', 'app.html');
+      else if (href === '/history') el.setAttribute('href', 'history.html');
+    });
   }
 
   // Inicio

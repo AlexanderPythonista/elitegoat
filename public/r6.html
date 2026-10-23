@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- SEO Primary Meta Tags -->
+  <title>División Rainbow Six Siege · Elite Goat Esports</title>
+  <meta name="title" content="División Rainbow Six Siege · Elite Goat Esports" />
+  <meta name="description" content="Conoce la división de operadores tácticos de Rainbow Six Siege en Elite Goat. Estrategia 5v5, asedios coordinados, demolición y defensa." />
+  <meta name="keywords" content="rainbow six elite goat, clan r6 siege, operadores r6, esports rainbow six, scrims r6, clan competitivo r6" />
+  <meta name="author" content="Elite Goat" />
+  <meta name="publisher" content="Elite Goat Clan" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <link rel="canonical" href="https://eventos-beta-six.vercel.app/r6" />
+
+  <!-- Open Graph / Discord -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Elite Goat Clan" />
+  <meta property="og:url" content="https://eventos-beta-six.vercel.app/r6" />
+  <meta property="og:title" content="División Rainbow Six Siege · Elite Goat" />
+  <meta property="og:description" content="División táctica oficial de Rainbow Six en Elite Goat. Operaciones SWAT y defensa de alta sincronización." />
+  <meta property="og:image" content="https://wunfoxghrqmumalnygmg.supabase.co/storage/v1/object/public/img/elite.jpeg" />
+  <meta property="og:locale" content="es_ES" />
+
+  <!-- Theme & Favicon -->
+  <meta name="theme-color" content="#00d2d3" />
+  <link rel="icon" type="image/jpeg" href="https://wunfoxghrqmumalnygmg.supabase.co/storage/v1/object/public/img/elite.jpeg" />
+  <link rel="apple-touch-icon" href="https://wunfoxghrqmumalnygmg.supabase.co/storage/v1/object/public/img/elite.jpeg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    :root {
+      --game-primary: #00d2d3;
+      --game-primary-glow: rgba(0, 210, 211, 0.35);
+      --game-accent: #0abde3;
+      --bg-dark: #040404;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: #fff;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      width: 100%;
+    }
+
+    /* Ambient background glows temáticos */
+    .ambient-glow-1 {
+      position: fixed;
+      top: -160px;
+      right: -100px;
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, rgba(0, 210, 211, 0.16) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow-2 {
+      position: fixed;
+      bottom: -160px;
+      left: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(219, 114, 69, 0.08) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(4, 4, 4, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 1.1rem 0;
+    }
+
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid #db7245;
+      object-fit: cover;
+      box-shadow: 0 0 16px rgba(219, 114, 69, 0.4);
+    }
+
+    .logo-text {
+      background: linear-gradient(135deg, #ffffff 40%, #db7245 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.25s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--game-primary);
+    }
+
+    .btn-outline {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.55rem 1.25rem;
+      border-radius: 40px;
+      transition: all 0.25s !important;
+      color: #fff !important;
+    }
+
+    .btn-outline:hover {
+      border-color: #db7245;
+      background: rgba(219, 114, 69, 0.1);
+      color: #db7245 !important;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* MAIN CONTENT */
+    main {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      padding: 3.5rem 0 5.5rem;
+    }
+
+    .game-hero {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto 3rem;
+    }
+
+    .game-hero-icon-wrap {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: rgba(0, 210, 211, 0.14);
+      border: 2px solid var(--game-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 3rem;
+      color: var(--game-primary);
+      box-shadow: 0 0 30px var(--game-primary-glow);
+    }
+
+    .game-badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 210, 211, 0.15);
+      border: 1px solid rgba(0, 210, 211, 0.4);
+      color: #3ef0f1;
+      padding: 0.45rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1.2rem;
+    }
+
+    .game-hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .game-hero h1 span {
+      background: linear-gradient(135deg, #00d2d3 0%, #48dbfb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .game-hero p.subtitle {
+      font-size: 1.18rem;
+      color: rgba(255, 255, 255, 0.7);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* CARD DESTACADA: CONSTRUCCIÓN DE LA HISTORIA DE INTEGRANTES */
+    .construction-banner-box {
+      background: linear-gradient(135deg, rgba(0, 210, 211, 0.1) 0%, rgba(219, 114, 69, 0.08) 100%);
+      border: 1.5px solid rgba(0, 210, 211, 0.45);
+      border-radius: 20px;
+      padding: 2rem 2.2rem;
+      margin: 2.5rem auto 3.5rem;
+      max-width: 860px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+    }
+
+    .construction-banner-box .icon-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(0, 210, 211, 0.2);
+      border: 1px solid var(--game-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: #3ef0f1;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(0, 210, 211, 0.3);
+    }
+
+    .construction-banner-box .text-box h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #3ef0f1;
+      margin-bottom: 0.4rem;
+    }
+
+    .construction-banner-box .text-box p {
+      font-size: 0.98rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+
+    /* GRID DE DETALLES DE LA DIVISIÓN */
+    .division-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+      max-width: 1050px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .division-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 2rem 1.6rem;
+      backdrop-filter: blur(4px);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .division-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--game-primary);
+      box-shadow: 0 10px 30px rgba(0, 210, 211, 0.15);
+    }
+
+    .division-card .card-icon {
+      font-size: 2.2rem;
+      color: var(--game-primary);
+      margin-bottom: 1.2rem;
+    }
+
+    .division-card h4 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      color: #fff;
+    }
+
+    .division-card p {
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.65);
+      line-height: 1.55;
+    }
+
+    /* ACTIONS / CTAS */
+    .actions-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .btn-action-primary {
+      background: var(--game-primary);
+      color: #031c1d;
+      font-weight: 700;
+      padding: 0.85rem 1.8rem;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s;
+      box-shadow: 0 4px 20px var(--game-primary-glow);
+    }
+
+    .btn-action-primary:hover {
+      transform: translateY(-2px);
+      background: #32e8e9;
+      box-shadow: 0 8px 30px rgba(0, 210, 211, 0.5);
+    }
+
+    .btn-action-clan {
+      background: #25D366;
+      color: #03210d;
+      font-weight: 700;
+      padding: 0.85rem 1.8rem;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s;
+    }
+
+    .btn-action-clan:hover {
+      transform: translateY(-2px);
+      background: #2ee872;
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.35);
+    }
+
+    .btn-action-discord {
+      background: rgba(88, 101, 242, 0.15);
+      border: 1px solid rgba(88, 101, 242, 0.4);
+      color: #fff;
+      font-weight: 600;
+      padding: 0.85rem 1.8rem;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s;
+    }
+
+    .btn-action-discord:hover {
+      background: rgba(88, 101, 242, 0.3);
+      border-color: #5865F2;
+      transform: translateY(-2px);
+    }
+
+    .btn-action-back {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+      padding: 0.85rem 1.8rem;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s;
+    }
+
+    .btn-action-back:hover {
+      border-color: #fff;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 2rem 0;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.85rem;
+    }
+    .footer span {
+      color: var(--game-primary);
+    }
+
+    @media (max-width: 768px) {
+      .game-hero h1 { font-size: 2.2rem; }
+      .construction-banner-box { flex-direction: column; text-align: center; padding: 1.5rem; }
+      .menu-toggle { display: block; }
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: rgba(4, 4, 4, 0.98);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+      }
+      .nav-links.open { display: flex; }
+      .actions-wrap { flex-direction: column; align-items: stretch; }
+      .actions-wrap a { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- NAVBAR IDENTICO -->
+  <header class="navbar">
+    <div class="container">
+      <a href="/" onclick="if(window.location.protocol==='file:'){this.href='landing.html';}" class="logo">
+        <img src="https://wunfoxghrqmumalnygmg.supabase.co/storage/v1/object/public/img/elite.jpeg" alt="Elite Goat Logo" />
+        <span class="logo-text">Elite Goat</span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="nav-links" id="navLinks">
+        <a href="/" onclick="if(window.location.protocol==='file:'){this.href='landing.html';}">Inicio</a>
+        <a href="/#about">Nosotros</a>
+        <a href="/#games" class="active">Juegos</a>
+        <a href="/#integrantes">Integrantes</a>
+        <a href="/history">Logros</a>
+        <a href="/#contact">Contacto</a>
+        <a href="/form" class="btn-outline"><i class="fas fa-arrow-right-to-bracket"></i> Formularios</a>
+        <a href="/app" class="btn-outline"><i class="fas fa-arrow-right-to-bracket"></i> Panel</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="container">
+      <div class="game-hero">
+        <div class="game-hero-icon-wrap">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <div class="game-badge-top">
+          <i class="fas fa-user-secret"></i> Operaciones Tácticas SWAT
+        </div>
+        <h1>División <span>Rainbow Six</span></h1>
+        <p class="subtitle">
+          Estrategia milimétrica, asedios coordinados, demolición vertical y defensa impenetrable 5v5.
+        </p>
+      </div>
+
+      <!-- AVISO DE CONSTRUCCIÓN DE LA HISTORIA DE INTEGRANTES -->
+      <div class="construction-banner-box">
+        <div class="icon-box">
+          <i class="fas fa-hammer"></i>
+        </div>
+        <div class="text-box">
+          <h3>La construcción de la historia de los integrantes está en construcción</h3>
+          <p>
+            Estamos armando el registro de nuestros operadores (Roamers, Anchors, Hard Breachers, Flank Watch), rangos de liga y jugadas destacadas. Muy pronto la historia de cada integrante de Rainbow Six estará publicada aquí.
+          </p>
+        </div>
+      </div>
+
+      <!-- GRID DE CARACTERISTICAS DE LA DIVISION -->
+      <div class="division-grid">
+        <div class="division-card">
+          <div class="card-icon"><i class="fas fa-hammer"></i></div>
+          <h4>Breaching y Estrategia Vertical</h4>
+          <p>Juego milimétrico con demoliciones coordinadas de techos, pisos reforzados y líneas de mira de píxel.</p>
+        </div>
+
+        <div class="division-card">
+          <div class="card-icon"><i class="fas fa-camera"></i></div>
+          <h4>Control de Información</h4>
+          <p>Drones de reconocimiento, cámaras Valquiria y llamados instantáneos para neutralizar al enemigo sin exponernos.</p>
+        </div>
+
+        <div class="division-card">
+          <div class="card-icon"><i class="fas fa-trophy"></i></div>
+          <h4>Roster para Ligas y Copas</h4>
+          <p>Escuadra titular y suplente para representar a Elite Goat en torneos comunitarios y clasificatorios oficiales.</p>
+        </div>
+      </div>
+
+      <!-- ACCIONES -->
+      <div class="actions-wrap">
+        <a href="https://chat.whatsapp.com/DS7b2VYvliIAIn4sLdwg14" target="_blank" rel="noopener noreferrer" class="btn-action-clan">
+          <i class="fab fa-whatsapp"></i> Unirme a la División Rainbow Six
+        </a>
+        <a href="https://discord.gg/gS2b6YdM2R" target="_blank" rel="noopener noreferrer" class="btn-action-discord">
+          <i class="fab fa-discord"></i> Discord de Operadores
+        </a>
+        <a href="/#games" class="btn-action-back">
+          <i class="fas fa-arrow-left"></i> Ver Todos los Juegos
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      &copy; 2025 <span>Elite Goat</span> · División Rainbow Six — Todos los derechos reservados.
+    </div>
+  </footer>
+
+  <script>
+    function fixLocalLinks() {
+      if (window.location.protocol === 'file:') {
+        document.querySelectorAll('a[href]').forEach(el => {
+          const href = el.getAttribute('href');
+          if (!href) return;
+          if (href === '/') {
+            el.setAttribute('href', 'landing.html');
+          } else if (href.startsWith('/#')) {
+            el.setAttribute('href', 'landing.html' + href.substring(1));
+          } else if (href === '/history') {
+            el.setAttribute('href', 'history.html');
+          } else if (href === '/app') {
+            el.setAttribute('href', 'app.html');
+          } else if (href === '/form') {
+            el.setAttribute('href', 'form.html');
+          } else if (href === '/ab') {
+            el.setAttribute('href', 'ab.html');
+          } else if (href === '/war') {
+            el.setAttribute('href', 'war.html');
+          } else if (href === '/bs') {
+            el.setAttribute('href', 'bs.html');
+          } else if (href === '/cod') {
+            el.setAttribute('href', 'cod.html');
+          } else if (href === '/r6') {
+            el.setAttribute('href', 'r6.html');
+          } else if (href === '/cs') {
+            el.setAttribute('href', 'cs.html');
+          }
+        });
+      }
+    }
+    fixLocalLinks();
+    document.addEventListener('DOMContentLoaded', fixLocalLinks);
+
+    const toggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (toggle && navLinks) {
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navLinks.classList.toggle('open');
+        const icon = this.querySelector('i');
+        if (icon) {
+          icon.className = navLinks.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+        }
+      });
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function() {
+          navLinks.classList.remove('open');
+          const icon = toggle.querySelector('i');
+          if (icon) icon.className = 'fas fa-bars';
+        });
+      });
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.navbar')) {
+          navLinks.classList.remove('open');
+          const icon = toggle.querySelector('i');
+          if (icon) icon.className = 'fas fa-bars';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
