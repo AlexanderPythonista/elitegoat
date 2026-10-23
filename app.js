@@ -60,8 +60,37 @@ app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'app.html'));
 });
 
+app.get('/history', (req, res) => { // NUEVO: vista de logros e historia
+  res.sendFile(path.join(__dirname, 'public', 'history.html'));
+});
+
 app.get('/form', (req, res) => { // NUEVO: vista pública de formularios
   res.sendFile(path.join(__dirname, 'public', 'form.html'));
+});
+
+// Divisiones de juegos
+app.get('/ab', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'ab.html'));
+});
+
+app.get('/war', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'war.html'));
+});
+
+app.get('/bs', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'bs.html'));
+});
+
+app.get('/cod', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'cod.html'));
+});
+
+app.get('/r6', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'r6.html'));
+});
+
+app.get('/cs', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'cs.html'));
 });
 
 app.listen(PORT, () => {
