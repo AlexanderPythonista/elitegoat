@@ -1187,12 +1187,15 @@
             el.setAttribute('href', 'landing.html');
           } else if (href.startsWith('/#')) {
             el.setAttribute('href', 'landing.html' + href.substring(1));
-          } else if (href === '/history') {
-            el.setAttribute('href', 'history.html');
-          } else if (href === '/app') {
-            el.setAttribute('href', 'app.html');
-          } else if (href === '/form') {
-            el.setAttribute('href', 'form.html');
+          } else if (href === '/history' || href.startsWith('/history#')) {
+            const hash = href.includes('#') ? href.substring(href.indexOf('#')) : '';
+            el.setAttribute('href', 'history.html' + hash);
+          } else if (href === '/app' || href.startsWith('/app#')) {
+            const hash = href.includes('#') ? href.substring(href.indexOf('#')) : '';
+            el.setAttribute('href', 'app.html' + hash);
+          } else if (href === '/form' || href.startsWith('/form#')) {
+            const hash = href.includes('#') ? href.substring(href.indexOf('#')) : '';
+            el.setAttribute('href', 'form.html' + hash);
           } else if (href === '/ab') {
             el.setAttribute('href', 'ab.html');
           } else if (href === '/war') {
