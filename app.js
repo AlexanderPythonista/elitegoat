@@ -64,7 +64,7 @@ app.get('/history', (req, res) => { // NUEVO: vista de logros e historia
   res.sendFile(path.join(__dirname, 'public', 'history.html'));
 });
 
-app.get('/form', (req, res) => { // NUEVO: vista pública de formularios
+app.get(['/form', '/form/:slug', '/form/:slug/*'], (req, res) => { // Vista pública de formularios y enlaces directos
   res.sendFile(path.join(__dirname, 'public', 'form.html'));
 });
 
