@@ -45,10 +45,39 @@ export const createForm = async (req, res) => {
   }
 };
 
+const findFormByIdOrSlug = async (identifier) => {
+  if (!identifier) return null;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+  if (isUuid) {
+    try {
+      const form = await Form.findById(identifier);
+      if (form) return form;
+    } catch (_) {}
+  }
+
+  // Buscar por slug de primeras letras / palabras sin espacios o título normalizado
+  const allForms = await Form.findAll();
+  const normalize = (str) => (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const target = normalize(identifier).replace(/^\/+|\/+$/g, '');
+
+  const found = allForms.find(f => {
+    const normTitle = normalize(f.title);
+    const firstWord = normTitle.split(/[^a-z0-9]+/i)[0] || '';
+    const fullSlug = normTitle.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const cleanNoSpace = normTitle.replace(/[^a-z0-9]/g, '');
+    return target === firstWord || target === fullSlug || target === cleanNoSpace || target === normTitle || f.id === identifier;
+  });
+
+  if (found) {
+    return await Form.findById(found.id);
+  }
+  return null;
+};
+
 export const getForm = async (req, res) => {
   try {
     const { id } = req.params;
-    const form = await Form.findById(id);
+    const form = await findFormByIdOrSlug(id);
     if (!form) {
       return res.status(404).json({ success: false, message: 'Formulario no encontrado' });
     }
@@ -186,7 +215,7 @@ export const submitResponse = async (req, res) => {
   try {
     const { id } = req.params;
     const { respondent_name, answers } = req.body;
-    const form = await Form.findById(id);
+    const form = await findFormByIdOrSlug(id);
     if (!form) {
       return res.status(404).json({ success: false, message: 'Formulario no encontrado' });
     }
@@ -205,7 +234,7 @@ export const submitResponse = async (req, res) => {
       respondent_user_id: req.user?.id || null,
       answers
     };
-    const response = await Form.submitResponse(id, responseData);
+    const response = await Form.submitResponse(form.id, responseData);
     res.status(201).json({ success: true, data: response });
   } catch (error) {
     console.error('Error en submitResponse:', error);
