@@ -1395,7 +1395,17 @@ body.top-fullscreen-mode #topAddColumnBtn {
           <button class="btn-add-participant" onclick="closeFormDetail()" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
           <div id="formDetailHeader" style="background:#f8fafc; border-radius:16px; padding:1.5rem; border:1px solid #edf2f7; margin-bottom:1.5rem;">
             <h3 id="detailFormTitle" style="margin:0;"></h3>
-            <p id="detailFormDesc" style="color:#64748b;"></p>
+            <p id="detailFormDesc" style="color:#64748b; margin-top:0.3rem;"></p>
+            <div style="margin:0.8rem 0; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+              <span style="font-size:0.85rem; font-weight:600; color:#475569;"><i class="fas fa-link"></i> Dirección pública:</span>
+              <code id="detailFormUrl" style="background:#fff; border:1px solid #cbd5e1; padding:0.25rem 0.6rem; border-radius:6px; color:#0369a1; font-weight:600; font-size:0.85rem;"></code>
+              <button type="button" class="btn-secondary" id="detailCopyLinkBtn" style="padding:0.25rem 0.7rem; font-size:0.8rem; border-radius:6px; cursor:pointer;">
+                <i class="fas fa-copy"></i> Copiar enlace
+              </button>
+              <a id="detailOpenLinkBtn" href="#" target="_blank" style="padding:0.25rem 0.7rem; font-size:0.8rem; border-radius:6px; background:#0a2540; color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                <i class="fas fa-external-link-alt"></i> Ver formulario
+              </a>
+            </div>
             <div style="display:flex; gap:1rem; margin-top:0.5rem; font-size:0.9rem; color:#94a3b8;">
               <span><i class="fas fa-question-circle"></i> <span id="detailQuestionsCount">0</span> preguntas</span>
               <span><i class="fas fa-users"></i> <span id="detailRespondentsCount">0</span> respuestas</span>
@@ -1683,6 +1693,9 @@ body.top-fullscreen-mode #topAddColumnBtn {
 <!-- ============================================================ -->
 <!-- MODAL: CREAR/EDITAR FORMULARIO (estilo Google Forms)         -->
 <!-- ============================================================ -->
+<!-- ============================================================ -->
+<!-- MODAL: CREAR/EDITAR FORMULARIO (estilo Google Forms)         -->
+<!-- ============================================================ -->
 <div class="modal" id="formModal">
   <div class="modal-content" style="max-width:900px; padding:0; overflow-y:auto; max-height:95vh;">
     <div style="background:#0a2540; color:#fff; padding:1.5rem 2rem; border-radius:32px 32px 0 0; display:flex; justify-content:space-between; align-items:center;">
@@ -1691,11 +1704,28 @@ body.top-fullscreen-mode #topAddColumnBtn {
     </div>
     <div style="padding:2rem;">
       <input type="hidden" id="formEditId" />
-      <div class="input-group" style="margin-bottom:1.5rem;">
-        <label style="font-weight:600; font-size:1.1rem;">Título del formulario *</label>
-        <input type="text" id="formTitle" placeholder="Ej: Encuesta de satisfacción" style="font-size:1.5rem; font-weight:600; border:none; border-bottom:2px solid #e2e8f0; padding:0.5rem 0; border-radius:0; background:transparent;" />
+
+      <!-- Alerta de borrador recuperado -->
+      <div id="formDraftAlert" style="display:none; background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:0.8rem 1.2rem; border-radius:14px; margin-bottom:1.5rem; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i class="fas fa-history" style="font-size:1.1rem; color:#2563eb;"></i>
+          <span><strong>Borrador encontrado:</strong> Tienes preguntas sin guardar (<span id="draftTimeAgo">hace un momento</span>).</span>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button type="button" class="btn-primary" onclick="restoreDraft()" style="padding:0.35rem 0.9rem; font-size:0.85rem;"><i class="fas fa-undo"></i> Restaurar</button>
+          <button type="button" class="btn-secondary" onclick="discardDraft()" style="padding:0.35rem 0.9rem; font-size:0.85rem; color:#dc2626;"><i class="fas fa-trash"></i> Descartar</button>
+        </div>
       </div>
-      <div class="input-group" style="margin-bottom:1.5rem;">
+
+      <div class="input-group" style="margin-bottom:1.2rem;">
+        <label style="font-weight:600; font-size:1.1rem;">Título del formulario *</label>
+        <input type="text" id="formTitle" placeholder="Ej: Conociendo EG" style="font-size:1.4rem; font-weight:600; border:none; border-bottom:2px solid #e2e8f0; padding:0.5rem 0; border-radius:0; background:transparent;" />
+        <div id="formSlugPreview" style="font-size:0.85rem; color:#64748b; margin-top:0.4rem; display:flex; align-items:center; gap:6px;">
+          <i class="fas fa-link" style="color:#3b82f6;"></i> Dirección web:
+          <code id="formSlugCode" style="background:#f1f5f9; padding:0.2rem 0.5rem; border-radius:6px; color:#0369a1; font-weight:600; font-family:monospace;">/form/.../</code>
+        </div>
+      </div>
+      <div class="input-group" style="margin-bottom:1.2rem;">
         <label style="font-weight:500;">Descripción</label>
         <textarea id="formDescription" rows="2" placeholder="Describe el propósito del formulario" style="border:1px solid #e2e8f0; border-radius:12px; padding:0.8rem; width:100%;"></textarea>
       </div>
@@ -1706,15 +1736,103 @@ body.top-fullscreen-mode #topAddColumnBtn {
 
       <!-- Área de preguntas -->
       <div style="margin-top:2rem; border-top:1px solid #e2e8f0; padding-top:1.5rem;">
-        <h4 style="font-weight:600; margin-bottom:0.5rem;"><i class="fas fa-list"></i> Preguntas</h4>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:1rem;">
+          <h4 style="font-weight:600; margin:0;"><i class="fas fa-list"></i> Preguntas (<span id="editorQuestionsCount">0</span>)</h4>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" class="btn-secondary" onclick="openImportModal()" style="padding:0.4rem 0.9rem; border-radius:8px; font-size:0.85rem; font-weight:500;"><i class="fas fa-file-import"></i> Importar preguntas</button>
+            <button type="button" class="btn-secondary" onclick="openExportModal()" style="padding:0.4rem 0.9rem; border-radius:8px; font-size:0.85rem; font-weight:500;"><i class="fas fa-file-export"></i> Exportar</button>
+          </div>
+        </div>
+
         <div id="questionsEditor" style="display:flex; flex-direction:column; gap:0.8rem;"></div>
-        <button class="btn-add-participant" onclick="addQuestionToEditor()" style="margin-top:0.8rem;"><i class="fas fa-plus"></i> Añadir pregunta</button>
+
+        <!-- Controles para añadir preguntas -->
+        <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-top:1rem; padding:0.8rem 1.2rem; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+          <button type="button" class="btn-add-participant" onclick="addQuestionToEditor()"><i class="fas fa-plus"></i> Añadir 1 pregunta</button>
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <span style="font-size:0.85rem; color:#64748b; font-weight:500;">o elegir cantidad:</span>
+            <input type="number" id="batchQuestionsCount" value="5" min="1" max="50" style="width:58px; padding:0.35rem; border:1px solid #cbd5e1; border-radius:8px; font-size:0.9rem; text-align:center;" />
+            <button type="button" class="btn-secondary" onclick="addBatchQuestions()" style="padding:0.35rem 0.8rem; border-radius:8px; font-size:0.85rem; font-weight:600;"><i class="fas fa-layer-group"></i> Añadir varias</button>
+          </div>
+        </div>
       </div>
 
-      <div class="modal-footer" style="border-top:1px solid #e2e8f0; padding-top:1.5rem; margin-top:1.5rem;">
-        <button class="btn-cancel" id="closeFormModal2" style="padding:0.6rem 2rem;">Cancelar</button>
-        <button class="btn-submit" id="saveFormBtn" style="padding:0.6rem 2.5rem;">Guardar Formulario</button>
+      <div class="modal-footer" style="border-top:1px solid #e2e8f0; padding-top:1.5rem; margin-top:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <span id="draftStatusIndicator" style="font-size:0.85rem; color:#64748b;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Borrador sincronizado</span>
+        <div style="display:flex; gap:0.8rem;">
+          <button class="btn-cancel" id="closeFormModal2" style="padding:0.6rem 2rem;">Cancelar</button>
+          <button class="btn-submit" id="saveFormBtn" style="padding:0.6rem 2.5rem;">Guardar Formulario</button>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: IMPORTAR PREGUNTAS (1.hola 2.adios...)                -->
+<!-- ============================================================ -->
+<div class="modal" id="importFormModal">
+  <div class="modal-content" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.8rem;">
+      <h3 style="margin:0; font-size:1.3rem; color:#0a2540;"><i class="fas fa-file-import" style="color:#2563eb;"></i> Importar Preguntas</h3>
+      <button type="button" onclick="closeImportModal()" style="border:none; background:#f1f5f9; padding:0.3rem 0.8rem; border-radius:20px; cursor:pointer; font-weight:bold;">✕</button>
+    </div>
+    <p style="color:#64748b; font-size:0.9rem; margin-bottom:0.5rem;">
+      Pega tu lista de preguntas numeradas o texto plano. Cada línea se convertirá en una pregunta con su cuadro de respuesta.
+    </p>
+    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.6rem 0.8rem; font-family:monospace; font-size:0.85rem; color:#334155; margin-bottom:1rem;">
+      <strong>Ejemplo soportado:</strong><br>
+      1.hola<br>
+      2.adios<br>
+      3.rojo
+    </div>
+    <div class="input-group" style="margin-bottom:1rem;">
+      <label style="font-weight:600;">Lista de preguntas:</label>
+      <textarea id="importQuestionsText" rows="7" placeholder="1.hola&#10;2.adios&#10;3.rojo" style="width:100%; border:1px solid #cbd5e1; border-radius:10px; padding:0.8rem; font-family:inherit;"></textarea>
+    </div>
+    <div class="input-group" style="margin-bottom:1rem;">
+      <label style="font-weight:600;">Tipo de cuadro de respuesta:</label>
+      <select id="importQuestionsType" style="width:100%; padding:0.6rem; border:1px solid #cbd5e1; border-radius:8px;">
+        <option value="text">Texto corto (caja de respuesta estándar)</option>
+        <option value="textarea">Texto largo (párrafo)</option>
+        <option value="radio">Opción única (Radio)</option>
+        <option value="checkbox">Selección múltiple (Casillas)</option>
+      </select>
+    </div>
+    <div style="display:flex; gap:1.5rem; margin-bottom:1.5rem;">
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9rem;">
+        <input type="radio" name="importMode" value="append" checked /> Añadir a las existentes
+      </label>
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9rem;">
+        <input type="radio" name="importMode" value="replace" /> Reemplazar actuales
+      </label>
+    </div>
+    <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:0.8rem;">
+      <button type="button" class="btn-cancel" onclick="closeImportModal()">Cancelar</button>
+      <button type="button" class="btn-submit" onclick="applyImportedQuestions()" style="background:#2563eb; color:#fff; border:none; padding:0.6rem 1.5rem; border-radius:24px; cursor:pointer; font-weight:600;"><i class="fas fa-check"></i> Importar preguntas</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: EXPORTAR FORMULARIO (Texto o JSON)                    -->
+<!-- ============================================================ -->
+<div class="modal" id="exportFormModal">
+  <div class="modal-content" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.8rem;">
+      <h3 style="margin:0; font-size:1.3rem; color:#0a2540;"><i class="fas fa-file-export" style="color:#059669;"></i> Exportar Formulario</h3>
+      <button type="button" onclick="closeExportModal()" style="border:none; background:#f1f5f9; padding:0.3rem 0.8rem; border-radius:20px; cursor:pointer; font-weight:bold;">✕</button>
+    </div>
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button type="button" id="exportTabList" class="btn-primary" onclick="switchExportTab('list')" style="padding:0.4rem 1rem; font-size:0.85rem;"><i class="fas fa-list-ol"></i> Lista numerada</button>
+      <button type="button" id="exportTabJson" class="btn-secondary" onclick="switchExportTab('json')" style="padding:0.4rem 1rem; font-size:0.85rem;"><i class="fas fa-code"></i> Formato JSON</button>
+    </div>
+    <div class="input-group" style="margin-bottom:1rem;">
+      <textarea id="exportResultText" rows="8" readonly style="width:100%; border:1px solid #cbd5e1; border-radius:10px; padding:0.8rem; font-family:monospace; font-size:0.85rem; background:#f8fafc;"></textarea>
+    </div>
+    <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:0.8rem;">
+      <button type="button" class="btn-secondary" onclick="copyExportText()"><i class="fas fa-copy"></i> Copiar texto</button>
+      <button type="button" class="btn-primary" onclick="downloadExportText()"><i class="fas fa-download"></i> Descargar archivo</button>
     </div>
   </div>
 </div>
@@ -4903,6 +5021,7 @@ function toggleTopFullscreen() {
     forms.forEach(f => {
       const isPrivate = f.is_private ? '<span class="badge private"><i class="fas fa-lock"></i> Privado</span>' : '<span class="badge">Público</span>';
       const qCount = f.questions ? f.questions.length : 0;
+      const slug = getFormSlug(f.title);
       const actions = isAdmin ? `
         <div class="actions">
           <button class="btn-add-participant" onclick="event.stopPropagation(); openFormEditor('${f.id}')"><i class="fas fa-edit"></i> Editar</button>
@@ -4912,8 +5031,17 @@ function toggleTopFullscreen() {
       ` : '';
       html += `
         <div class="form-card" onclick="openFormDetail('${f.id}')">
-          <div class="title">${f.title}</div>
-          <div class="desc">${f.description || 'Sin descripción'}</div>
+          <div class="title">${escapeHtml(f.title)}</div>
+          <div class="desc">${escapeHtml(f.description || 'Sin descripción')}</div>
+          <div style="margin:0.6rem 0; display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+            <span style="font-family:monospace; font-size:0.75rem; background:#f1f5f9; color:#0369a1; padding:0.2rem 0.5rem; border-radius:4px; border:1px solid #e0f2fe;">/form/${slug}/</span>
+            <button type="button" onclick="event.stopPropagation(); copyFormLink('${slug}')" style="background:#e0f2fe; color:#0369a1; border:none; padding:0.2rem 0.6rem; border-radius:4px; font-size:0.75rem; cursor:pointer; font-weight:600;">
+              <i class="fas fa-copy"></i> Copiar link
+            </button>
+            <a href="/form/${slug}/" target="_blank" onclick="event.stopPropagation();" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; padding:0.2rem 0.5rem; border-radius:4px; font-size:0.75rem; text-decoration:none;" title="Abrir en pestaña nueva">
+              <i class="fas fa-external-link-alt"></i>
+            </a>
+          </div>
           <div class="meta">
             <span>${qCount} preguntas</span>
             ${isPrivate}
@@ -4944,6 +5072,15 @@ function toggleTopFullscreen() {
       document.getElementById('detailFormDesc').textContent = form.description || '';
       document.getElementById('detailQuestionsCount').textContent = (form.questions || []).length;
       document.getElementById('detailRespondentsCount').textContent = currentFormResponses.length;
+
+      const slug = getFormSlug(form.title);
+      const urlCodeEl = document.getElementById('detailFormUrl');
+      if (urlCodeEl) urlCodeEl.textContent = `/form/${slug}/`;
+      const copyBtn = document.getElementById('detailCopyLinkBtn');
+      if (copyBtn) copyBtn.onclick = () => copyFormLink(slug);
+      const openBtn = document.getElementById('detailOpenLinkBtn');
+      if (openBtn) openBtn.href = `/form/${slug}/`;
+
       renderRespondents(currentFormResponses, form);
     } catch (e) {
       showToast('Error al abrir detalle: ' + e.message, 'error');
@@ -5032,10 +5169,265 @@ function toggleTopFullscreen() {
   }
 
   // ================================================================
-  // EDITOR DE FORMULARIOS (resumido)
+  // UTILIDADES Y EDITOR DE FORMULARIOS AVANZADO
   // ================================================================
   let editorQuestions = [];
   let editorFormId = null;
+  const FORM_DRAFT_KEY = 'eg_form_draft_v1';
+
+  // Slug amigable: minúsculas, primera palabra / letras sin espacios
+  function getFormSlug(title) {
+    if (!title) return '';
+    const clean = title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const firstWord = clean.split(/[^a-z0-9]+/i)[0] || clean.replace(/[^a-z0-9]/g, '');
+    return firstWord || 'form';
+  }
+
+  function copyFormLink(slug) {
+    const url = `${window.location.origin}/form/${slug}/`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast(`Enlace copiado: /form/${slug}/`);
+      }).catch(() => {
+        prompt('Copia el enlace del formulario:', url);
+      });
+    } else {
+      prompt('Copia el enlace del formulario:', url);
+    }
+  }
+
+  function updateSlugPreview(title) {
+    const slug = getFormSlug(title);
+    const codeEl = document.getElementById('formSlugCode');
+    if (codeEl) {
+      codeEl.textContent = slug ? `/form/${slug}/` : '/form/.../';
+    }
+  }
+
+  function updateQuestionsCount() {
+    const countEl = document.getElementById('editorQuestionsCount');
+    if (countEl) countEl.textContent = editorQuestions ? editorQuestions.length : 0;
+  }
+
+  // Sincronizar estado del DOM hacia editorQuestions
+  function syncQuestionsFromDOM() {
+    const container = document.getElementById('questionsEditor');
+    if (!container) return;
+    const items = container.querySelectorAll('.question-editor-item');
+    if (!items.length) {
+      if (editorQuestions.length > 0 && container.children.length === 0) {
+        // Aún no renderizado
+      } else {
+        editorQuestions = [];
+      }
+      updateQuestionsCount();
+      return;
+    }
+    const updated = [];
+    items.forEach((item, index) => {
+      const textInput = item.querySelector('.q-text');
+      const typeSelect = item.querySelector('.q-type');
+      const optionsInput = item.querySelector('.q-options');
+      const requiredCheck = item.querySelector('.q-required');
+
+      const qText = textInput ? textInput.value : '';
+      const qType = typeSelect ? typeSelect.value : 'text';
+      let opts = [];
+      if (optionsInput && optionsInput.value.trim()) {
+        opts = optionsInput.value.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      const isReq = requiredCheck ? requiredCheck.checked : false;
+
+      updated.push({
+        question_text: qText,
+        question_type: qType,
+        options: opts,
+        is_required: isReq
+      });
+    });
+    editorQuestions = updated;
+    updateQuestionsCount();
+  }
+
+  // Renderizar las preguntas en el editor
+  function renderQuestionsEditor() {
+    const container = document.getElementById('questionsEditor');
+    updateQuestionsCount();
+    if (!editorQuestions || editorQuestions.length === 0) {
+      container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:1.5rem; background:#fff; border-radius:12px; border:1px dashed #cbd5e1;"><i class="fas fa-question-circle" style="font-size:1.5rem; margin-bottom:0.3rem; display:block; color:#cbd5e1;"></i>No hay preguntas todavía. Añade una o importa una lista.</div>';
+      return;
+    }
+    let html = '';
+    editorQuestions.forEach((q, index) => {
+      const opts = q.options || [];
+      const isText = q.question_type === 'text' || q.question_type === 'textarea';
+      html += `
+        <div class="question-editor-item" data-index="${index}">
+          <span class="drag-handle" title="Pregunta #${index + 1}"><strong style="color:#64748b; font-size:0.85rem;">${index + 1}.</strong></span>
+          <div class="question-fields">
+            <input type="text" class="q-text" value="${escapeHtml(q.question_text || '')}" placeholder="Texto de la pregunta" data-index="${index}" />
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <select class="q-type" data-index="${index}" style="max-width:200px; margin:0;">
+                <option value="text" ${q.question_type === 'text' ? 'selected' : ''}>Texto corto</option>
+                <option value="textarea" ${q.question_type === 'textarea' ? 'selected' : ''}>Texto largo (párrafo)</option>
+                <option value="select" ${q.question_type === 'select' ? 'selected' : ''}>Desplegable</option>
+                <option value="radio" ${q.question_type === 'radio' ? 'selected' : ''}>Opción única (Radio)</option>
+                <option value="checkbox" ${q.question_type === 'checkbox' ? 'selected' : ''}>Selección múltiple</option>
+              </select>
+              <label style="display:inline-flex; align-items:center; gap:5px; font-size:0.8rem; font-weight:500; cursor:pointer; margin:0;">
+                <input type="checkbox" class="q-required" ${q.is_required ? 'checked' : ''} data-index="${index}" style="width:auto; margin:0;" />
+                Obligatoria
+              </label>
+            </div>
+            <div class="options-input" style="${isText ? 'display:none;' : 'display:flex;'} margin-top:0.4rem;">
+              <input type="text" class="q-options" value="${escapeHtml(opts.join(', '))}" placeholder="Opciones separadas por coma (ej: Sí, No, Tal vez)" data-index="${index}" />
+            </div>
+          </div>
+          <div class="question-actions">
+            <button type="button" class="delete-q" onclick="removeQuestionFromEditor(${index})" title="Eliminar pregunta"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  // Gestión de borradores automáticos
+  function saveFormDraft() {
+    if (editorFormId) return; // Solo autoguardar si es creación de nuevo formulario
+    const title = document.getElementById('formTitle').value;
+    const description = document.getElementById('formDescription').value;
+    const is_private = document.getElementById('formPrivate').checked;
+
+    if (!title.trim() && !description.trim() && (!editorQuestions || editorQuestions.length === 0)) {
+      return;
+    }
+
+    const draft = {
+      title,
+      description,
+      is_private,
+      questions: editorQuestions,
+      savedAt: Date.now()
+    };
+    try {
+      localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify(draft));
+      const statusEl = document.getElementById('draftStatusIndicator');
+      if (statusEl) {
+        statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Borrador guardado automáticamente';
+      }
+    } catch (_) {}
+  }
+
+  function checkDraftOnOpen() {
+    const alertEl = document.getElementById('formDraftAlert');
+    if (!alertEl) return;
+    if (editorFormId) {
+      alertEl.style.display = 'none';
+      return;
+    }
+    const raw = localStorage.getItem(FORM_DRAFT_KEY);
+    if (!raw) {
+      alertEl.style.display = 'none';
+      return;
+    }
+    try {
+      const draft = JSON.parse(raw);
+      if (draft && (draft.title || draft.description || (draft.questions && draft.questions.length > 0))) {
+        const timeAgoEl = document.getElementById('draftTimeAgo');
+        if (timeAgoEl) {
+          const diffMinutes = Math.floor((Date.now() - (draft.savedAt || Date.now())) / 60000);
+          timeAgoEl.textContent = diffMinutes <= 1 ? 'hace un momento' : `hace ${diffMinutes} min`;
+        }
+        alertEl.style.display = 'flex';
+      } else {
+        alertEl.style.display = 'none';
+      }
+    } catch (_) {
+      alertEl.style.display = 'none';
+    }
+  }
+
+  function restoreDraft() {
+    const raw = localStorage.getItem(FORM_DRAFT_KEY);
+    if (!raw) return;
+    try {
+      const draft = JSON.parse(raw);
+      document.getElementById('formTitle').value = draft.title || '';
+      document.getElementById('formDescription').value = draft.description || '';
+      document.getElementById('formPrivate').checked = !!draft.is_private;
+      updateSlugPreview(draft.title || '');
+      editorQuestions = Array.isArray(draft.questions) ? draft.questions : [];
+      renderQuestionsEditor();
+      document.getElementById('formDraftAlert').style.display = 'none';
+      showToast('Borrador restaurado correctamente');
+    } catch (e) {
+      showToast('Error al restaurar borrador', 'error');
+    }
+  }
+
+  function discardDraft() {
+    localStorage.removeItem(FORM_DRAFT_KEY);
+    const alertEl = document.getElementById('formDraftAlert');
+    if (alertEl) alertEl.style.display = 'none';
+    showToast('Borrador descartado');
+  }
+
+  function clearFormDraft() {
+    localStorage.removeItem(FORM_DRAFT_KEY);
+    const alertEl = document.getElementById('formDraftAlert');
+    if (alertEl) alertEl.style.display = 'none';
+  }
+
+  // Sincronización en vivo con eventos input/change para evitar pérdida de datos
+  const qEditorEl = document.getElementById('questionsEditor');
+  if (qEditorEl) {
+    qEditorEl.addEventListener('input', (e) => {
+      const item = e.target.closest('.question-editor-item');
+      if (item) {
+        const idx = parseInt(item.getAttribute('data-index'), 10);
+        if (!isNaN(idx) && editorQuestions[idx]) {
+          if (e.target.classList.contains('q-text')) {
+            editorQuestions[idx].question_text = e.target.value;
+          } else if (e.target.classList.contains('q-options')) {
+            editorQuestions[idx].options = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+          }
+          saveFormDraft();
+        }
+      }
+    });
+
+    qEditorEl.addEventListener('change', (e) => {
+      const item = e.target.closest('.question-editor-item');
+      if (item) {
+        const idx = parseInt(item.getAttribute('data-index'), 10);
+        if (!isNaN(idx) && editorQuestions[idx]) {
+          if (e.target.classList.contains('q-type')) {
+            editorQuestions[idx].question_type = e.target.value;
+            const optsContainer = item.querySelector('.options-input');
+            if (optsContainer) {
+              optsContainer.style.display = (e.target.value === 'text' || e.target.value === 'textarea') ? 'none' : 'flex';
+            }
+          } else if (e.target.classList.contains('q-required')) {
+            editorQuestions[idx].is_required = e.target.checked;
+          }
+          saveFormDraft();
+        }
+      }
+    });
+  }
+
+  // Escuchadores de título y descripción
+  document.getElementById('formTitle').addEventListener('input', (e) => {
+    updateSlugPreview(e.target.value);
+    saveFormDraft();
+  });
+  document.getElementById('formDescription').addEventListener('input', () => {
+    saveFormDraft();
+  });
+  document.getElementById('formPrivate').addEventListener('change', () => {
+    saveFormDraft();
+  });
 
   document.getElementById('openCreateForm').addEventListener('click', () => { openFormEditor(null); });
 
@@ -5051,7 +5443,10 @@ function toggleTopFullscreen() {
         document.getElementById('formTitle').value = form.title;
         document.getElementById('formDescription').value = form.description || '';
         document.getElementById('formPrivate').checked = form.is_private || false;
+        updateSlugPreview(form.title);
         editorQuestions = form.questions || [];
+        const alertEl = document.getElementById('formDraftAlert');
+        if (alertEl) alertEl.style.display = 'none';
       } catch(e) {
         showToast('Error al cargar formulario: ' + e.message, 'error');
         return;
@@ -5062,67 +5457,82 @@ function toggleTopFullscreen() {
       document.getElementById('formTitle').value = '';
       document.getElementById('formDescription').value = '';
       document.getElementById('formPrivate').checked = false;
+      updateSlugPreview('');
       editorQuestions = [];
+      checkDraftOnOpen();
     }
     renderQuestionsEditor();
     document.getElementById('formModal').classList.add('active');
   }
 
-  function renderQuestionsEditor() {
-    const container = document.getElementById('questionsEditor');
-    if (!editorQuestions || editorQuestions.length === 0) {
-      container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:1rem;">No hay preguntas. Añade una.</div>';
-      return;
-    }
-    let html = '';
-    editorQuestions.forEach((q, index) => {
-      const opts = q.options || [];
-      html += `
-        <div class="question-editor-item" data-index="${index}">
-          <span class="drag-handle"><i class="fas fa-grip-lines"></i></span>
-          <div class="question-fields">
-            <input type="text" class="q-text" value="${q.question_text}" placeholder="Texto de la pregunta" data-index="${index}" />
-            <select class="q-type" data-index="${index}">
-              <option value="text" ${q.question_type === 'text' ? 'selected' : ''}>Texto corto</option>
-              <option value="textarea" ${q.question_type === 'textarea' ? 'selected' : ''}>Texto largo</option>
-              <option value="select" ${q.question_type === 'select' ? 'selected' : ''}>Desplegable</option>
-              <option value="radio" ${q.question_type === 'radio' ? 'selected' : ''}>Opción única</option>
-              <option value="checkbox" ${q.question_type === 'checkbox' ? 'selected' : ''}>Selección múltiple</option>
-            </select>
-            <div class="options-input" style="${(q.question_type === 'text' || q.question_type === 'textarea') ? 'display:none;' : ''}">
-              <input type="text" class="q-options" value="${opts.join(', ')}" placeholder="Opciones (separadas por coma)" data-index="${index}" />
-            </div>
-            <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.2rem;">
-              <input type="checkbox" class="q-required" ${q.is_required ? 'checked' : ''} data-index="${index}" />
-              <label style="font-size:0.8rem; font-weight:400; margin:0;">Obligatoria</label>
-            </div>
-          </div>
-          <div class="question-actions">
-            <button class="delete-q" onclick="removeQuestionFromEditor(${index})"><i class="fas fa-trash"></i></button>
-          </div>
-        </div>
-      `;
+  function addQuestionToEditor() {
+    syncQuestionsFromDOM();
+    const newIdx = editorQuestions.length + 1;
+    editorQuestions.push({
+      question_text: `Pregunta ${newIdx}`,
+      question_type: 'text',
+      options: [],
+      is_required: false
     });
-    container.innerHTML = html;
-    // listeners (se mantienen igual)
+    renderQuestionsEditor();
+    saveFormDraft();
+    setTimeout(() => {
+      const items = document.querySelectorAll('#questionsEditor .q-text');
+      if (items.length) {
+        const last = items[items.length - 1];
+        last.focus();
+        last.select();
+      }
+    }, 50);
   }
 
-  function addQuestionToEditor() {
-    editorQuestions.push({ question_text: 'Nueva pregunta', question_type: 'text', options: [], is_required: false });
+  function addBatchQuestions() {
+    const countInput = document.getElementById('batchQuestionsCount');
+    let count = parseInt(countInput ? countInput.value : 5, 10);
+    if (isNaN(count) || count < 1) count = 1;
+    if (count > 50) count = 50;
+    syncQuestionsFromDOM();
+    const currentCount = editorQuestions.length;
+    for (let i = 0; i < count; i++) {
+      editorQuestions.push({
+        question_text: `Pregunta ${currentCount + i + 1}`,
+        question_type: 'text',
+        options: [],
+        is_required: false
+      });
+    }
     renderQuestionsEditor();
+    saveFormDraft();
+    showToast(`Se añadieron ${count} preguntas`);
+    setTimeout(() => {
+      const items = document.querySelectorAll('#questionsEditor .q-text');
+      if (items.length && items[currentCount]) {
+        items[currentCount].focus();
+        items[currentCount].select();
+      }
+    }, 50);
   }
 
   function removeQuestionFromEditor(index) {
+    syncQuestionsFromDOM();
     editorQuestions.splice(index, 1);
     renderQuestionsEditor();
+    saveFormDraft();
   }
 
+  // Guardar formulario y todas sus preguntas fielmente
   document.getElementById('saveFormBtn').addEventListener('click', async () => {
+    syncQuestionsFromDOM();
     const id = document.getElementById('formEditId').value;
     const title = document.getElementById('formTitle').value.trim();
     const description = document.getElementById('formDescription').value.trim();
     const is_private = document.getElementById('formPrivate').checked;
     if (!title) return showToast('El título es requerido', 'error');
+
+    const saveBtn = document.getElementById('saveFormBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
     try {
       let formId = id;
       if (id) {
@@ -5132,24 +5542,203 @@ function toggleTopFullscreen() {
         for (const q of oldQuestions) {
           await apiCall(`/forms/${id}/questions/${q.id}`, { method: 'DELETE' });
         }
-        for (const q of editorQuestions) {
-          await apiCall(`/forms/${id}/questions`, { method: 'POST', body: { question_text: q.question_text, question_type: q.question_type, options: q.options, is_required: q.is_required } });
+        for (let i = 0; i < editorQuestions.length; i++) {
+          const q = editorQuestions[i];
+          const qText = (q.question_text || '').trim() || `Pregunta ${i + 1}`;
+          await apiCall(`/forms/${id}/questions`, {
+            method: 'POST',
+            body: {
+              question_text: qText,
+              question_type: q.question_type || 'text',
+              options: q.options || [],
+              is_required: !!q.is_required,
+              order: i
+            }
+          });
         }
-        showToast('Formulario actualizado');
+        showToast('Formulario actualizado con éxito');
       } else {
         const newForm = await apiCall('/forms', { method: 'POST', body: { title, description, is_private } });
         formId = newForm.data.id;
-        for (const q of editorQuestions) {
-          await apiCall(`/forms/${formId}/questions`, { method: 'POST', body: { question_text: q.question_text, question_type: q.question_type, options: q.options, is_required: q.is_required } });
+        for (let i = 0; i < editorQuestions.length; i++) {
+          const q = editorQuestions[i];
+          const qText = (q.question_text || '').trim() || `Pregunta ${i + 1}`;
+          await apiCall(`/forms/${formId}/questions`, {
+            method: 'POST',
+            body: {
+              question_text: qText,
+              question_type: q.question_type || 'text',
+              options: q.options || [],
+              is_required: !!q.is_required,
+              order: i
+            }
+          });
         }
-        showToast('Formulario creado');
+        showToast('Formulario creado con éxito');
       }
+      clearFormDraft();
       document.getElementById('formModal').classList.remove('active');
       loadForms();
     } catch(e) {
       showToast('Error al guardar formulario: ' + e.message, 'error');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = 'Guardar Formulario';
     }
   });
+
+  // Funciones de Importar y Exportar
+  function openImportModal() {
+    document.getElementById('importQuestionsText').value = '';
+    document.getElementById('importFormModal').classList.add('active');
+  }
+
+  function closeImportModal() {
+    document.getElementById('importFormModal').classList.remove('active');
+  }
+
+  function applyImportedQuestions() {
+    const raw = document.getElementById('importQuestionsText').value;
+    const qType = document.getElementById('importQuestionsType').value || 'text';
+    const mode = document.querySelector('input[name="importMode"]:checked')?.value || 'append';
+
+    if (!raw.trim()) {
+      return showToast('Por favor, ingresa las preguntas a importar', 'error');
+    }
+
+    let importedQuestions = [];
+    try {
+      const parsedJson = JSON.parse(raw);
+      if (Array.isArray(parsedJson)) {
+        importedQuestions = parsedJson.map(q => ({
+          question_text: q.question_text || q.text || String(q),
+          question_type: q.question_type || qType,
+          options: q.options || [],
+          is_required: !!q.is_required
+        }));
+      } else if (parsedJson.questions && Array.isArray(parsedJson.questions)) {
+        if (parsedJson.title && !document.getElementById('formTitle').value.trim()) {
+          document.getElementById('formTitle').value = parsedJson.title;
+          updateSlugPreview(parsedJson.title);
+        }
+        if (parsedJson.description && !document.getElementById('formDescription').value.trim()) {
+          document.getElementById('formDescription').value = parsedJson.description;
+        }
+        importedQuestions = parsedJson.questions.map(q => ({
+          question_text: q.question_text || q.text || String(q),
+          question_type: q.question_type || qType,
+          options: q.options || [],
+          is_required: !!q.is_required
+        }));
+      }
+    } catch (_) {
+      // Formato texto numerado o línea por línea (1.hola 2.adios 3.rojo)
+      const lines = raw.split(/\r?\n/);
+      for (let line of lines) {
+        line = line.trim();
+        if (!line) continue;
+        const cleaned = line.replace(/^\s*(?:\d+[\.\)\-:]|\*|\-|\•)?\s*/, '').trim();
+        if (!cleaned) continue;
+        // Capitalizar primera letra como solicitado
+        const formatted = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+        importedQuestions.push({
+          question_text: formatted,
+          question_type: qType,
+          options: [],
+          is_required: false
+        });
+      }
+    }
+
+    if (importedQuestions.length === 0) {
+      return showToast('No se detectaron preguntas válidas en el texto', 'error');
+    }
+
+    syncQuestionsFromDOM();
+    if (mode === 'replace') {
+      editorQuestions = importedQuestions;
+    } else {
+      editorQuestions = editorQuestions.concat(importedQuestions);
+    }
+
+    renderQuestionsEditor();
+    saveFormDraft();
+    closeImportModal();
+    showToast(`Se importaron ${importedQuestions.length} preguntas correctamente`);
+  }
+
+  let currentExportTab = 'list';
+
+  function openExportModal() {
+    syncQuestionsFromDOM();
+    switchExportTab('list');
+    document.getElementById('exportFormModal').classList.add('active');
+  }
+
+  function closeExportModal() {
+    document.getElementById('exportFormModal').classList.remove('active');
+  }
+
+  function switchExportTab(tab) {
+    currentExportTab = tab;
+    const tabListBtn = document.getElementById('exportTabList');
+    const tabJsonBtn = document.getElementById('exportTabJson');
+    const textArea = document.getElementById('exportResultText');
+    const title = document.getElementById('formTitle').value.trim();
+    const desc = document.getElementById('formDescription').value.trim();
+
+    if (tab === 'list') {
+      tabListBtn.className = 'btn-primary';
+      tabJsonBtn.className = 'btn-secondary';
+      let text = '';
+      editorQuestions.forEach((q, idx) => {
+        text += `${idx + 1}.${q.question_text || 'Nueva pregunta'}\n`;
+      });
+      textArea.value = text.trim();
+    } else {
+      tabListBtn.className = 'btn-secondary';
+      tabJsonBtn.className = 'btn-primary';
+      const obj = {
+        title: title || 'Formulario',
+        description: desc || null,
+        slug: getFormSlug(title),
+        questions: editorQuestions
+      };
+      textArea.value = JSON.stringify(obj, null, 2);
+    }
+  }
+
+  function copyExportText() {
+    const text = document.getElementById('exportResultText').value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Texto copiado al portapapeles');
+      }).catch(() => {
+        showToast('Copia el texto manualmente del cuadro', 'error');
+      });
+    } else {
+      showToast('Copia el texto manualmente del cuadro', 'error');
+    }
+  }
+
+  function downloadExportText() {
+    const text = document.getElementById('exportResultText').value;
+    const title = document.getElementById('formTitle').value.trim() || 'formulario';
+    const slug = getFormSlug(title);
+    const ext = currentExportTab === 'json' ? 'json' : 'txt';
+    const mime = currentExportTab === 'json' ? 'application/json' : 'text/plain';
+
+    const blob = new Blob([text], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${slug || 'formulario'}.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Archivo descargado');
+  }
 
   document.getElementById('closeFormModal').addEventListener('click', () => {
     document.getElementById('formModal').classList.remove('active');

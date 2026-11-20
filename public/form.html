@@ -90,6 +90,30 @@
     }).catch(() => {});
   }
 
+  // Utilidad para generar slug amigable: minúsculas, primera palabra / letras sin espacios
+  function getFormSlug(title) {
+    if (!title) return '';
+    const clean = title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const firstWord = clean.split(/[^a-z0-9]+/i)[0] || clean.replace(/[^a-z0-9]/g, '');
+    return firstWord || 'form';
+  }
+
+  // Detectar slug o ID desde la URL
+  function getSlugOrIdFromUrl() {
+    const path = window.location.pathname;
+    const match = path.match(/^\/form\/(.+)$/);
+    if (match) {
+      const slug = match[1].replace(/\/+$/, '').trim();
+      if (slug && slug !== 'form.html' && slug !== 'index.html') return decodeURIComponent(slug);
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const param = urlParams.get('id') || urlParams.get('slug') || urlParams.get('name');
+    if (param) return decodeURIComponent(param.trim());
+    const hash = window.location.hash.replace(/^#/, '').trim();
+    if (hash) return decodeURIComponent(hash);
+    return null;
+  }
+
   async function loadForms() {
     const container = document.getElementById('formList');
     try {
@@ -108,10 +132,14 @@
         const isPrivate = f.is_private;
         const badge = isPrivate ? '<span class="badge private"><i class="fas fa-lock"></i> Privado</span>' : '<span class="badge">Público</span>';
         const qCount = f.questions ? f.questions.length : 0;
+        const slug = getFormSlug(f.title);
         html += `
-          <div class="form-card" onclick="viewForm('${f.id}')">
+          <div class="form-card" onclick="viewForm('${slug}')">
             <div class="title">${f.title}</div>
             <div class="desc">${f.description || 'Sin descripción'}</div>
+            <div style="margin:0.4rem 0;">
+              <span style="font-family:monospace; font-size:0.75rem; background:#f1f5f9; color:#0369a1; padding:0.15rem 0.5rem; border-radius:4px;">/form/${slug}/</span>
+            </div>
             <div class="meta">
               <span>${qCount} preguntas</span>
               ${badge}
@@ -125,7 +153,7 @@
     }
   }
 
-  async function viewForm(formId) {
+  async function viewForm(formIdOrSlug, pushState = true) {
     const listView = document.getElementById('listView');
     const formView = document.getElementById('formView');
     const content = document.getElementById('formContent');
@@ -135,7 +163,7 @@
     content.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando formulario...</div>';
 
     try {
-      const res = await fetch(`${API_URL}/forms/${formId}`, {
+      const res = await fetch(`${API_URL}/forms/${encodeURIComponent(formIdOrSlug)}`, {
         headers: authToken ? { 'Authorization': `Bearer ${authToken}` } : {}
       });
       const data = await res.json();
@@ -143,9 +171,20 @@
       const form = data.data;
       if (!form) throw new Error('Formulario no encontrado');
 
+      const slug = getFormSlug(form.title);
+      document.title = `${form.title} · Clan Elite Goat`;
+      if (pushState && window.location.pathname.startsWith('/form')) {
+        window.history.pushState({ formId: form.id, slug }, '', `/form/${slug}/`);
+      }
+
       let html = `
         <div class="title">${form.title}</div>
         <div class="desc">${form.description || ''}</div>
+        <div style="margin-bottom:1.5rem;">
+          <span style="font-family:monospace; font-size:0.8rem; background:#f1f5f9; color:#0369a1; padding:0.25rem 0.6rem; border-radius:6px; border:1px solid #e0f2fe;">
+            <i class="fas fa-link"></i> /form/${slug}/
+          </span>
+        </div>
         <form id="responseForm">
           <!-- Campo obligatorio: Nombre -->
           <div class="question" style="background:#fff; border:1px solid #e2e8f0;">
@@ -200,7 +239,7 @@
         });
 
         try {
-          const res = await fetch(`${API_URL}/forms/${formId}/submit`, {
+          const res = await fetch(`${API_URL}/forms/${form.id}/submit`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -227,7 +266,15 @@
       });
 
     } catch (error) {
-      content.innerHTML = `<div style="color:#dc2626;">Error: ${error.message}</div>`;
+      content.innerHTML = `
+        <div style="color:#dc2626; padding:1.5rem; text-align:center;">
+          <i class="fas fa-exclamation-triangle" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>
+          <strong>Error:</strong> ${error.message}
+          <div style="margin-top:1rem;">
+            <button class="btn-secondary" onclick="goBack()"><i class="fas fa-arrow-left"></i> Volver a formularios</button>
+          </div>
+        </div>
+      `;
     }
   }
 
@@ -252,8 +299,24 @@
   function goBack() {
     document.getElementById('listView').style.display = 'block';
     document.getElementById('formView').style.display = 'none';
+    document.title = 'Formularios e Inscripciones · Clan Elite Goat';
+    if (window.location.pathname.startsWith('/form')) {
+      window.history.pushState({}, '', '/form');
+    }
     loadForms();
   }
+
+  window.addEventListener('popstate', () => {
+    const target = getSlugOrIdFromUrl();
+    if (target) {
+      viewForm(target, false);
+    } else {
+      document.getElementById('listView').style.display = 'block';
+      document.getElementById('formView').style.display = 'none';
+      document.title = 'Formularios e Inscripciones · Clan Elite Goat';
+      loadForms();
+    }
+  });
 
   function showToast(msg, type='success') {
     const toast = document.createElement('div');
@@ -273,8 +336,13 @@
     });
   }
 
-  // Inicio
-  loadForms();
+  // Inicio: verificar si se solicita un formulario directo o listar todos
+  const initialTarget = getSlugOrIdFromUrl();
+  if (initialTarget) {
+    viewForm(initialTarget, false);
+  } else {
+    loadForms();
+  }
 </script>
 </body>
 </html>
